@@ -18,7 +18,9 @@ session_start();
 // the site, but if there is a citizen id in the $_SESSION array, the properties will be loaded. Otherwise,
 // properties will be left = null.
 $citizen = new citizen();
-$citizen->get_citizen();
+if ($citizen->in_session()) {
+	$citizen->load(CIT_LOAD_FROMDB);
+}
 
 // Set the action variable, which controls the mode of this page.
 $action = "";
@@ -30,22 +32,15 @@ if (isset($_GET['a'])) {
 
 // Create the position object based on the action mode.
 $source = null;
-switch ($action) {
-	case "r":
-	case "e":
-		$source = GETPOS_FROMDB;
-		break;
-	case "u":
-	case "i":
-		$source = GETPOS_FROMPOST;
-		break;
-	case "n":
-	default:
-		$source = GETPOS_NEW;
-		break;
+if ($action == "r" || $action == "e" || $action == "c") {
+	$source = POS_LOAD_FROMDB;
+} elseif ($action == "u" || $action == "i") {
+	$source = POS_LOAD_FROMPOST;
+} else {
+	$source = POS_LOAD_NEW;
 }
 $position = new position();
-$position->get_position($source);
+$position->load($source);
 
  
 // If we're currently adding a comment, this HTML will be statically loaded.
@@ -58,7 +53,7 @@ switch ($action) {
 	
 	case "i":	// insert newly created position and reload page
 	
-		$position->insert_new();
+		$position->insert();
 		header("Location:position.php?a=r&pid={$position->id}");
 		break;
 		
@@ -86,7 +81,7 @@ switch ($action) {
 	default:
 	
 		if ($citizen->id) {
-			$position->get_position_vote($citizen->id);
+			$position->get_vote($citizen->id);
 			$vote = $position->vote;
 			switch ($vote) {
 				case VOTE_FOR:

@@ -24,6 +24,7 @@ if ($action == "r") {
 } elseif ($action == "i" || $action == "u" || $action == "e") {
 	$citizen->load(CIT_LOAD_FROMPOST);
 }
+//var_dump($citizen);
 
 $div_err = "";
 $err_display = "none";

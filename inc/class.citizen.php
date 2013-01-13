@@ -1,5 +1,7 @@
 <?php
 
+require_once ("util_mysql.php");
+
 define ("CIT_LOAD_FROMDB", 1);
 define ("CIT_LOAD_FROMPOST", 2);
 
@@ -10,6 +12,7 @@ class citizen {
 	public $first_name = null;
 	public $last_name = null;
 	public $email = null;
+	public $password = null;
 	public $birth_year = null;
 	public $gender = null;
 	public $city = null;
@@ -53,6 +56,7 @@ class citizen {
 				$this->last_name = $_POST['last_name'];
 				$this->name = "{$this->first_name} {$this->last_name}";
 				$this->email = $_POST['email'];
+				$this->password = $_POST['password'];
 				$this->birth_year = $_POST['birth_year'];
 				$this->gender = $_POST['gender'];
 				$this->city = $_POST['city'];
@@ -83,7 +87,7 @@ class citizen {
 	}
 	
 	private function get_sql() {
-		$sql = "password = SHA1('" . safe_sql($this->password) . "'),
+		$sql = "password = SHA1('{$this->password}'),
 		email = '" . safe_sql($this->email) . "',
 		first_name = '" . safe_sql($this->first_name) . "',
 		last_name = '" . safe_sql($this->last_name) . "',

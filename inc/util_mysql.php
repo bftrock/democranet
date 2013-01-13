@@ -1,9 +1,9 @@
 <?php
 
-define("DB_HOST", "localhost");
-define("DB_UNAME", "root");
-define("DB_PWD", "");
-define("DB_NAME", "democranet");
+define ("DB_HOST", "localhost");
+define ("DB_UNAME", "root");
+define ("DB_PWD", "");
+define ("DB_NAME", "democranet");
 
 // Opens a connection to the database and returns a link.
 function open_db_connection() {

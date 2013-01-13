@@ -37,7 +37,6 @@ if (isset($_POST['email'])) {
 	$email = $_POST['email'];
 	$password = $_POST['password'];
 	$sql = "SELECT citizen_id FROM citizens WHERE email = '{$email}' AND password = SHA1('{$password}')";
-	echo $sql;
 	$result = execute_query($sql);
 	if (get_num_rows($result)) {
 		$line = fetch_line($result);

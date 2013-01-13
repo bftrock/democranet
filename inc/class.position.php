@@ -1,8 +1,10 @@
 <?php
 
-define (GETPOS_NEW, 0);
-define (GETPOS_FROMDB, 1);
-define (GETPOS_FROMPOST, 2);
+require_once ("util_mysql.php");
+
+define ("POS_LOAD_NEW", 0);
+define ("POS_LOAD_FROMDB", 1);
+define ("POS_LOAD_FROMPOST", 2);
 
 class position {
 	
@@ -14,10 +16,10 @@ class position {
 	public $for_count = null;
 	public $against_count = null;
 	
-	public function get_position($source) {
+	public function load($source) {
 		
 		switch ($source) {
-			case GETPOS_FROMDB:
+			case POS_LOAD_FROMDB:
 				$this->id = $_GET['pid'];
 				$sql = "SELECT * FROM positions WHERE position_id = '{$this->id}'";
 				$result = execute_query($sql);
@@ -26,19 +28,19 @@ class position {
 				$this->justification = $line['justification'];
 				$this->issue_id = $line['issue_id'];
 				break;
-			case GETPOS_FROMPOST:
+			case POS_LOAD_FROMPOST:
 				$this->id = $_POST['position_id'];
 				$this->name = $_POST['name'];
 				$this->justification = $_POST['justification'];
 				break;
-			case GETPOS_NEW:
+			case POS_LOAD_NEW:
 			default:
 				$this->issue_id = $_GET['iid'];
 		}
 		
 	}
 	
-	public function insert_new() {
+	public function insert() {
 		
 		$sql = "INSERT positions SET 
 			name = '" . safe_sql($this->name) . "',
@@ -59,7 +61,7 @@ class position {
 		
 	}
 	
-	public function get_position_vote($citizen_id) {
+	public function get_vote($citizen_id) {
 		
 		$sql = "SELECT vote FROM position_citizen WHERE position_id = '{$this->id}' AND citizen_id = '{$citizen_id}'";
 		$result = execute_query($sql);

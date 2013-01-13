@@ -1,8 +1,10 @@
 <?php
 
-define ("GETISS_NEW", 0);
-define ("GETISS_FROMDB", 1);
-define ("GETISS_FROMPOST", 2);
+require_once ("util_mysql.php");
+
+define ("ISS_LOAD_NEW", 0);
+define ("ISS_LOAD_FROMDB", 1);
+define ("ISS_LOAD_FROMPOST", 2);
 
 class issue {
 
@@ -14,7 +16,7 @@ class issue {
 		
 		switch ($source) {
 			
-			case GETISS_FROMDB:
+			case ISS_LOAD_FROMDB:
 				$this->id = $_GET['iid'];
 				$sql = "SELECT * FROM issues WHERE issue_id = '{$this->id}'";
 				$result = execute_query($sql);
@@ -22,12 +24,12 @@ class issue {
 				$this->name = $line['name'];
 				$this->description = $line['description'];
 				break;
-			case GETISS_FROMPOST:
+			case ISS_LOAD_FROMPOST:
 				$this->id = $_POST['issue_id'];
 				$this->name = $_POST['name'];
 				$this->description = $_POST['description'];
 				break;
-			case GETISS_NEW:
+			case ISS_LOAD_NEW:
 			default:
 				
 		}

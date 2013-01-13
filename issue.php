@@ -18,31 +18,28 @@ session_start();
 // the site, but if there is a citizen id in the $_SESSION array, the properties will be loaded. Otherwise,
 // properties will be left = null.
 $citizen = new citizen();
-$citizen->get_citizen();
+if ($citizen->in_session()) {
+	$citizen->load(CIT_LOAD_FROMDB);
+}
 
 // Set the action variable, which controls the mode of this page.
 $action = "";
 if (isset($_GET['a'])) {
 	$action = $_GET['a'];
-} else {
+} elseif (isset($_GET['iid'])) {
 	$action = "r";
+} else {
+	$action = "n";
 }
 
 // Create the issue object based on the action mode.
 $source = null;
-switch ($action) {
-	case "r":
-	case "e":
-		$source = GETISS_FROMDB;
-		break;
-	case "u":
-	case "i":
-		$source = GETISS_FROMPOST;
-		break;
-	case "n":
-	default:
-		$source = GETISS_NEW;
-		break;
+if ($action == "r" || $action == "e") {
+	$source = ISS_LOAD_FROMDB;
+} elseif ($action == "u" || $action == "i") {
+	$source = ISS_LOAD_FROMPOST;
+} else {
+	$source = ISS_LOAD_NEW;
 }
 $issue = new issue();
 $issue->get_issue($source);
