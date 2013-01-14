@@ -159,7 +159,7 @@ function getPositions(vote, positionId) {
 			document.getElementById("positions").innerHTML = xmlhttp.responseText;
 		}
 	}
-	var url = 'get_positions.php?iid=<?php echo $issue->id; ?>&cid=<?php echo $citizen->id; ?>';
+	var url = 'get_positions.php?iid=<?php echo $issue->id; ?>';
 	if (vote && positionId) {
 		url += '&vo=' + vote + '&pid=' + positionId;
 	}

@@ -1,19 +1,46 @@
 <?php
+// This page is used to make an AJAX call to get positions for an issue. It's also used 
+// to add/change a citizen's vote on the position.
 
 include ("inc/util_mysql.php");
 include ("inc/util_democranet.php");
 
+// This function is in util_mysql. It opens a connection to the db using hard-coded 
+// username and password.
 $db = open_db_connection();
 
-$issue_id = $_GET['iid'];
-$citizen_id = null;
-if (isset($_GET['cid'])) {
-	$citizen_id = $_GET['cid'];
+// Start the session handler for the page.
+session_start();
+
+// The issue id must be passed in the query string.
+$issue_id = null;
+if (isset($_GET['iid'])) {
+	$issue_id = $_GET['iid'];
 }
 
-// If the vote (vo) parameter has been passed, then insert/update the vote into the position_citizen table.
+// The citizen id may be stored in the session if a citizen (user) is logged in.
+$citizen_id = null;
+if (isset($_SESSION['citizen_id'])) {
+	$citizen_id = $_SESSION['citizen_id'];
+}
+
+// The position id may be passed if we're voting on a position.
+$position_id = null;
+if (isset($_GET['pid'])) {
+	$position_id = $_GET['pid'];
+}
+
+// Ihe vote parameter may be passed if we're voting on a position.
+$vote = null;
 if (isset($_GET['vo'])) {
-	$sql = "REPLACE position_citizen (position_id, citizen_id, vote) VALUES ('{$_GET['pid']}','{$citizen_id}','{$_GET['vo']}')";
+	$vote = $_GET['vo'];
+}
+
+// If we have everything we need, update the position_citizen table to cast a vote. The
+// REPLACE statement inserts a new row if one doesn't exist for this primary key, and 
+// updates the row if one does exist. Handy.
+if ($position_id && $citizen_id && $vote) {
+	$sql = "REPLACE position_citizen (position_id, citizen_id, vote) VALUES ('{$position_id}','{$citizen_id}','{$vote}')";
 	execute_query($sql);
 }
 
@@ -53,6 +80,7 @@ while ($line = fetch_line($result)) {
 	}
 	$ret .= "</tr>\n";
 }
+$ret .= "</table>\n";
 echo $ret;
 
 function get_vote_html($vote) {
