@@ -1,0 +1,62 @@
+p.issue_name {
+	font-weight: bold;
+}
+
+#pos_title {
+	font-weight: bold;
+	font-size: 1.2em;
+}
+
+a.position {
+	color: #000;
+}
+
+a.for {
+	color: #66cc66;
+}
+
+a.against {
+	color: #cc6666;
+}
+
+a.comment {
+	color: #6666cc;
+}
+
+#positions table {
+	border: 1px solid gray;
+	border-collapse: collapse;
+}
+
+#positions th {
+	border-bottom: 1px solid gray;
+	border-collapse: collapse;
+}
+
+#positions td {
+	border-bottom: 1px solid gray;
+	border-collapse: collapse;
+}
+
+#positions #th_position {
+	width: 60%;
+	text-align: left;
+}
+
+#positions #th_your_vote {
+	width: 10%;
+	text-align: left;
+}
+
+#positions #th_add_vote {
+	width: 20%;
+	text-align: left;
+}
+
+#positions #th_comment {
+	text-align: left;
+}
+
+.exceeded {
+	background-color : red;
+}

@@ -5,6 +5,7 @@ require_once ("util_mysql.php");
 define ("ISS_LOAD_NEW", 0);
 define ("ISS_LOAD_FROMDB", 1);
 define ("ISS_LOAD_FROMPOST", 2);
+define ("ISS_DESC_MAXLEN", 3000);
 
 class issue {
 
@@ -50,7 +51,7 @@ class issue {
 		
 		$sql = "UPDATE issues SET 
 			name = '" . safe_sql($this->name) . "',
-			description = '" . safe_sql($this->description) . "'
+			description = '" . safe_sql(substr($this->desc, 0, ISS_DESC_MAXLEN)) . "'
 			WHERE issue_id = '{$this->id}'";
 		execute_query($sql);
 		

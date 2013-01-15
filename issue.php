@@ -79,69 +79,10 @@ switch ($action) {
 <html>
 
 <head>
-	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
 	<title>Democranet: Issue</title>
-	<style type="text/css">
-p.issue_name {
-	font-weight: bold;
-}
-
-#pos_title {
-	font-weight: bold;
-	font-size: 1.2em;
-}
-
-a.position {
-	color: #000;
-}
-
-a.for {
-	color: #66cc66;
-}
-
-a.against {
-	color: #cc6666;
-}
-
-a.comment {
-	color: #6666cc;
-}
-
-#positions table {
-	border: 1px solid gray;
-	border-collapse: collapse;
-}
-
-#positions th {
-	border-bottom: 1px solid gray;
-	border-collapse: collapse;
-}
-
-#positions td {
-	border-bottom: 1px solid gray;
-	border-collapse: collapse;
-}
-
-#positions #th_position {
-	width: 60%;
-	text-align: left;
-}
-
-#positions #th_your_vote {
-	width: 10%;
-	text-align: left;
-}
-
-#positions #th_add_vote {
-	width: 20%;
-	text-align: left;
-}
-
-#positions #th_comment {
-	text-align: left;
-}
-
-	</style>
+	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
+	<link rel="stylesheet" type="text/css" href="style/issue.css" />
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 	<script type="text/javascript">
 	
 function getPositions(vote, positionId) {
@@ -182,10 +123,30 @@ function cancelEdit() {
 	window.location.assign(url);
 }
 
+<?php if ($action == "e" || $action == "n") { ?>
+var updateCount = function() {
+    var $ta = $("#description"),
+        $sp = $("#charNum"),
+        len = $ta.val().length,
+        maxChars = +$ta.attr("data-maxChars");
+
+    $sp.text(len).toggleClass("exceeded", len > maxChars);		
+}
+$(document).ready(function() {
+
+	updateCount();
+    $("#description").on("keyup blur", updateCount);
+
+});
+<?php } ?>
+
 	</script>
 </head>
 
+
+<?php if ($action == "r") { ?>
 <body onload="getPositions(null, null)">
+<?php } ?>
 	
 <div id="container">
 	<div id="login">
@@ -215,8 +176,10 @@ if ($citizen->id) {
 			<form method="post" action="<?php echo $submit_action; ?>">
 				<input name="issue_id" type="hidden" value="<?php echo $issue->id; ?>" /><br />
 				<input name="name" size="50" value="<?php echo $issue->name; ?>" /><br />
-				<textarea name="description" rows="30" cols="110"><?php echo $issue->description; ?></textarea><br />
+				<textarea name="description" id="description" rows="30" cols="110" data-maxChars="<?php echo ISS_DESC_MAXLEN; ?>">
+<?php echo $issue->description; ?></textarea><br />
 				<input type="submit" value="Save" /><input type="button" value="Cancel" onclick="cancelEdit()" />
+				<span>Character count: <span id="charNum" class="counter"></span> / <?php echo ISS_DESC_MAXLEN; ?></span>
 			</form>
 <?php } else { ?>
 			<p class="issue_name"><?php echo $issue->name; ?></p>
