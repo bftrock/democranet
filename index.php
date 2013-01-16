@@ -27,12 +27,17 @@ if ($citizen->in_session()) {
 	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
 	<title>Democranet</title>
 	<style type="text/css">
-p.is_ti {
+p.is_ca {
 	margin: 20px 0 2px 0;
+	font-size: 120%;
+}
+
+p.is_ti {
+	margin: 10px 0 2px 20px;
 }
 
 p.is_de {
-	margin: 0 0 0 20px;
+	margin: 0 0 0 40px;
 }
 
 #issue_list a:link {
@@ -93,12 +98,16 @@ if ($citizen->id) {
 function get_issue_list() {
 
 	$ret = "<div id=\"issue_list\">";
-	$sql = "SELECT issue_id, name, CONCAT(LEFT(description, 270), '...') description
-		FROM issues 
-		ORDER BY name";
+	$sql = "SELECT c.name category_name, ic.*, i.name issue_name, CONCAT(LEFT(i.description, 270), '...') issue_description
+		FROM issue_category ic 
+		LEFT JOIN categories c ON ic.category_id = c.category_id 
+		LEFT JOIN issues i ON ic.issue_id = i.issue_id 
+		ORDER BY c.name ASC";
 	$result = execute_query($sql);
 	while ($line = fetch_line($result)) {
-		$ret .= "<p class=\"is_ti\"><a href=\"issue.php?iid={$line['issue_id']}\" />{$line['name']}</a><p class=\"is_de\">{$line['description']}</p>";
+		$ret .= "<p class=\"is_ca\">{$line['category_name']}</p>
+			<p class=\"is_ti\"><a href=\"issue.php?iid={$line['issue_id']}\" />{$line['issue_name']}</a>
+			<p class=\"is_de\">{$line['issue_description']}</p>";
 	}
 	$ret .= "</div>";
 	return $ret;
