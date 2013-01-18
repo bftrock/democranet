@@ -156,7 +156,7 @@ function getComments(comment) {
 			document.getElementById("comments").innerHTML = xmlhttp.responseText;
 		}
 	}
-	var url = 'get_comments.php?pid=<?php echo $position->id; ?>';
+	var url = 'ajax/ajax.comments.php?pid=<?php echo $position->id; ?>';
 	if (comment) {
 		url += '&co=' + encodeURI(comment);
 	}

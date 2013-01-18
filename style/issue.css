@@ -1,5 +1,6 @@
-p.issue_name {
-	font-weight: bold;
+#content th {
+	text-align: left;
+	vertical-align: top;
 }
 
 #pos_title {
@@ -23,18 +24,8 @@ a.comment {
 	color: #6666cc;
 }
 
-#positions table {
+#positions table, #positions th, #positions td {
 	border: 1px solid gray;
-	border-collapse: collapse;
-}
-
-#positions th {
-	border-bottom: 1px solid gray;
-	border-collapse: collapse;
-}
-
-#positions td {
-	border-bottom: 1px solid gray;
 	border-collapse: collapse;
 }
 

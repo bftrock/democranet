@@ -98,16 +98,23 @@ if ($citizen->id) {
 function get_issue_list() {
 
 	$ret = "<div id=\"issue_list\">";
-	$sql = "SELECT c.name category_name, ic.*, i.name issue_name, CONCAT(LEFT(i.description, 270), '...') issue_description
-		FROM issue_category ic 
+	$sql = "SELECT c.name category_name, i.issue_id issue_id, i.name issue_name, CONCAT(LEFT(i.description, 270), '...') issue_description
+		FROM issues i 
+		LEFT JOIN issue_category ic ON i.issue_id = ic.issue_id 
 		LEFT JOIN categories c ON ic.category_id = c.category_id 
-		LEFT JOIN issues i ON ic.issue_id = i.issue_id 
 		ORDER BY c.name ASC";
 	$result = execute_query($sql);
+	$last_category = "";
 	while ($line = fetch_line($result)) {
-		$ret .= "<p class=\"is_ca\">{$line['category_name']}</p>
-			<p class=\"is_ti\"><a href=\"issue.php?iid={$line['issue_id']}\" />{$line['issue_name']}</a>
-			<p class=\"is_de\">{$line['issue_description']}</p>";
+		$this_category = $line['category_name'];
+		if ($this_category != $last_category) {
+			$ret .= "<p class=\"is_ca\">{$line['category_name']}</p>\n";
+		} elseif ($this_category == null) {
+			$ret .= "<p class=\"is_ca\">(Uncategorized)</p>\n";
+		}
+		$ret .= "<p class=\"is_ti\"><a href=\"issue.php?iid={$line['issue_id']}\" />{$line['issue_name']}</a>
+				<p class=\"is_de\">{$line['issue_description']}</p>";
+		$last_category = $this_category;
 	}
 	$ret .= "</div>";
 	return $ret;

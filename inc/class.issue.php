@@ -66,6 +66,23 @@ class issue {
 	
 	}
 
+	// This function returns an array of category ids and names associated with this issue
+	public function get_categories() {
+
+		$sql = "SELECT ic.*, c.name category_name
+			FROM issue_category ic 
+			LEFT JOIN categories c on ic.category_id = c.category_id
+			WHERE ic.issue_id = '{$this->id}'
+			ORDER BY c.name ASC";
+		$result = execute_query($sql);
+		$arr = array();
+		while($line = fetch_line($result)) {
+			$arr[$line['category_id']] = $line['category_name'];
+		}
+		return $arr;
+
+	}
+
 }
 
 ?>

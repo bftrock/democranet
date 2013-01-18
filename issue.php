@@ -82,7 +82,7 @@ switch ($action) {
 	<title>Democranet: Issue</title>
 	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
 	<link rel="stylesheet" type="text/css" href="style/issue.css" />
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+	<script src="inc/jquery.js"></script>
 	<script type="text/javascript">
 	
 function getPositions(vote, positionId) {
@@ -100,7 +100,7 @@ function getPositions(vote, positionId) {
 			document.getElementById("positions").innerHTML = xmlhttp.responseText;
 		}
 	}
-	var url = 'get_positions.php?iid=<?php echo $issue->id; ?>';
+	var url = 'ajax/ajax.positions.php?iid=<?php echo $issue->id; ?>';
 	if (vote && positionId) {
 		url += '&vo=' + vote + '&pid=' + positionId;
 	}
@@ -124,20 +124,27 @@ function cancelEdit() {
 }
 
 <?php if ($action == "e" || $action == "n") { ?>
-var updateCount = function() {
+
+function updateCount() {
     var $ta = $("#description"),
         $sp = $("#charNum"),
         len = $ta.val().length,
         maxChars = +$ta.attr("data-maxChars");
-
     $sp.text(len).toggleClass("exceeded", len > maxChars);		
 }
+
+function addCategory() {
+	var sel = document.getElementById('cats');
+	var opt = sel.options[sel.selectedIndex];
+	var sp = document.getElementById('selCats');
+	sp.innerHTML += opt.text + '&nbsp;';
+}
+
 $(document).ready(function() {
-
 	updateCount();
-    $("#description").on("keyup blur", updateCount);
-
+	$("#description").on("keyup blur", updateCount);
 });
+
 <?php } ?>
 
 	</script>
@@ -173,18 +180,27 @@ if ($citizen->id) {
 		</div>
 		<div id="content">
 <?php if ($action == "e" || $action == "n") { ?>
-			<form method="post" action="<?php echo $submit_action; ?>">
-				<input name="issue_id" type="hidden" value="<?php echo $issue->id; ?>" /><br />
-				<input name="name" size="50" value="<?php echo $issue->name; ?>" /><br />
-				<textarea name="description" id="description" rows="30" cols="110" data-maxChars="<?php echo ISS_DESC_MAXLEN; ?>">
-<?php echo $issue->description; ?></textarea><br />
-				<input type="submit" value="Save" /><input type="button" value="Cancel" onclick="cancelEdit()" />
-				<span>Character count: <span id="charNum" class="counter"></span> / <?php echo ISS_DESC_MAXLEN; ?></span>
-			</form>
+			<form method="post" action="<?php echo $submit_action; ?>"><table>
+				<tr><th>Title:<input name="issue_id" type="hidden" value="<?php echo $issue->id; ?>" /></th>
+					<td><input name="name" size="50" value="<?php echo $issue->name; ?>" /></td></tr>
+				<tr><th>Description:</th>
+					<td><textarea name="description" id="description" rows="25" cols="100" data-maxChars="<?php echo ISS_DESC_MAXLEN; ?>">
+<?php echo $issue->description; ?></textarea>
+						<span>Character count: <span id="charNum" class="counter"></span> / <?php echo ISS_DESC_MAXLEN; ?></span></td></tr>
+				<tr><th>Categories:</th>
+					<td><select id="cats"><?php echo get_category_options($issue->get_categories()); ?></select>
+						<button id="addCat" onclick="addCategory()">Add</button><button id="delCat">Delete</button>
+						<span id="selCats"><?php echo display_categories($issue->get_categories(), 2); ?></span></td></tr>
+				<tr><td></td><td>
+					<input type="button" value="Save" /><input type="button" value="Cancel" /></td></tr>
+			</table></form>
 <?php } else { ?>
-			<p class="issue_name"><?php echo $issue->name; ?></p>
-			<p><?php echo $issue->display_description(); ?></p>
-			<input type="button" value="Edit" onclick="edit()" />
+			<table>
+				<tr><th>Title:</th><td><?php echo $issue->name; ?></td></tr>
+				<tr><th>Description:</th><td><?php echo $issue->display_description(); ?></td></tr>
+				<tr><th>Categories:</th><td><?php echo display_categories($issue->get_categories(), 1); ?></td></tr>
+				<tr><td></td><td><input type="button" value="Edit" onclick="edit()" /></td></tr>
+			</table>
 			<hr />
 			<div id="positions"></div>
 <?php } ?>
@@ -196,3 +212,41 @@ if ($citizen->id) {
 
 </html>
 
+<?php
+
+// Returns selected categories to be displayed with issue. If $mode = 1, a comma-separated list is returned
+// for display in read mode. If $mode = 2, a list of checkboxes is returned for display in edit mode.
+function display_categories($selected_categories, $mode) {
+
+	$result = "";
+	if ($mode == 1) {
+		foreach($selected_categories as $category_id => $category_name) {
+			$result .= "{$category_name}, ";
+		}
+	} elseif ($mode == 2) {
+		foreach($selected_categories as $category_id => $category_name) {
+			$result .= "<input type=\"checkbox\" name=\"categories\" value=\"$category_id\">{$category_name}</input>";
+		}
+	}
+	return substr($result, 0, -2);
+
+}
+
+function get_category_options($selected_categories) {
+
+	$result	 = "";
+	$sql = "SELECT c.* FROM categories c ORDER BY name";
+	$result = execute_query($sql);
+	$all_categories = array();
+	while($line = fetch_line($result)) {
+		$all_categories[$line['category_id']] = $line['name'];
+	}
+	$unselected_categories = array_diff($all_categories, $selected_categories);
+	foreach($unselected_categories as $category_id => $category_name) {
+		$result .= "<option value=\"{$category_id}\">{$category_name}</option>";
+	}
+	return $result;
+
+}
+
+?>
