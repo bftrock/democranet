@@ -85,33 +85,14 @@ switch ($action) {
 	<script src="inc/jquery.js"></script>
 	<script type="text/javascript">
 	
-function getPositions(vote, positionId) {
-	
-	var xmlhttp;
-	if (window.XMLHttpRequest) {
-		// code for IE7+, Firefox, Chrome, Opera, Safari
-		xmlhttp=new XMLHttpRequest();
-	} else {
-		// code for IE6, IE5
-		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-	}
-	xmlhttp.onreadystatechange = function() {
-		if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-			document.getElementById("positions").innerHTML = xmlhttp.responseText;
-		}
-	}
-	var url = 'ajax/ajax.positions.php?iid=<?php echo $issue->id; ?>';
-	if (vote && positionId) {
-		url += '&vo=' + vote + '&pid=' + positionId;
-	}
-	xmlhttp.open('GET', url, true);
-	xmlhttp.send();
-	
-}
+<?php if ($action == "e" || $action == "n") { ?>
 
-function edit() {
-	var url = 'issue.php?a=e&iid=<?php echo $issue->id; ?>';
-	window.location.assign(url);
+function updateCount() {
+    var $ta = $("#description"),
+        $sp = $("#charNum"),
+        len = $ta.val().length,
+        maxChars = +$ta.attr("data-maxChars");
+    $sp.text(len).toggleClass("exceeded", len > maxChars);		
 }
 
 function cancelEdit() {
@@ -123,36 +104,31 @@ function cancelEdit() {
 	window.location.assign(url);
 }
 
-<?php if ($action == "e" || $action == "n") { ?>
-
-function updateCount() {
-    var $ta = $("#description"),
-        $sp = $("#charNum"),
-        len = $ta.val().length,
-        maxChars = +$ta.attr("data-maxChars");
-    $sp.text(len).toggleClass("exceeded", len > maxChars);		
-}
-
-function addCategory() {
-	var sel = document.getElementById('cats');
-	var opt = sel.options[sel.selectedIndex];
-	var sp = document.getElementById('selCats');
-	sp.innerHTML += opt.text + '&nbsp;';
-}
-
 $(document).ready(function() {
 	updateCount();
 	$("#description").on("keyup blur", updateCount);
+	$("#cancelEdit").on("click", cancelEdit);
+});
+
+<?php } else { ?>
+
+function edit() {
+	var url = 'issue.php?a=e&iid=<?php echo $issue->id; ?>';
+	window.location.assign(url);
+}
+
+$(document).ready(function() {
+	$("#edit").on("click", edit);
+	$("#positions").load('ajax/ajax.positions.php?iid=<?php echo $issue->id; ?>');
 });
 
 <?php } ?>
-
 	</script>
 </head>
 
 
 <?php if ($action == "r") { ?>
-<body onload="getPositions(null, null)">
+<body>
 <?php } ?>
 	
 <div id="container">
@@ -184,22 +160,19 @@ if ($citizen->id) {
 				<tr><th>Title:<input name="issue_id" type="hidden" value="<?php echo $issue->id; ?>" /></th>
 					<td><input name="name" size="50" value="<?php echo $issue->name; ?>" /></td></tr>
 				<tr><th>Description:</th>
-					<td><textarea name="description" id="description" rows="25" cols="100" data-maxChars="<?php echo ISS_DESC_MAXLEN; ?>">
-<?php echo $issue->description; ?></textarea>
+					<td><textarea name="description" id="description" rows="25" cols="100" data-maxChars="<?php echo ISS_DESC_MAXLEN; ?>"><?php echo $issue->description; ?></textarea>
 						<span>Character count: <span id="charNum" class="counter"></span> / <?php echo ISS_DESC_MAXLEN; ?></span></td></tr>
 				<tr><th>Categories:</th>
-					<td><select id="cats"><?php echo get_category_options($issue->get_categories()); ?></select>
-						<button id="addCat" onclick="addCategory()">Add</button><button id="delCat">Delete</button>
-						<span id="selCats"><?php echo display_categories($issue->get_categories(), 2); ?></span></td></tr>
+					<td><select name="categories[]" id="categories" multiple="multiple" size="10"><?php echo get_category_options($issue->get_categories()); ?></select></td></tr>
 				<tr><td></td><td>
-					<input type="button" value="Save" /><input type="button" value="Cancel" /></td></tr>
+					<input type="submit" value="Save" /><button id="cancelEdit">Cancel</button></td></tr>
 			</table></form>
 <?php } else { ?>
 			<table>
 				<tr><th>Title:</th><td><?php echo $issue->name; ?></td></tr>
 				<tr><th>Description:</th><td><?php echo $issue->display_description(); ?></td></tr>
 				<tr><th>Categories:</th><td><?php echo display_categories($issue->get_categories(), 1); ?></td></tr>
-				<tr><td></td><td><input type="button" value="Edit" onclick="edit()" /></td></tr>
+				<tr><td></td><td><button id="edit">Edit</button></td></tr>
 			</table>
 			<hr />
 			<div id="positions"></div>
@@ -214,38 +187,31 @@ if ($citizen->id) {
 
 <?php
 
-// Returns selected categories to be displayed with issue. If $mode = 1, a comma-separated list is returned
-// for display in read mode. If $mode = 2, a list of checkboxes is returned for display in edit mode.
-function display_categories($selected_categories, $mode) {
+// Returns selected categories to be displayed with issue.
+function display_categories($selected_categories) {
 
 	$result = "";
-	if ($mode == 1) {
-		foreach($selected_categories as $category_id => $category_name) {
-			$result .= "{$category_name}, ";
-		}
-	} elseif ($mode == 2) {
-		foreach($selected_categories as $category_id => $category_name) {
-			$result .= "<input type=\"checkbox\" name=\"categories\" value=\"$category_id\">{$category_name}</input>";
-		}
+	foreach($selected_categories as $category_id => $category_name) {
+		$result .= "{$category_name}, ";
 	}
 	return substr($result, 0, -2);
 
 }
 
+// Returns options to display in select control.
 function get_category_options($selected_categories) {
 
-	$result	 = "";
-	$sql = "SELECT c.* FROM categories c ORDER BY name";
+	$options = "";
+	$sql = "SELECT * FROM categories ORDER BY name";
 	$result = execute_query($sql);
-	$all_categories = array();
 	while($line = fetch_line($result)) {
-		$all_categories[$line['category_id']] = $line['name'];
+		$options .= "<option value=\"{$line['category_id']}\"";
+		if (array_key_exists($line['category_id'], $selected_categories)) {
+			$options .= " selected=\"selected\"";
+		}
+		$options .= ">{$line['name']}</option>\n";
 	}
-	$unselected_categories = array_diff($all_categories, $selected_categories);
-	foreach($unselected_categories as $category_id => $category_name) {
-		$result .= "<option value=\"{$category_id}\">{$category_name}</option>";
-	}
-	return $result;
+	return $options;
 
 }
 

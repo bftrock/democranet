@@ -12,6 +12,7 @@ class issue {
 	public $id = null;
 	public $name = null;
 	public $description = null;
+	public $categories = array();
 	
 	public function get_issue($source) {
 		
@@ -24,11 +25,17 @@ class issue {
 				$line = fetch_line($result);
 				$this->name = $line['name'];
 				$this->description = $line['description'];
+				$sql = "SELECT * FROM issue_category WHERE issue_id = '{$this->id}'";
+				$result = execute_query($sql);
+				while($line = fetch_line($result)) {
+					$this->categories[] = $line['category_id'];
+				}
 				break;
 			case ISS_LOAD_FROMPOST:
 				$this->id = $_POST['issue_id'];
 				$this->name = $_POST['name'];
 				$this->description = $_POST['description'];
+				$this->categories = $_POST['categories'];
 				break;
 			case ISS_LOAD_NEW:
 			default:
@@ -51,9 +58,18 @@ class issue {
 		
 		$sql = "UPDATE issues SET 
 			name = '" . safe_sql($this->name) . "',
-			description = '" . safe_sql(substr($this->desc, 0, ISS_DESC_MAXLEN)) . "'
+			description = '" . safe_sql(substr($this->description, 0, ISS_DESC_MAXLEN)) . "'
 			WHERE issue_id = '{$this->id}'";
 		execute_query($sql);
+		$sql = "DELETE FROM issue_category WHERE issue_id = '{$this->id}'";
+		execute_query($sql);
+		if (count($this->categories) > 0) {
+			$sql = "INSERT issue_category (issue_id, category_id) VALUES ";
+			foreach ($this->categories as $cat_id) {
+				$sql .= "('{$this->id}','{$cat_id}'),";
+			}
+			execute_query(substr($sql, 0, -1));
+		}
 		
 	}
 	
