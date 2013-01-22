@@ -3,6 +3,20 @@
 	vertical-align: top;
 }
 
+p.ref {
+	margin-top: 0;
+	margin-bottom: 10px;
+}
+
+#divRB {
+	border: solid 1px gray;
+	width: 700px;
+}
+
+.italics {
+	font-style: italic;
+}
+
 #pos_title {
 	font-weight: bold;
 	font-size: 1.2em;
@@ -50,4 +64,12 @@ a.comment {
 
 .exceeded {
 	background-color : red;
+}
+
+.highlight {
+	background-color: #ccccff;
+}
+
+.hidden {
+	display: none;
 }

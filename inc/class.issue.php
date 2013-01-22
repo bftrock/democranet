@@ -14,7 +14,7 @@ class issue {
 	public $description = null;
 	public $categories = array();
 	
-	public function get_issue($source) {
+	public function load($source) {
 		
 		switch ($source) {
 			
@@ -44,7 +44,7 @@ class issue {
 		
 	}
 	
-	public function insert_new() {
+	public function insert() {
 		
 		$sql = "INSERT issues SET 
 			name = '" . safe_sql($this->name) . "',
@@ -75,7 +75,7 @@ class issue {
 	
 	// This function is used to display the description field in read mode. Right now this just means replacing
 	// carriage returns with <br />, but later there will be more sophisticated markup to convert.
-	public function display_description() {
+	public function get_description() {
 		
 		$str = str_replace("\r\n", "<br />", $this->description);
 		return $str;
@@ -99,6 +99,19 @@ class issue {
 
 	}
 
+	// This function queries the database for all references for this issue
+	// and returns an array.
+	public function get_references() {
+
+		$arr = array();	// returned result
+		$sql = "SELECT * FROM refs WHERE issue_id = '{$this->id}'";
+		$result = execute_query($sql);
+		while($line = fetch_line($result)) {
+			$arr[] = $line;
+		}
+		return $arr;
+
+	}
 }
 
 ?>
