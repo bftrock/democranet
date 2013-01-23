@@ -110,22 +110,22 @@ function cancelEdit() {
 
 function adjustRB() {
 
-	var selectedType = $("#type option:selected").val();
+	var selectedType = $("#se_type option:selected").val();
 	switch (selectedType) {
-		case "Web":
-		case "News":
+		case "1":
+		case "4":
 			$("#sp_isbn").hide();
 			$("#sp_location").hide();
 			$("#sp_volume").hide();
 			$("#sp_number").hide();
 			break;
-		case "Book":
+		case "2":
 			$("#sp_isbn").show();
 			$("#sp_location").show();
 			$("#sp_volume").hide();
 			$("#sp_number").hide();
 			break;
-		case "Journal":
+		case "3":
 			$("#sp_isbn").hide();
 			$("#sp_location").hide();
 			$("#sp_volume").show();
@@ -136,7 +136,20 @@ function adjustRB() {
 }
 
 function loadRB(data, status) {
-
+	var ref = JSON.parse(data);
+	$("#se_type").val(ref.type);
+	$("#in_ref_id").val(ref.ref_id);
+	$("#in_title").val(ref.title);
+	$("#in_author").val(ref.author);
+	$("#in_publisher").val(ref.publisher);
+	$("#in_url").val(ref.url);
+	$("#in_date").val(ref.date);
+	$("#in_isbn").val(ref.isbn);
+	$("#in_location").val(ref.location);
+	$("#in_page").val(ref.page);
+	$("#in_volume").val(ref.volume);
+	$("#in_number").val(ref.number);
+	$("#se_type").change();
 }
 
 $(document).ready(function() {
@@ -147,7 +160,7 @@ $(document).ready(function() {
 		$("#divRB").toggle("fast");
 	})
 	adjustRB();
-	$("#type").on("change", adjustRB);
+	$("#se_type").on("change", adjustRB);
 	$("p.ref").on({
 		mouseenter: function () {
 			$(this).addClass("highlight");
@@ -156,7 +169,7 @@ $(document).ready(function() {
 			$(this).removeClass("highlight");
 		},
 		click: function () {
-			var id = '';
+			var id = $(this).find('span.hidden').text();
 			var url = 'ajax/ajax.ref.php?a=r&id=' + id;
 			$.get(url, loadRB);
 		}
@@ -221,18 +234,22 @@ if ($citizen->id) {
 					<td>
 						<a id="showRB">+/- RefBuilder</a><br>
 						<div id="divRB">
-							<span id="sp_type"><label for="type">Reference Type:</label><select id="type"><option>Web</option><option>Book</option><option>Journal</option><option>News</option></select></span>
-							<span id="sp_author"><label for="author">Author:</label><input type="text" id="author" /></span>
-							<span id="sp_title"><label for="title">Title:</label><input type="text" id="title" size="55" /></span><br>
-							<span id="sp_publisher"><label for="publisher">Publisher:</label><input type="text" id="publisher" /></span>
-							<span id="sp_date"><label for="date">Date:</label><input type="text" id="date" /></span>
-							<span id="sp_url"><label for="url">URL:</label><input type="text" id="url" size="55" /></span><br>
-							<span id="sp_isbn"><label for="isbn">ISBN:</label><input type="text" id="isbn" /></span>
-							<span id="sp_location"><label for="location">Location:</label><input type="text" id="location" /></span>
-							<span id="sp_page"><label for="page">Page:</label><input type="text" id="page" /></span>
-							<span id="sp_volume"><label for="volume">Volume:</label><input type="text" id="volume" /></span>
-							<span id="sp_number"><label for="number">Number:</label><input type="text" id="number" /></span>
-							<button>Add Referernce</button>
+							<span id="sp_ref_id"><input type="hidden" id="in_ref_id"/></span>
+							<span id="sp_issue_id"><input type="hidden" id="f_issue_id"/></span>
+							<span id="sp_type"><label for="type">Reference Type:</label><select id="se_type"><option value="1">Web</option><option value="2">Book</option><option value="3">News</option><option value="4">Journal</option></select></span>
+							<span id="sp_author"><label for="in_author">Author:</label><input type="text" id="in_author" /></span>
+							<span id="sp_title"><label for="in_title">Title:</label><input type="text" id="in_title" size="55" /></span><br>
+							<span id="sp_publisher"><label for="in_publisher">Publisher:</label><input type="text" id="in_publisher" /></span>
+							<span id="sp_date"><label for="in_date">Date:</label><input type="text" id="in_date" /></span>
+							<span id="sp_url"><label for="in_url">URL:</label><input type="text" id="in_url" size="55" /></span><br>
+							<span id="sp_isbn"><label for="in_isbn">ISBN:</label><input type="text" id="in_isbn" /></span>
+							<span id="sp_location"><label for="in_location">Location:</label><input type="text" id="in_location" /></span>
+							<span id="sp_page"><label for="in_page">Page:</label><input type="text" id="in_page" /></span>
+							<span id="sp_volume"><label for="in_volume">Volume:</label><input type="text" id="in_volume" /></span>
+							<span id="sp_number"><label for="in_number">Number:</label><input type="text" id="in_number" /></span>
+							<button>Save</button>
+							<button>Add</button>
+							<button>Delete</button>
 						</div>
 					</td></tr>
 				<tr><th>Categories:</th>
@@ -272,7 +289,7 @@ function display_references($ref_arr) {
 	foreach($ref_arr as $ref) {
 		$index++;
 		$type = $ref['type'];
-		$h .= "<p class=\"ref\"><span id=\"ref_id\" class=\"hidden\">{$ref['ref_id']}</span>{$index}. ";
+		$h .= "<p class=\"ref\"><span class=\"hidden\">{$ref['ref_id']}</span>{$index}. ";
 		switch ($type) {
 			case 1:
 				if (isset($ref['author'])) {
