@@ -10,9 +10,6 @@ include ("inc/class.citizen.php");
 
 // This function is in util_mysql. It opens a connection to the db using hard-coded username and password.
 $db = open_db_connection();
-if (isset($_GET['a'])) {
-	debug("Action = {$_GET['a']}");
-}
 
 // Start the session handler for the page.
 session_start();
@@ -77,8 +74,8 @@ switch ($action) {
 
 }
 
+echo DOC_TYPE;
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 
 <head>
@@ -89,6 +86,27 @@ switch ($action) {
 	<script type="text/javascript">
 	
 <?php if ($action == "e" || $action == "n") { ?>
+
+function displayRefs() {
+
+	var issue_id = $("#issue_id").val();
+	$.post("ajax/ajax.reflist.php", {iid: issue_id}, function(data) {
+		$("#divRefs").html(data);
+		$("p.ref").on({
+			mouseenter: function () {
+				$(this).addClass("highlight");
+			},
+			mouseleave: function () {
+				$(this).removeClass("highlight");
+			},
+			click: function () {
+				var id = $(this).find('span.hidden').text();
+				$.getJSON('ajax/ajax.ref.php', {"a": "r", "ref_id": id}, loadRB);
+			}
+		});
+	}, 'html')
+
+}
 
 function updateCount() {
     var $ta = $("#description"),
@@ -110,22 +128,22 @@ function cancelEdit() {
 
 function adjustRB() {
 
-	var selectedType = $("#se_type option:selected").val();
+	var selectedType = $("#rb_type option:selected").val();
 	switch (selectedType) {
-		case "1":
-		case "4":
+		case '<?php echo REF_TYPE_WEB; ?>':
+		case '<?php echo REF_TYPE_NEWS; ?>':
 			$("#sp_isbn").hide();
 			$("#sp_location").hide();
 			$("#sp_volume").hide();
 			$("#sp_number").hide();
 			break;
-		case "2":
+		case '<?php echo REF_TYPE_BOOK; ?>':
 			$("#sp_isbn").show();
 			$("#sp_location").show();
 			$("#sp_volume").hide();
 			$("#sp_number").hide();
 			break;
-		case "3":
+		case '<?php echo REF_TYPE_JOURNAL; ?>':
 			$("#sp_isbn").hide();
 			$("#sp_location").hide();
 			$("#sp_volume").show();
@@ -135,48 +153,60 @@ function adjustRB() {
 
 }
 
-function loadRB(data, status) {
-	var ref = JSON.parse(data);
-	$("#se_type").val(ref.type);
-	$("#in_ref_id").val(ref.ref_id);
-	$("#in_title").val(ref.title);
-	$("#in_author").val(ref.author);
-	$("#in_publisher").val(ref.publisher);
-	$("#in_url").val(ref.url);
-	$("#in_date").val(ref.date);
-	$("#in_isbn").val(ref.isbn);
-	$("#in_location").val(ref.location);
-	$("#in_page").val(ref.page);
-	$("#in_volume").val(ref.volume);
-	$("#in_number").val(ref.number);
-	$("#se_type").change();
+function loadRB(data) {
+
+	$.each(data, function (ref_key, ref_val) {
+		$("#rb_" + ref_key).val(ref_val);
+	})
+	$("#rb_type").change();
+	$("#bu_save").on("click", function () {
+		postRef('u');
+	});
+	$("#bu_delete").on("click", function () {
+		postRef('d');
+	})
+
+}
+
+function postRef(action) {
+
+	var ref = '';
+	if (action == 'd') {
+		ref = 'ref_id=' + $("#rb_ref_id").val();
+	} else {
+		$("#divInput :input").each(function (i) {
+			if ($(this).val().length) {
+				ref += $(this).attr('name').substr(3) + '=' + encodeURI($(this).val()) + '&';
+			}
+		})
+	}
+	$.ajax("ajax/ajax.ref.php?a=" + action, {data: ref, type: "post", success: loadRB, async: false, dataType: "json"})
+	displayRefs();
+
 }
 
 $(document).ready(function() {
-	updateCount();
 	$("#description").on("keyup blur", updateCount);
 	$("#cancelEdit").on("click", cancelEdit);
-	$("#showRB").on("click", function () {
-		$("#divRB").toggle("fast");
-	})
-	adjustRB();
-	$("#se_type").on("change", adjustRB);
-	$("p.ref").on({
-		mouseenter: function () {
-			$(this).addClass("highlight");
-		},
-		mouseleave: function () {
-			$(this).removeClass("highlight");
-		},
-		click: function () {
-			var id = $(this).find('span.hidden').text();
-			var url = 'ajax/ajax.ref.php?a=r&id=' + id;
-			$.get(url, loadRB);
-		}
+	$("#rb_type").on("change", adjustRB);
+	$("#bu_add").on("click", function () {
+		postRef('i');
 	});
+	updateCount();
+	displayRefs();
+	adjustRB();
 });
 
 <?php } else { ?>
+
+function displayRefs() {
+
+	var issue_id = $("#issue_id").val();
+	$.post("ajax/ajax.reflist.php", {iid: issue_id}, function(data) {
+		$("#divRefs").html(data);
+	}, 'html')
+
+}
 
 function edit() {
 	var url = 'issue.php?a=e&iid=<?php echo $issue->id; ?>';
@@ -186,6 +216,7 @@ function edit() {
 $(document).ready(function() {
 	$("#edit").on("click", edit);
 	$("#positions").load('ajax/ajax.positions.php?iid=<?php echo $issue->id; ?>');
+	displayRefs();
 });
 
 <?php } ?>
@@ -222,51 +253,61 @@ if ($citizen->id) {
 		</div>
 		<div id="content">
 <?php if ($action == "e" || $action == "n") { ?>
-			<form id="editIssue" method="post" action="<?php echo $submit_action; ?>"><table>
-				<tr><th>Title:<input name="issue_id" type="hidden" value="<?php echo $issue->id; ?>" /></th>
-					<td><input name="name" size="50" value="<?php echo $issue->name; ?>" /></td></tr>
-				<tr><th>Description:</th>
-					<td><textarea name="description" id="description" rows="20" cols="106" data-maxChars="<?php echo ISS_DESC_MAXLEN; ?>"><?php echo $issue->description; ?></textarea>
-						<span>Character count: <span id="charNum" class="counter"></span> / <?php echo ISS_DESC_MAXLEN; ?></span></td></tr>
-				<tr><th>References:</th>
-					<td><?php echo display_references($issue->get_references()); ?></td></tr>
-				<tr><td></td>
-					<td>
-						<a id="showRB">+/- RefBuilder</a><br>
-						<div id="divRB">
-							<span id="sp_ref_id"><input type="hidden" id="in_ref_id"/></span>
-							<span id="sp_issue_id"><input type="hidden" id="f_issue_id"/></span>
-							<span id="sp_type"><label for="type">Reference Type:</label><select id="se_type"><option value="1">Web</option><option value="2">Book</option><option value="3">News</option><option value="4">Journal</option></select></span>
-							<span id="sp_author"><label for="in_author">Author:</label><input type="text" id="in_author" /></span>
-							<span id="sp_title"><label for="in_title">Title:</label><input type="text" id="in_title" size="55" /></span><br>
-							<span id="sp_publisher"><label for="in_publisher">Publisher:</label><input type="text" id="in_publisher" /></span>
-							<span id="sp_date"><label for="in_date">Date:</label><input type="text" id="in_date" /></span>
-							<span id="sp_url"><label for="in_url">URL:</label><input type="text" id="in_url" size="55" /></span><br>
-							<span id="sp_isbn"><label for="in_isbn">ISBN:</label><input type="text" id="in_isbn" /></span>
-							<span id="sp_location"><label for="in_location">Location:</label><input type="text" id="in_location" /></span>
-							<span id="sp_page"><label for="in_page">Page:</label><input type="text" id="in_page" /></span>
-							<span id="sp_volume"><label for="in_volume">Volume:</label><input type="text" id="in_volume" /></span>
-							<span id="sp_number"><label for="in_number">Number:</label><input type="text" id="in_number" /></span>
-							<button>Save</button>
-							<button>Add</button>
-							<button>Delete</button>
-						</div>
-					</td></tr>
-				<tr><th>Categories:</th>
-					<td>
-						<select name="categories[]" id="categories" multiple="multiple" size="6">
-							<?php echo get_category_options($issue->get_categories()); ?>
+<table>
+	<form id="editIssue" method="post" action="<?php echo $submit_action; ?>">
+	<tr><th>Title:<input name="issue_id" id="issue_id" type="hidden" value="<?php echo $issue->id; ?>" /></th>
+		<td><input name="name" size="50" value="<?php echo $issue->name; ?>" /></td></tr>
+	<tr><th>Description:</th>
+		<td><textarea name="description" id="description" rows="20" cols="106" data-maxChars="<?php echo ISS_DESC_MAXLEN; ?>"><?php echo $issue->description; ?></textarea>
+			<span>Character count: <span id="charNum" class="counter"></span> / <?php echo ISS_DESC_MAXLEN; ?></span></td></tr>
+	<tr><th>Categories:</th>
+		<td>
+			<select name="categories[]" id="categories" multiple="multiple" size="6">
+				<?php echo get_category_options($issue->get_categories()); ?>
+			</select>
+		</td></tr>
+	<tr><td></td><td>
+		<input type="submit" value="Save Issue" /><button id="cancelEdit">Cancel</button></td></tr>
+	</form>
+	<tr><th>References:</th>
+		<td>
+			<div id="divRB">
+				<div id="divInput">
+					<span id="sp_ref_id"><input type="hidden" name="rb_ref_id" id="rb_ref_id"/></span>
+					<span id="sp_issue_id"><input type="hidden" name="rb_issue_id" id="rb_issue_id" value="<?php echo $issue->id; ?>"/></span>
+					<span id="sp_type">
+						<label for="rb_type">Reference Type:</label>
+						<select name="rb_type" id="rb_type">
+							<option value="<?php echo REF_TYPE_WEB; ?>">Web</option>
+							<option value="<?php echo REF_TYPE_BOOK; ?>">Book</option>
+							<option value="<?php echo REF_TYPE_NEWS; ?>">News</option>
+							<option value="<?php echo REF_TYPE_JOURNAL; ?>">Journal</option>
 						</select>
-					</td></tr>
-				<tr><td></td><td>
-					<input type="submit" value="Save" /><button id="cancelEdit">Cancel</button></td></tr>
-			</table></form>
+					</span>
+					<span id="sp_author"><label for="rb_author">Author:</label><input type="text" name="rb_author" id="rb_author" /></span>
+					<span id="sp_title"><label for="rb_title">Title:</label><input type="text" name="rb_title" id="rb_title" size="70" /></span><br>
+					<span id="sp_publisher"><label for="rb_publisher">Publisher:</label><input type="text" name="rb_publisher" id="rb_publisher" /></span>
+					<span id="sp_date"><label for="rb_date">Date:</label><input type="text" name="rb_date" id="rb_date" /></span>
+					<span id="sp_url"><label for="rb_url">URL:</label><input type="text" name="rb_url" id="rb_url" size="70" /></span><br>
+					<span id="sp_isbn"><label for="rb_isbn">ISBN:</label><input type="text" name="rb_isbn" id="rb_isbn" /></span>
+					<span id="sp_location"><label for="rb_location">Location:</label><input type="text" name="rb_location" id="rb_location" /></span>
+					<span id="sp_page"><label for="rb_page">Page:</label><input type="text" name="rb_page" id="rb_page" /></span>
+					<span id="sp_volume"><label for="rb_volume">Volume:</label><input type="text" name="rb_volume" id="rb_volume" /></span>
+					<span id="sp_number"><label for="rb_number">Number:</label><input type="text" name="rb_number" id="rb_number" /></span>
+				</div>
+				<button name="bu_save" id="bu_save">Save</button>
+				<button name="bu_add" id="bu_add">Add</button>
+				<button name="bu_delete" id="bu_delete">Delete</button>
+				<div id="divRefs"></div>
+			</div>
+		</td></tr>
+</table>
 <?php } else { ?>
 			<table>
-				<tr><th>Title:</th><td><?php echo $issue->name; ?></td></tr>
+				<tr><th>Title:</th><td><input type="hidden" id="issue_id" value="<?php echo $issue->id; ?>" /><?php echo $issue->name; ?></td></tr>
 				<tr><th>Description:</th><td><?php echo $issue->get_description(); ?></td></tr>
-				<tr><th>References:</th><td><?php echo display_references($issue->get_references()); ?></td></tr>
 				<tr><th>Categories:</th><td><?php echo display_categories($issue->get_categories(), 1); ?></td></tr>
+				<tr><th>References:</th><td><div id="divRefs"></div></td></tr>
 				<tr><td></td><td><button id="edit">Edit</button></td></tr>
 			</table>
 			<hr />
@@ -281,121 +322,6 @@ if ($citizen->id) {
 </html>
 
 <?php
-
-function display_references($ref_arr) {
-
-	$h = "";
-	$index = 0;
-	foreach($ref_arr as $ref) {
-		$index++;
-		$type = $ref['type'];
-		$h .= "<p class=\"ref\"><span class=\"hidden\">{$ref['ref_id']}</span>{$index}. ";
-		switch ($type) {
-			case 1:
-				if (isset($ref['author'])) {
-					$h .= "{$ref['author']}. ";
-				}
-				if (isset($ref['title'])) {
-					if (isset($ref['url'])) {
-						$h .= "&quot;<a href=\"{$ref['url']}\">{$ref['title']}</a>.&quot; ";
-					} else {
-						$h .= "&quot;{$ref['title']}.&quot; ";
-					}
-				}
-				if (isset($ref['publisher'])) {
-					$h .= "<span class=\"italics\">{$ref['publisher']}</span>. ";
-				}
-				if (isset($ref['date'])) {
-					$h .= "{$ref['date']}. ";
-				}
-				if (isset($ref['url'])) {
-					$h .= "&lt;{$ref['url']}&gt;";
-				}
-				$h .= "</p>\n";
-				break;
-			case 2:
-				if (isset($ref['author'])) {
-					$h .= "{$ref['author']}. ";
-				}
-				if (isset($ref['title'])) {
-					if (isset($ref['url'])) {
-						$h .= "<span class=\"italics\"><a href=\"{$ref['url']}\">{$ref['title']}</a></span>. ";
-					} else {
-						$h .= "<span class=\"italics\">{$ref['title']}</span>. ";
-					}
-				}
-				if (isset($ref['location'])) {
-					$h .= "{$ref['location']}. ";
-				}
-				if (isset($ref['publisher'])) {
-					$h .= "{$ref['publisher']}. ";
-				}
-				if (isset($ref['date'])) {
-					$h .= "{$ref['date']}. ";
-				}
-				if (isset($ref['page'])) {
-					$h .= "p. {$ref['page']}. ";
-				}
-				if (isset($ref['isbn'])) {
-					$h .= "ISBN {$ref['isbn']}. ";
-				}
-				$h .= "</p>\n";
-				break;
-			case 3:
-				if (isset($ref['author'])) {
-					$h .= "{$ref['author']}. ";
-				}
-				if (isset($ref['title'])) {
-					if (isset($ref['url'])) {
-						$h .= "&quot;<a href=\"{$ref['url']}\">{$ref['title']}</a>.&quot; ";
-					} else {
-						$h .= "&quot;{$ref['title']}.&quot; ";
-					}
-				}
-				if (isset($ref['publisher'])) {
-					$h .= "<span class=\"italics\">{$ref['publisher']}</span>. ";
-				}
-				if (isset($ref['date'])) {
-					$h .= "{$ref['date']}. ";
-				}
-				if (isset($ref['url'])) {
-					$h .= "&lt;{$ref['url']}&gt;";
-				}
-				$h .= "</p>\n";
-				break;
-			case 4:
-				if (isset($ref['author'])) {
-					$h .= "{$ref['author']}. ";
-				}
-				if (isset($ref['title'])) {
-					if (isset($ref['url'])) {
-						$h .= "&quot;<a href=\"{$ref['url']}\">{$ref['title']}</a>.&quot; ";
-					} else {
-						$h .= "&quot;{$ref['title']}.&quot; ";
-					}
-				}
-				if (isset($ref['publisher'])) {
-					$h .= "<span class=\"italics\">{$ref['publisher']}</span> ";
-				}
-				if (isset($ref['volume'])) {
-					$h .= "{$ref['volume']}, ";
-				}
-				if (isset($ref['number'])) {
-					$h .= "no. {$ref['number']} ";
-				}
-				if (isset($ref['date'])) {
-					$h .= "({$ref['date']}): ";
-				}
-				if (isset($ref['page'])) {
-					$h .= "p. {$ref['page']}. ";
-				}
-				$h .= "</p>\n";
-				break;
-		}
-	}
-	return $h;
-
-}
 
 // Returns selected categories to be displayed with issue.
 function display_categories($selected_categories) {

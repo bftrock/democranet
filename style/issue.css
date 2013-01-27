@@ -4,13 +4,13 @@
 }
 
 p.ref {
-	margin-top: 0;
-	margin-bottom: 10px;
+	margin-top: 10px;
+	margin-bottom: 0;
 }
 
 #divRB {
 	border: solid 1px gray;
-	width: 700px;
+	width: 760px;
 }
 
 .italics {
