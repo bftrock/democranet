@@ -4,10 +4,13 @@
 }
 
 p.ref {
-	margin-top: 10px;
-	margin-bottom: 0;
+	margin-top: 0;
+	margin-bottom: 10px;
 }
 
+span.counter {
+	float: right;
+}
 #divRB {
 	border: solid 1px gray;
 	width: 760px;

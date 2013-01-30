@@ -3,36 +3,38 @@
 // insert and update Issues. The Model for this page is the Issue class, and the View and Control happens 
 // within this page.
 
-include ("inc/util_mysql.php");
-include ("inc/util_democranet.php");
-include ("inc/class.issue.php");
-include ("inc/class.citizen.php");
+include ("inc/util_mysql.php");			// functions for handling database
+include ("inc/util_democranet.php");	// common application functions
+include ("inc/class.issue.php");		// the issue object, which is the model for this page
+include ("inc/class.citizen.php");		// the citizen object, which is needed for user management
 
-// This function is in util_mysql. It opens a connection to the db using hard-coded username and password.
 $db = open_db_connection();
 
-// Start the session handler for the page.
 session_start();
 
-// Create the citizen object, which represents a user. It is not necessary for a user to be logged on to use
-// the site, but if there is a citizen id in the $_SESSION array, the properties will be loaded. Otherwise,
-// properties will be left = null.
+// Create the citizen object, which represents a user. It is not necessary for a user to be logged
+// on to use the site, but if there is a citizen id in the $_SESSION array, the citizen fields will
+// be loaded. Otherwise, properties will be left = null.
 $citizen = new citizen();
 if ($citizen->in_session()) {
 	$citizen->load(CIT_LOAD_FROMDB);
 }
 
-// Set the action variable, which controls the mode of this page.
+// The action variable controls the mode of this page.
 $action = "";
 if (isset($_GET['a'])) {
+	// typical case
 	$action = $_GET['a'];
 } elseif (isset($_GET['iid'])) {
+	// if only the issue id is passed, we assume read mode
 	$action = "r";
 } else {
+	// otherwise we're adding a new issue
 	$action = "n";
 }
 
-// Create the issue object based on the action mode.
+// The issue object is loaded from the db if we're reading or editing, and from the $_POST global if
+// we're inserting or updating.  If we're adding a new issue, the object is mostly unloaded.
 $source = null;
 if ($action == "r" || $action == "e") {
 	$source = ISS_LOAD_FROMDB;
@@ -44,32 +46,32 @@ if ($action == "r" || $action == "e") {
 $issue = new issue();
 $issue->load($source);
 
-// The action variable determines what we're doing on this page.
+// The action variable determines the mode of this page.
 switch ($action) {
 
-	case "i":	// insert newly created issue and reload page
+	case "i":	// inserting newly created issue and reloading page
 	
 		$issue->insert();
 		header("Location:issue.php?a=r&iid={$issue->id}");
 		break;
 		
-	case "u":	// update edited position and reload page
+	case "u":	// updating edited issue and reloading page
 		
 		$issue->update();
 		header("Location:issue.php?a=r&iid={$issue->id}");
 		break;
 		
-	case "e":	// edit existing position
+	case "e":	// editing existing issue, setting form action to update
 
 		$submit_action = "issue.php?a=u";
 		break;
 		
-	case "n":	// create new position
+	case "n":	// creating new issue, setting from action to insert
 
 		$submit_action = "issue.php?a=i";
 		break;
 
-	case "r":	// display position specified in query string in read-only mode
+	case "r":	// displaying issue specified in query string in read-only mode
 	default:
 
 }
@@ -87,12 +89,38 @@ echo DOC_TYPE;
 	
 <?php if ($action == "e" || $action == "n") { ?>
 
+$(document).ready(function() {
+	$("#description").on("keyup blur", updateCount);
+	$("#cancelEdit").on("click", cancelEdit);
+	$("#rb_type").on("change", adjustRB);
+	$("#bu_add").on("click", function () {
+		postRef('i');
+	});
+	$("#bu_save").on("click", function () {
+		postRef('u');
+	});
+	$("#bu_delete").on("click", function () {
+		postRef('d');
+	})
+	updateCount();
+	displayRefs();
+	adjustRB();
+});
+
+function updateCount() {
+    var $ta = $("#description"),
+        $sp = $("#charNum"),
+        len = $ta.val().length,
+        maxChars = +$ta.attr("data-maxChars");
+    $sp.text(len).toggleClass("exceeded", len > maxChars);		
+}
+
 function displayRefs() {
 
 	var issue_id = $("#issue_id").val();
 	$.post("ajax/ajax.reflist.php", {iid: issue_id}, function(data) {
 		$("#divRefs").html(data);
-		$("p.ref").on({
+		$("#divRefs p.ref").on({
 			mouseenter: function () {
 				$(this).addClass("highlight");
 			},
@@ -108,12 +136,59 @@ function displayRefs() {
 
 }
 
-function updateCount() {
-    var $ta = $("#description"),
-        $sp = $("#charNum"),
-        len = $ta.val().length,
-        maxChars = +$ta.attr("data-maxChars");
-    $sp.text(len).toggleClass("exceeded", len > maxChars);		
+function adjustRB() {
+
+	var selectedType = $("#rb_type option:selected").val();
+	switch (selectedType) {
+		case '<?php REF_TYPE_BOOK; ?>':
+			$("#sp_isbn").show();
+			$("#sp_location").show();
+			$("#sp_page").show();
+			$("#sp_volume").hide();
+			$("#sp_number").hide();
+			break;
+		case '<?php REF_TYPE_JOURNAL; ?>':
+			$("#sp_isbn").hide();
+			$("#sp_location").hide();
+			$("#sp_page").show();
+			$("#sp_volume").show();
+			$("#sp_number").show();
+			break;
+		case '<?php REF_TYPE_WEB; ?>':
+		case '<?php REF_TYPE_NEWS; ?>':
+		default:
+			$("#sp_isbn").hide();
+			$("#sp_location").hide();
+			$("#sp_page").hide();
+			$("#sp_volume").hide();
+			$("#sp_number").hide();
+			break;
+	}
+
+}
+
+function loadRB(data) {
+
+	$.each(data, function (ref_key, ref_val) {
+		$("#rb_" + ref_key).val(ref_val);
+	})
+	adjustRB();
+
+}
+
+function postRef(action) {
+
+	var ref = '';
+	if (action == 'd') {
+		ref = 'ref_id=' + $("#rb_ref_id").val();
+	} else {
+		$("#divInput :input").each(function (i) {
+			ref += $(this).attr('name').substr(3) + '=' + encodeURI($(this).val()) + '&';
+		})
+	}
+	$.ajax("ajax/ajax.ref.php?a=" + action, {data: ref, type: "post", success: loadRB, async: false, dataType: "json"})
+	displayRefs();
+
 }
 
 function cancelEdit() {
@@ -126,78 +201,15 @@ function cancelEdit() {
 	return false;
 }
 
-function adjustRB() {
-
-	var selectedType = $("#rb_type option:selected").val();
-	switch (selectedType) {
-		case '<?php echo REF_TYPE_WEB; ?>':
-		case '<?php echo REF_TYPE_NEWS; ?>':
-			$("#sp_isbn").hide();
-			$("#sp_location").hide();
-			$("#sp_volume").hide();
-			$("#sp_number").hide();
-			break;
-		case '<?php echo REF_TYPE_BOOK; ?>':
-			$("#sp_isbn").show();
-			$("#sp_location").show();
-			$("#sp_volume").hide();
-			$("#sp_number").hide();
-			break;
-		case '<?php echo REF_TYPE_JOURNAL; ?>':
-			$("#sp_isbn").hide();
-			$("#sp_location").hide();
-			$("#sp_volume").show();
-			$("#sp_number").show();
-			break;
-	}
-
-}
-
-function loadRB(data) {
-
-	$.each(data, function (ref_key, ref_val) {
-		$("#rb_" + ref_key).val(ref_val);
-	})
-	$("#rb_type").change();
-	$("#bu_save").on("click", function () {
-		postRef('u');
-	});
-	$("#bu_delete").on("click", function () {
-		postRef('d');
-	})
-
-}
-
-function postRef(action) {
-
-	var ref = '';
-	if (action == 'd') {
-		ref = 'ref_id=' + $("#rb_ref_id").val();
-	} else {
-		$("#divInput :input").each(function (i) {
-			if ($(this).val().length) {
-				ref += $(this).attr('name').substr(3) + '=' + encodeURI($(this).val()) + '&';
-			}
-		})
-	}
-	$.ajax("ajax/ajax.ref.php?a=" + action, {data: ref, type: "post", success: loadRB, async: false, dataType: "json"})
-	displayRefs();
-
-}
+<?php } else { ?>
 
 $(document).ready(function() {
-	$("#description").on("keyup blur", updateCount);
-	$("#cancelEdit").on("click", cancelEdit);
-	$("#rb_type").on("change", adjustRB);
-	$("#bu_add").on("click", function () {
-		postRef('i');
-	});
-	updateCount();
+	$("#edit").on("click", edit);
+	$("#positions").load('ajax/issue.positions.php',
+		{iid: <?php echo $issue->id; ?>}
+	);
 	displayRefs();
-	adjustRB();
 });
-
-<?php } else { ?>
 
 function displayRefs() {
 
@@ -213,11 +225,17 @@ function edit() {
 	window.location.assign(url);
 }
 
-$(document).ready(function() {
-	$("#edit").on("click", edit);
-	$("#positions").load('ajax/ajax.positions.php?iid=<?php echo $issue->id; ?>');
-	displayRefs();
-});
+function getPositions(vote, positionId) {
+	
+	var data = null;
+	if (vote && positionId) {
+		data = {iid:<?php echo $issue->id; ?>, cid:<?php echo $citizen->id; ?>, vo: vote, pid: positionId};
+	} else {
+		data = {iid:<?php echo $issue->id; ?>, cid:<?php echo $citizen->id; ?>};
+	}
+	$("#positions").load('ajax/ajax.positions.php', data);
+	
+}
 
 <?php } ?>
 	</script>
@@ -252,6 +270,7 @@ if ($citizen->id) {
 			</ul>
 		</div>
 		<div id="content">
+			<h3>Issue</h3>
 <?php if ($action == "e" || $action == "n") { ?>
 <table>
 	<form id="editIssue" method="post" action="<?php echo $submit_action; ?>">
@@ -259,7 +278,7 @@ if ($citizen->id) {
 		<td><input name="name" size="50" value="<?php echo $issue->name; ?>" /></td></tr>
 	<tr><th>Description:</th>
 		<td><textarea name="description" id="description" rows="20" cols="106" data-maxChars="<?php echo ISS_DESC_MAXLEN; ?>"><?php echo $issue->description; ?></textarea>
-			<span>Character count: <span id="charNum" class="counter"></span> / <?php echo ISS_DESC_MAXLEN; ?></span></td></tr>
+			<span class="counter">Character count: <span id="charNum"></span> / <?php echo ISS_DESC_MAXLEN; ?> maximum</span></td></tr>
 	<tr><th>Categories:</th>
 		<td>
 			<select name="categories[]" id="categories" multiple="multiple" size="6">

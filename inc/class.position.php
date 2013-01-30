@@ -32,6 +32,7 @@ class position {
 				$this->id = $_POST['position_id'];
 				$this->name = $_POST['name'];
 				$this->justification = $_POST['justification'];
+				$this->issue_id = $_POST['issue_id'];
 				break;
 			case POS_LOAD_NEW:
 			default:

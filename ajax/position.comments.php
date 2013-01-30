@@ -5,10 +5,8 @@
 include ("../inc/util_mysql.php");
 include ("../inc/util_democranet.php");
 
-// This function is in util_mysql. It opens a connection to the db using hard-coded username and password.
 $db = open_db_connection();
 
-// Start the session handler for the page.
 session_start();
 
 // The citizen id may be stored in the session if a citizen (user) is logged in.
@@ -19,14 +17,14 @@ if (isset($_SESSION['citizen_id'])) {
 
 // The position id should be in the query string from the AJAX call.
 $position_id = null;
-if (isset($_GET['pid'])) {
-	$position_id = $_GET['pid'];
+if (check_field('pid', $_REQUEST)) {
+	$position_id = $_REQUEST['pid'];
 }
 
 // If the comment parameter (co) is passed in the query string, we're posting a comment.
 $comment = null;
-if (isset($_GET['co']) && strlen($_GET['co']) > 0) {
-	$comment = safe_sql($_GET['co']);
+if (check_field('co', $_REQUEST)) {
+	$comment = safe_sql($_REQUEST['co']);
 	// Check to make sure everything we need is set before inserting.
 	if ($position_id && $citizen_id) {
 		$sql = "INSERT comments (position_id, citizen_id, comment) VALUES ('{$position_id}','{$citizen_id}','{$comment}')";

@@ -28,80 +28,86 @@ function get_formatted_refs($ref_arr) {
 		switch ($type) {
 			case REF_TYPE_WEB:
 			case REF_TYPE_NEWS:
-				if (isset($ref['author'])) {
+				if (check_field('author', $ref)) {
 					$h .= "{$ref['author']}. ";
 				}
-				if (isset($ref['title'])) {
-					if (isset($ref['url'])) {
+				if (check_field('title', $ref)) {
+					if (check_field('url', $ref)) {
 						$h .= "&quot;<a href=\"{$ref['url']}\" target=\"_blank\">{$ref['title']}</a>.&quot; ";
 					} else {
 						$h .= "&quot;{$ref['title']}.&quot; ";
 					}
 				}
-				if (isset($ref['publisher'])) {
+				if (check_field('publisher', $ref)) {
 					$h .= "<span class=\"italics\">{$ref['publisher']}</span>. ";
 				}
-				if (isset($ref['date'])) {
+				if (check_field('date', $ref)) {
 					$h .= "{$ref['date']}. ";
 				}
-				if (isset($ref['url'])) {
+				if (check_field('url', $ref)) {
 					$h .= "&lt;{$ref['url']}&gt;";
 				}
 				$h .= "</p>\n";
 				break;
 			case REF_TYPE_BOOK:
-				if (isset($ref['author'])) {
+				if (check_field('author', $ref)) {
 					$h .= "{$ref['author']}. ";
 				}
-				if (isset($ref['title'])) {
-					if (isset($ref['url'])) {
+				if (check_field('title', $ref)) {
+					if (check_field('url', $ref)) {
 						$h .= "<span class=\"italics\"><a href=\"{$ref['url']}\" target=\"_blank\">{$ref['title']}</a></span>. ";
 					} else {
 						$h .= "<span class=\"italics\">{$ref['title']}</span>. ";
 					}
 				}
-				if (isset($ref['location'])) {
+				if (check_field('location', $ref)) {
 					$h .= "{$ref['location']}. ";
 				}
-				if (isset($ref['publisher'])) {
+				if (check_field('publisher', $ref)) {
 					$h .= "{$ref['publisher']}. ";
 				}
-				if (isset($ref['date'])) {
+				if (check_field('date', $ref)) {
 					$h .= "{$ref['date']}. ";
 				}
-				if (isset($ref['page'])) {
+				if (check_field('page', $ref)) {
 					$h .= "p. {$ref['page']}. ";
 				}
-				if (isset($ref['isbn'])) {
+				if (check_field('isbn', $ref)) {
 					$h .= "ISBN {$ref['isbn']}. ";
+				}
+				if (check_field('url', $ref)) {
+					$h .= "&lt;{$ref['url']}&gt;";
 				}
 				$h .= "</p>\n";
 				break;
 			case REF_TYPE_JOURNAL:
-				if (isset($ref['author'])) {
+				if (check_field('author', $ref)) {
 					$h .= "{$ref['author']}. ";
 				}
-				if (isset($ref['title'])) {
-					if (isset($ref['url'])) {
+				if (check_field('title', $ref)) {
+					if (check_field('url', $ref)) {
 						$h .= "&quot;<a href=\"{$ref['url']}\" target=\"_blank\">{$ref['title']}</a>.&quot; ";
 					} else {
 						$h .= "&quot;{$ref['title']}.&quot; ";
 					}
 				}
-				if (isset($ref['publisher'])) {
+				if (check_field('publisher', $ref)) {
 					$h .= "<span class=\"italics\">{$ref['publisher']}</span> ";
 				}
-				if (isset($ref['volume'])) {
+				if (check_field('volume', $ref)) {
 					$h .= "{$ref['volume']}, ";
 				}
-				if (isset($ref['number'])) {
+				if (check_field('number', $ref)) {
 					$h .= "no. {$ref['number']} ";
 				}
-				if (isset($ref['date'])) {
+				if (check_field('date', $ref)) {
 					$h .= "({$ref['date']}): ";
 				}
-				if (isset($ref['page'])) {
+				if (check_field('page', $ref)) {
 					$h .= "p. {$ref['page']}. ";
+				}
+				if (check_field('url', $ref)) {
+					$h .= "&lt;{$ref['url']}&gt;";
 				}
 				$h .= "</p>\n";
 				break;

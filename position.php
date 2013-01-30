@@ -8,15 +8,13 @@ include ("inc/util_democranet.php");
 include ("inc/class.citizen.php");
 include ("inc/class.position.php");
 
-// This function is in util_mysql. It opens a connection to the db using hard-coded username and password.
 $db = open_db_connection();
 
-// Start the session handler for the page.
 session_start();
 
-// Create the citizen object, which represents a user. It is not necessary for a user to be logged on to use
-// the site, but if there is a citizen id in the $_SESSION array, the properties will be loaded. Otherwise,
-// properties will be left = null.
+// Create the citizen object, which represents a user. It is not necessary for a user to be logged
+// on to use the site, but if there is a citizen id in the $_SESSION array, the properties will be
+// loaded. Otherwise, properties will be left = null.
 $citizen = new citizen();
 if ($citizen->in_session()) {
 	$citizen->load(CIT_LOAD_FROMDB);
@@ -25,12 +23,16 @@ if ($citizen->in_session()) {
 // Set the action variable, which controls the mode of this page.
 $action = "";
 if (isset($_GET['a'])) {
+	// typical case
 	$action = $_GET['a'];
 } else {
+	// default to read if no action is passed
 	$action = "r";
 }
 
-// Create the position object based on the action mode.
+// The position object is loaded from the db if we're reading or editing or commenting, and from the
+// $_POST global if we're inserting or updating.  If we're adding a new position, the object is
+// mostly unloaded.
 $source = null;
 if ($action == "r" || $action == "e" || $action == "c") {
 	$source = POS_LOAD_FROMDB;
@@ -45,7 +47,7 @@ $position->load($source);
  
 // If we're currently adding a comment, this HTML will be statically loaded.
 // If the Comment button is clicked, this HTML will be loaded by a javascript call.
-$add_comment_html = "<textarea id=\"comment\" rows=\"15\" cols=\"90\"></textarea><br /><input type=\"button\" value=\"Save\" onclick=\"saveComment()\" /><input type=\"button\" value=\"Cancel\" onclick=\"cancelComment()\" />";
+$add_comment_html = "<textarea id=\"comment\" rows=\"15\" cols=\"90\"></textarea><br /><button id=\"save_comment\">Save</button><button id=\"cancel_comment\">Cancel</button>";
 $div_comment_html = "";
 
 // The action variable determines what we're doing on this page.
@@ -97,8 +99,8 @@ switch ($action) {
 
 }
 
+echo DOC_TYPE;
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 
 <head>
@@ -111,64 +113,48 @@ switch ($action) {
 	vertical-align: top;
 }
 
+#vote_for {
+	color: LimeGreen;
+}
+
+#vote_against {
+	color: red;
+}
+
 	</style>
+	<script src="inc/jquery.js"></script>
 	<script type="text/javascript">
-	
-function edit() {
-	var url = 'position.php?a=e&pid=<?php echo $position->id; ?>';
-	window.location.assign(url);
-}
 
-function cancelEdit() {
-	var url = 'position.php?pid=<?php echo $position->id; ?>';
-	window.location.assign(url);
-}
-
-function addComment() {
-	var d = document.getElementById('new_comment');
-	d.innerHTML = '<?php echo $add_comment_html; ?>';
-}
-
-function saveComment() {
-	var d = document.getElementById('comment');
-	var comment = d.value;
-	cancelComment();
-	getComments(comment);
-}
-
-function cancelComment() {
-	var d = document.getElementById('new_comment');
-	d.innerHTML = '';
-}
-
-function getComments(comment) {
-	
-	var xmlhttp;
-	if (window.XMLHttpRequest) {
-		// code for IE7+, Firefox, Chrome, Opera, Safari
-		xmlhttp=new XMLHttpRequest();
-	} else {
-		// code for IE6, IE5
-		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-	}
-	xmlhttp.onreadystatechange = function() {
-		if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-			document.getElementById("comments").innerHTML = xmlhttp.responseText;
-		}
-	}
-	var url = 'ajax/ajax.comments.php?pid=<?php echo $position->id; ?>';
-	if (comment) {
-		url += '&co=' + encodeURI(comment);
-	}
-	xmlhttp.open('GET', url, true);
-	xmlhttp.send();
-	
-}
+$(document).ready(function () {
+	$('#new_comment').hide();
+	$('#comments').load('ajax/position.comments.php', {pid: <?php echo $position->id; ?>});
+	$('#bu_edit_pos').click(function () {
+		window.location.assign('position.php?a=e&pid=<?php echo $position->id; ?>');
+	});
+	$('#bu_cancel_pos').click(function () {
+		window.location.assign('position.php?a=r&pid=<?php echo $position->id; ?>');
+	});
+	$('#bu_add_comment').click(function () {
+		$('#new_comment').show();
+	});
+	$('#bu_save_comment').click(function () {
+		$('#comments').load(
+			'ajax/position.comments.php', 
+			{co: $('#comment').val(), pid: <?php echo $position->id; ?>}
+		);
+		$('#comment').val('');
+		$('#new_comment').hide();
+	});
+	$('#bu_cancel_comment').click(function () {
+		$('#comment').val('');
+		$('#new_comment').hide();
+	});
+})
 
 	</script>
 </head>
 
-<body onload="getComments(null)">
+<body>
 
 <div id="container">
 	<div id="login">
@@ -196,6 +182,7 @@ if ($citizen->id) {
 			</ul>
 		</div>
 		<div id="content">
+			<h3>Position</h3>
 <?php if ($action == "e" || $action == "n") { ?>
 			<form method="post" action="<?php echo $submit_action; ?>"><table>
 				<tr><th>Position:
@@ -204,25 +191,30 @@ if ($citizen->id) {
 					</th>
 					<td><input name="name" size="100" value="<?php echo $position->name; ?>" /></td></tr>
 				<tr><th>Justification:</th><td><textarea name="justification" rows="15" cols="90"><?php echo $position->justification; ?></textarea></td></tr>
-				<tr><td></td><td><input type="submit" value="Save" /><input type="button" value="Cancel" onclick="cancelEdit()" /></td></tr>
+				<tr><td></td><td><input type="submit" value="Save" /><button id="bu_cancel_pos">Cancel</button></td></tr>
 			</table></form>
 <?php } else { ?>
 			<table>
 				<tr><th>Position:</th><td><?php echo $position->name; ?></td></tr>
 				<tr><th>Justification:</th><td><?php echo $position->display_justification(); ?></td></tr>
-				<tr><td></td><td><input type="button" value="Edit" onclick="edit()" /></td></tr>
+				<tr><td></td><td><button id="bu_edit_pos">Edit</button></td></tr>
 			</table>
 			<hr />
 			<table><tr>
 <?php if ($citizen->id) { ?>
 				<th>Your vote:</th><td style="width:70px"><?php echo $citizen_vote_html; ?></td>
+				<th>Add/change vote:</th><td style="width:100px"><a id="vote_for" href="#">For</a>&nbsp;&nbsp;<a id="vote_against" href="#">Against</a></td>
 <?php } ?>
 				<th>Citizens For:</th><td style="width:70px"><?php echo $position->for_count; ?></td>
 				<th>Citizens Against:</th><td style="width:70px"><?php echo $position->against_count; ?></td>
 			</tr></table>
 			<hr />
-			<input type="button" value="Add Comment" onclick="addComment()" /><br />
-			<div id="new_comment"><?php echo $div_comment_html; ?></div>
+			<button id="bu_add_comment">Add Comment</button><br />
+			<div id="new_comment">
+				<textarea id="comment" rows="15" cols="90"></textarea><br />
+				<button id="bu_save_comment">Save</button>
+				<button id="bu_cancel_comment">Cancel</button>
+			</div>
 			<div id="comments"></div>
 <?php } ?>
 		</div>

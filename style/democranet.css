@@ -110,6 +110,10 @@ a:active {
 	margin: 0;
 }
 
+#content h3 {
+	margin: 0 0 10px 0;
+}
+
 #footer {
 	background: #f9f9f9;
 	border-style: solid;

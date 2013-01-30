@@ -10,4 +10,13 @@ define ("REF_TYPE_BOOK", 2);
 define ("REF_TYPE_NEWS", 3);
 define ("REF_TYPE_JOURNAL", 4);
 
+function check_field($field_name, $arr) {
+
+	if (isset($arr[$field_name]) && strlen($arr[$field_name]) > 0) {
+		return true;
+	} else {
+		return false;
+	}
+
+}
 ?>

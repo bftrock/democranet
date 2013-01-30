@@ -1,4 +1,6 @@
 <?php
+// This page is used to create, read, update, and delete references for issues. It returns JSON
+// formated data.
 
 include ("../inc/util_mysql.php");
 include ("../inc/util_democranet.php");
@@ -6,8 +8,9 @@ include ("../inc/util_democranet.php");
 $db = open_db_connection();
 
 $action = $_REQUEST['a'];
-debug("action = {$action}");
-$fields = array('type','title','author','publisher','url','date','isbn','location','page','volume','number','issue_id');
+//debug("action = {$action}");
+$fields = array('type','title','author','publisher','url','date','isbn','location','page','volume',
+	'number','issue_id');
 
 switch ($action) {
 
@@ -22,7 +25,7 @@ switch ($action) {
 	case "u":	// update a reference record
 
 		$sql = "UPDATE refs SET " . build_sql($fields) . " WHERE ref_id = '{$_REQUEST['ref_id']}'";
-		debug(safe_sql($sql));
+		//debug(safe_sql($sql));
 		execute_query($sql);
 		$sql = "SELECT * FROM refs WHERE ref_id = '{$_REQUEST['ref_id']}'";
 		$result = execute_query($sql);
@@ -33,7 +36,7 @@ switch ($action) {
 	case "i":	// insert a new reference record
 
 		$sql = "INSERT refs SET " . build_sql($fields);
-		debug(safe_sql($sql));
+		//debug(safe_sql($sql));
 		execute_query($sql);
 		$ref_id = get_insert_id();
 		$sql = "SELECT * FROM refs WHERE ref_id = '{$ref_id}'";
@@ -50,7 +53,7 @@ switch ($action) {
 
 }
 
-debug($json);
+//debug($json);
 echo $json;
 
 function build_sql($fields) {
