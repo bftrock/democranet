@@ -20,7 +20,7 @@ class position {
 		
 		switch ($source) {
 			case POS_LOAD_FROMDB:
-				$this->id = $_GET['pid'];
+				$this->id = $_REQUEST['pid'];
 				$sql = "SELECT * FROM positions WHERE position_id = '{$this->id}'";
 				$result = execute_query($sql);
 				$line = fetch_line($result);
@@ -79,6 +79,13 @@ class position {
 		$line = fetch_line($result);
 		$this->against_count = $line['cnt'];
 		
+	}
+
+	public function set_vote($citizen_id, $vote) {
+
+		$sql = "REPLACE position_citizen SET vote = '{$vote}', position_id = '{$this->id}', citizen_id = '{$citizen_id}'";
+		execute_query($sql);
+
 	}
 	
 	// This function is used to display the justification field in read mode. Right now this just means replacing

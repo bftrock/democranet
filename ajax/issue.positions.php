@@ -1,6 +1,5 @@
 <?php
-// This page is used to make an AJAX call to get positions for an issue. It's also used 
-// to add/change a citizen's vote on the position.
+// This page is used to make an AJAX call to get positions for an issue.
 
 include ("../inc/util_mysql.php");
 include ("../inc/util_democranet.php");

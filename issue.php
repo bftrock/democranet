@@ -118,7 +118,7 @@ function updateCount() {
 function displayRefs() {
 
 	var issue_id = $("#issue_id").val();
-	$.post("ajax/ajax.reflist.php", {iid: issue_id}, function(data) {
+	$.post("ajax/issue.reflist.php", {iid: issue_id}, function(data) {
 		$("#divRefs").html(data);
 		$("#divRefs p.ref").on({
 			mouseenter: function () {
@@ -129,7 +129,7 @@ function displayRefs() {
 			},
 			click: function () {
 				var id = $(this).find('span.hidden').text();
-				$.getJSON('ajax/ajax.ref.php', {"a": "r", "ref_id": id}, loadRB);
+				$.getJSON('ajax/issue.ref.php', {"a": "r", "ref_id": id}, loadRB);
 			}
 		});
 	}, 'html')
@@ -186,7 +186,7 @@ function postRef(action) {
 			ref += $(this).attr('name').substr(3) + '=' + encodeURI($(this).val()) + '&';
 		})
 	}
-	$.ajax("ajax/ajax.ref.php?a=" + action, {data: ref, type: "post", success: loadRB, async: false, dataType: "json"})
+	$.ajax("ajax/issue.ref.php?a=" + action, {data: ref, type: "post", success: loadRB, async: false, dataType: "json"})
 	displayRefs();
 
 }
@@ -214,7 +214,7 @@ $(document).ready(function() {
 function displayRefs() {
 
 	var issue_id = $("#issue_id").val();
-	$.post("ajax/ajax.reflist.php", {iid: issue_id}, function(data) {
+	$.post("ajax/issue.reflist.php", {iid: issue_id}, function(data) {
 		$("#divRefs").html(data);
 	}, 'html')
 

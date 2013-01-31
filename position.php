@@ -121,12 +121,43 @@ echo DOC_TYPE;
 	color: red;
 }
 
+ul#votes li {
+	display: inline;
+	margin: 0 25px 0 0;
+}
+
+ul#votes li.label {
+	font-weight: bold;
+	margin-right: 1px;
+}
+
 	</style>
 	<script src="inc/jquery.js"></script>
 	<script type="text/javascript">
 
+function setVote(vote) {
+	$.post('ajax/position.vote.php', {pid: <?php echo $position->id; ?>, vo: vote}, updateVoteFields, 'json');
+}
+
+function updateVoteFields(data) {
+	var j = data;
+<?php if ($citizen->id) { ?>
+	var v = j.vote;
+	if (v == 1) {
+		$('#your_vote').html('<img src="img/for.png"/>');
+	} else if (v == 2) {
+		$('#your_vote').html('<img src="img/against.png"/>');
+	} else {
+		$('#your_vote').html('(none)');
+	}
+<?php } ?>
+	$('#citizens_for').html(j.for);
+	$('#citizens_against').html(j.against);
+}
+
 $(document).ready(function () {
 	$('#new_comment').hide();
+	$.post('ajax/position.vote.php', {pid: <?php echo $position->id; ?>}, updateVoteFields, 'json');
 	$('#comments').load('ajax/position.comments.php', {pid: <?php echo $position->id; ?>});
 	$('#bu_edit_pos').click(function () {
 		window.location.assign('position.php?a=e&pid=<?php echo $position->id; ?>');
@@ -200,18 +231,24 @@ if ($citizen->id) {
 				<tr><td></td><td><button id="bu_edit_pos">Edit</button></td></tr>
 			</table>
 			<hr />
-			<table><tr>
+			<ul id="votes">
 <?php if ($citizen->id) { ?>
-				<th>Your vote:</th><td style="width:70px"><?php echo $citizen_vote_html; ?></td>
-				<th>Add/change vote:</th><td style="width:100px"><a id="vote_for" href="#">For</a>&nbsp;&nbsp;<a id="vote_against" href="#">Against</a></td>
+				<li class="label">Your vote:</li>
+				<li id="your_vote"></li>
+				<li class="label">Add/change vote:</li>
+				<li><a id="vote_for" href="JAVASCRIPT: setVote(1)">For</a>&nbsp;
+					<a id="vote_against" href="JAVASCRIPT: setVote(2)">Against</a>
+				</li>
 <?php } ?>
-				<th>Citizens For:</th><td style="width:70px"><?php echo $position->for_count; ?></td>
-				<th>Citizens Against:</th><td style="width:70px"><?php echo $position->against_count; ?></td>
-			</tr></table>
+				<li class="label">Citizens for:</li>
+				<li id="citizens_for"></li>
+				<li class="label">Citizens against:</li>
+				<li id="citizens_against"></li>
+			</ul>
 			<hr />
 			<button id="bu_add_comment">Add Comment</button><br />
 			<div id="new_comment">
-				<textarea id="comment" rows="15" cols="90"></textarea><br />
+				<textarea id="comment" rows="10" cols="90"></textarea><br />
 				<button id="bu_save_comment">Save</button>
 				<button id="bu_cancel_comment">Cancel</button>
 			</div>
