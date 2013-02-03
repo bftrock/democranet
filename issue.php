@@ -3,8 +3,8 @@
 // insert and update Issues. The Model for this page is the Issue class, and the View and Control happens 
 // within this page.
 
-include ("inc/util_mysql.php");			// functions for handling database
-include ("inc/util_democranet.php");	// common application functions
+include ("inc/util.mysql.php");			// functions for handling database
+include ("inc/util.democranet.php");	// common application functions
 include ("inc/class.issue.php");		// the issue object, which is the model for this page
 include ("inc/class.citizen.php");		// the citizen object, which is needed for user management
 
@@ -20,25 +20,26 @@ if ($citizen->in_session()) {
 	$citizen->load(CIT_LOAD_FROMDB);
 }
 
-// The action variable controls the mode of this page.
-$action = "";
-if (isset($_GET['a'])) {
+// The mode variable controls the mode of this page.
+// r = read, e = edit, n = new, u = update, i = insert
+$mode = "";
+if (isset($_GET['m'])) {
 	// typical case
-	$action = $_GET['a'];
+	$mode = $_GET['m'];
 } elseif (isset($_GET['iid'])) {
 	// if only the issue id is passed, we assume read mode
-	$action = "r";
+	$mode = "r";
 } else {
 	// otherwise we're adding a new issue
-	$action = "n";
+	$mode = "n";
 }
 
 // The issue object is loaded from the db if we're reading or editing, and from the $_POST global if
 // we're inserting or updating.  If we're adding a new issue, the object is mostly unloaded.
 $source = null;
-if ($action == "r" || $action == "e") {
+if ($mode == "r" || $mode == "e") {
 	$source = ISS_LOAD_FROMDB;
-} elseif ($action == "u" || $action == "i") {
+} elseif ($mode == "u" || $mode == "i") {
 	$source = ISS_LOAD_FROMPOST;
 } else {
 	$source = ISS_LOAD_NEW;
@@ -46,29 +47,28 @@ if ($action == "r" || $action == "e") {
 $issue = new issue();
 $issue->load($source);
 
-// The action variable determines the mode of this page.
-switch ($action) {
+switch ($mode) {
 
 	case "i":	// inserting newly created issue and reloading page
 	
 		$issue->insert();
-		header("Location:issue.php?a=r&iid={$issue->id}");
+		header("Location:issue.php?m=r&iid={$issue->id}");
 		break;
 		
 	case "u":	// updating edited issue and reloading page
 		
 		$issue->update();
-		header("Location:issue.php?a=r&iid={$issue->id}");
+		header("Location:issue.php?m=r&iid={$issue->id}");
 		break;
 		
 	case "e":	// editing existing issue, setting form action to update
 
-		$submit_action = "issue.php?a=u";
+		$submit_action = "issue.php?m=u";
 		break;
 		
 	case "n":	// creating new issue, setting from action to insert
 
-		$submit_action = "issue.php?a=i";
+		$submit_action = "issue.php?m=i";
 		break;
 
 	case "r":	// displaying issue specified in query string in read-only mode
@@ -87,7 +87,7 @@ echo DOC_TYPE;
 	<script src="inc/jquery.js"></script>
 	<script type="text/javascript">
 	
-<?php if ($action == "e" || $action == "n") { ?>
+<?php if ($mode == "e" || $mode == "n") { ?>
 
 $(document).ready(function() {
 	$("#description").on("keyup blur", updateCount);
@@ -176,24 +176,24 @@ function loadRB(data) {
 
 }
 
-function postRef(action) {
+function postRef(mode) {
 
 	var ref = '';
-	if (action == 'd') {
+	if (mode == 'd') {
 		ref = 'ref_id=' + $("#rb_ref_id").val();
 	} else {
 		$("#divInput :input").each(function (i) {
 			ref += $(this).attr('name').substr(3) + '=' + encodeURI($(this).val()) + '&';
 		})
 	}
-	$.ajax("ajax/issue.ref.php?a=" + action, {data: ref, type: "post", success: loadRB, async: false, dataType: "json"})
+	$.ajax("ajax/issue.ref.php?a=" + mode, {data: ref, type: "post", success: loadRB, async: false, dataType: "json"})
 	displayRefs();
 
 }
 
 function cancelEdit() {
 <?php if ($issue->id) { ?>
-	var url = 'issue.php?a=r&iid=<?php echo $issue->id; ?>';
+	var url = 'issue.php?m=r&iid=<?php echo $issue->id; ?>';
 <?php } else { ?>
 	var url = 'index.php';
 <?php } ?>
@@ -221,20 +221,8 @@ function displayRefs() {
 }
 
 function edit() {
-	var url = 'issue.php?a=e&iid=<?php echo $issue->id; ?>';
+	var url = 'issue.php?m=e&iid=<?php echo $issue->id; ?>';
 	window.location.assign(url);
-}
-
-function getPositions(vote, positionId) {
-	
-	var data = null;
-	if (vote && positionId) {
-		data = {iid:<?php echo $issue->id; ?>, cid:<?php echo $citizen->id; ?>, vo: vote, pid: positionId};
-	} else {
-		data = {iid:<?php echo $issue->id; ?>, cid:<?php echo $citizen->id; ?>};
-	}
-	$("#positions").load('ajax/ajax.positions.php', data);
-	
 }
 
 <?php } ?>
@@ -242,7 +230,7 @@ function getPositions(vote, positionId) {
 </head>
 
 
-<?php if ($action == "r") { ?>
+<?php if ($mode == "r") { ?>
 <body>
 <?php } ?>
 	
@@ -265,13 +253,13 @@ if ($citizen->id) {
 		<div id="navigation-left">
 			<ul>
 				<li><a href="index.php">View All Issues</a></li>
-				<li><a href="issue.php?a=n">Add New Issue</a></li>
-				<li><a href="position.php?a=n&iid=<?php echo $issue->id; ?>">Add New Position</a></li>
+				<li><a href="issue.php?m=n">Add New Issue</a></li>
+				<li><a href="position.php?m=n&iid=<?php echo $issue->id; ?>">Add New Position</a></li>
 			</ul>
 		</div>
 		<div id="content">
 			<h3>Issue</h3>
-<?php if ($action == "e" || $action == "n") { ?>
+<?php if ($mode == "e" || $mode == "n") { ?>
 <table>
 	<form id="editIssue" method="post" action="<?php echo $submit_action; ?>">
 	<tr><th>Title:<input name="issue_id" id="issue_id" type="hidden" value="<?php echo $issue->id; ?>" /></th>

@@ -1,8 +1,8 @@
 <?php
 // This page is used to make an AJAX call to get positions for an issue.
 
-include ("../inc/util_mysql.php");
-include ("../inc/util_democranet.php");
+include ("../inc/util.mysql.php");
+include ("../inc/util.democranet.php");
 
 $db = open_db_connection();
 
@@ -38,7 +38,7 @@ $ret .= "<table><tr><th id=\"th_position\">Position</th>";
 if ($citizen_id) {
 	$ret .= "<th id=\"th_your_vote\">Your Vote</th>";
 }
-$ret .= "<th id=\"th_citizens_for\">Citizens For</th><th id=\"th_citizens_against\">Citizens Against</th></tr>\n";
+$ret .= "<th id=\"th_citizens_for\">Citizens <img src=\"img/for.png\"/></th><th id=\"th_citizens_against\">Citizens <img src=\"img/against.png\"/></th></tr>\n";
 
 // If a citizen is in session, execute a separate query to get their vote on each issue, and store
 // results in an array.
@@ -64,7 +64,7 @@ $result = execute_query($sql);
 
 // Iterate over result to build each row of the table.
 while ($line = fetch_line($result)) {
-	$ret .= "<tr><td><a href=\"position.php?pid={$line['position_id']}&iid={$issue_id}\" class=\"position\">{$line['name']}</a></td>";
+	$ret .= "<tr><td><a href=\"position.php?m=r&pid={$line['position_id']}&iid={$issue_id}\" class=\"position\">{$line['name']}</a></td>";
 	if ($citizen_id) {
 		if (isset($citizen_votes[$line['position_id']])) {
 			$ret .= "<td>" . get_vote_html($citizen_votes[$line['position_id']]) . "</td>";

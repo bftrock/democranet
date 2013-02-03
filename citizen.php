@@ -1,7 +1,7 @@
 <?php
 
-include ("inc/util_mysql.php");
-include ("inc/util_democranet.php");
+include ("inc/util.mysql.php");
+include ("inc/util.democranet.php");
 include ("inc/class.citizen.php");
 
 $db = open_db_connection();
@@ -9,19 +9,19 @@ session_start();
 $citizen = new citizen();
 
 $citizen_in_session = $citizen->in_session();
-if (isset($_GET['a'])) {
-	$action = $_GET['a'];
+if (isset($_GET['m'])) {
+	$mode = $_GET['m'];
 } else {
 	if ($citizen_in_session) {
-		$action = "r";
+		$mode = "r";
 	} else {
-		$action = "n";
+		$mode = "n";
 	}
 }
 
-if ($action == "r") {
+if ($mode == "r") {
 	$citizen->load(CIT_LOAD_FROMDB);
-} elseif ($action == "i" || $action == "u" || $action == "e") {
+} elseif ($mode == "i" || $mode == "u" || $mode == "e") {
 	$citizen->load(CIT_LOAD_FROMPOST);
 }
 //var_dump($citizen);
@@ -33,12 +33,12 @@ if (isset($_GET['em'])) {
 	$err_display = "block";	
 }
 
-switch ($action) {
+switch ($mode) {
 	case "r":
-		$action_code = "u";
+		$mode_code = "u";
 		break;
 	case "n":
-		$action_code = "i";
+		$mode_code = "i";
 		break;
 	case "i":
 		if ($citizen->check_email()) {
@@ -57,8 +57,8 @@ switch ($action) {
 	default:
 }
 
+echo DOC_TYPE;
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 
 <head>
@@ -179,7 +179,7 @@ echo "<p><a href=\"login.php\">Log in / Become a Citizen</a></p>";
 <?php echo $div_err; ?>
 			</div>
 
-			<form method="post" action="citizen.php?a=<?php echo $action_code; ?>" id="citizen_form">
+			<form method="post" action="citizen.php?a=<?php echo $mode_code; ?>" id="citizen_form">
 				<table>
 					<tr><td id="email_label">Email address*:</td>
 						<td><input type="text" size="25" name="email" value="<?php echo $citizen->email; ?>" /></td></tr>

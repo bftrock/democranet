@@ -1,12 +1,12 @@
 <?php
 
-include ("inc/util_mysql.php");
+include ("inc/util.mysql.php");
 
 define ("SITE_NAME", "Democranet");
 define ("PAGE_NAME", "Log in");
 define ("PAGE_URL", "login.php");
 
-if (isset($_GET['a']) && $_GET['a'] == "lo") {
+if (isset($_GET['m']) && $_GET['m'] == "lo") {
 
 	session_start();
 
@@ -50,8 +50,8 @@ if (isset($_POST['email'])) {
 	}
 }
 
+echo DOC_TYPE;
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 
 <head>

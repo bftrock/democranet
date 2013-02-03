@@ -1,6 +1,6 @@
 <?php
 
-require_once ("util_mysql.php");
+require_once ("util.mysql.php");
 
 define ("ISS_LOAD_NEW", 0);
 define ("ISS_LOAD_FROMDB", 1);

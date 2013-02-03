@@ -2,8 +2,8 @@
 // This page is used to create, read, update, and delete references for issues. It returns JSON
 // formated data.
 
-include ("../inc/util_mysql.php");
-include ("../inc/util_democranet.php");
+include ("../inc/util.mysql.php");
+include ("../inc/util.democranet.php");
 
 $db = open_db_connection();
 

@@ -1,6 +1,6 @@
 <?php
 
-require_once ("util_mysql.php");
+require_once ("util.mysql.php");
 
 define ("CIT_LOAD_FROMDB", 1);
 define ("CIT_LOAD_FROMPOST", 2);

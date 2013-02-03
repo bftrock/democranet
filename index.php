@@ -1,8 +1,8 @@
 <?php
 // The main function of this page is to display all Issues.
 
-include ("inc/util_mysql.php");
-include ("inc/util_democranet.php");
+include ("inc/util.mysql.php");
+include ("inc/util.democranet.php");
 include ("inc/class.citizen.php");
 
 // This function is in util_mysql. It opens a connection to the db using hard-coded username and password.
@@ -19,46 +19,14 @@ if ($citizen->in_session()) {
 	$citizen->load(CIT_LOAD_FROMDB);
 }
 
+echo DOC_TYPE;
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 
 <head>
-	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
 	<title>Democranet</title>
-	<style type="text/css">
-p.is_ca {
-	margin: 20px 0 2px 0;
-	font-size: 120%;
-}
-
-p.is_ti {
-	margin: 10px 0 2px 20px;
-}
-
-p.is_de {
-	margin: 0 0 0 40px;
-}
-
-#issue_list a:link {
-	text-decoration: none;
-	color: gray;
-}
-
-#issue_list a:visited {
-	color: gray;
-}
-
-#issue_list a:hover {
-	text-decoration: underline;
-}
-
-#issue_list a:active {
-	text-decoration: underline;
-}
-	</style>
-	<script type="text/javascript">
-	</script>
+	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
+	<link rel="stylesheet" type="text/css" href="style/index.css" />
 </head>
 
 <body>

@@ -1,6 +1,6 @@
 <?php
-// This page is used to make an AJAX call to get comments for a position. It's also used
-// to post a comment to a position.
+// This page is used to make an AJAX call to get comments for an action. It's also used
+// to post a comment to an action.
 
 include ("../inc/util.mysql.php");
 include ("../inc/util.democranet.php");
@@ -15,10 +15,10 @@ if (isset($_SESSION['citizen_id'])) {
 	$citizen_id = $_SESSION['citizen_id'];
 }
 
-// The position id should be in the query string from the AJAX call.
-$position_id = null;
-if (check_field('pid', $_REQUEST)) {
-	$position_id = $_REQUEST['pid'];
+// The action id should be in the query string from the AJAX call.
+$action_id = null;
+if (check_field('aid', $_REQUEST)) {
+	$action_id = $_REQUEST['aid'];
 }
 
 // If the comment parameter (co) is passed in the query string, we're posting a comment.
@@ -26,18 +26,18 @@ $comment = null;
 if (check_field('co', $_REQUEST)) {
 	$comment = safe_sql($_REQUEST['co']);
 	// Check to make sure everything we need is set before inserting.
-	if ($position_id && $citizen_id) {
-		$sql = "INSERT comments (type, type_id, citizen_id, comment) VALUES ('p','{$position_id}','{$citizen_id}','{$comment}')";
+	if ($action_id && $citizen_id) {
+		$sql = "INSERT comments (type, type_id, citizen_id, comment) VALUES ('a','{$action_id}','{$citizen_id}','{$comment}')";
 		execute_query($sql);
 	}
 }
 
-// Now get all comments for this position. Join comments with their respective citizen.
+// Now get all comments for this action. Join comments with their respective citizen.
 $sql = " ";
 $sql .= "SELECT co.comment, CONCAT(ci.first_name, ' ', ci.last_name) name, co.ts
 	FROM comments co LEFT JOIN citizens ci ON co.citizen_id = ci.citizen_id
-	WHERE co.type_id = '{$position_id}'
-	AND co.type = 'p'
+	WHERE co.type_id = '{$action_id}'
+	AND co.type = 'a'
 	ORDER BY ts DESC";
 $result = execute_query($sql);
 $ret = "";

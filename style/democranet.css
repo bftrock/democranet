@@ -126,3 +126,30 @@ a:active {
 	height: 1%;
 	color: gray;
 }
+
+#content th {
+	text-align: left;
+	vertical-align: top;
+}
+
+#vote_for {
+	color: LimeGreen;
+}
+
+#vote_against {
+	color: red;
+}
+
+ul#votes li {
+	display: inline;
+	margin: 0 25px 0 0;
+}
+
+ul#votes li.label {
+	font-weight: bold;
+	margin-right: 1px;
+}
+
+#new_comment {
+	display: none;
+}

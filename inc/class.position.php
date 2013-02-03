@@ -1,6 +1,7 @@
 <?php
 
-require_once ("util_mysql.php");
+require_once ("util.mysql.php");
+//require_once ("ChromePhp.php");
 
 define ("POS_LOAD_NEW", 0);
 define ("POS_LOAD_FROMDB", 1);
@@ -38,6 +39,7 @@ class position {
 			default:
 				$this->issue_id = $_GET['iid'];
 		}
+		//ChromePhp::log($this);
 		
 	}
 	
@@ -64,11 +66,13 @@ class position {
 	
 	public function get_vote($citizen_id) {
 		
-		$sql = "SELECT vote FROM position_citizen WHERE position_id = '{$this->id}' AND citizen_id = '{$citizen_id}'";
-		$result = execute_query($sql);
-		if (get_num_rows($result)) {
-			$line = fetch_line($result);
-			$this->vote = $line['vote'];
+		if (isset($citizen_id)) {
+			$sql = "SELECT vote FROM position_citizen WHERE position_id = '{$this->id}' AND citizen_id = '{$citizen_id}'";
+			$result = execute_query($sql);
+			if (get_num_rows($result)) {
+				$line = fetch_line($result);
+				$this->vote = $line['vote'];
+			}
 		}
 		$sql = "SELECT COUNT(*) cnt FROM position_citizen WHERE position_id = '{$this->id}' AND vote = '" . VOTE_FOR . "'";
 		$result = execute_query($sql);
