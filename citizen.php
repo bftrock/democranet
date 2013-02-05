@@ -63,6 +63,7 @@ echo DOC_TYPE;
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+	<link rel="stylesheet" type="text/css" href="style/bootstrap.css" />
 	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
 	<title>Democranet: Citizen</title>
 	<style type="text/css">

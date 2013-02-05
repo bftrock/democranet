@@ -95,6 +95,7 @@ echo DOC_TYPE;
 
 <head>
 	<title>Democranet: Action</title>
+	<link rel="stylesheet" type="text/css" href="style/bootstrap.css" />
 	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
 	<link rel="stylesheet" type="text/css" href="style/action.css" />
 	<script src="inc/jquery.js"></script>

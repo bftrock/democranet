@@ -55,6 +55,7 @@ echo DOC_TYPE;
 <html>
 
 <head>
+	<link rel="stylesheet" type="text/css" href="style/bootstrap.css" />
 	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
 	<title>Log in</title>
 	<style type="text/css">
