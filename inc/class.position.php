@@ -1,11 +1,8 @@
 <?php
 
 require_once ("util.mysql.php");
+require_once ("util.democranet.php");
 //require_once ("ChromePhp.php");
-
-define ("POS_LOAD_NEW", 0);
-define ("POS_LOAD_FROMDB", 1);
-define ("POS_LOAD_FROMPOST", 2);
 
 class position {
 	
@@ -20,7 +17,7 @@ class position {
 	public function load($source) {
 		
 		switch ($source) {
-			case POS_LOAD_FROMDB:
+			case LOAD_DB:
 				$this->id = $_REQUEST['pid'];
 				$sql = "SELECT * FROM positions WHERE position_id = '{$this->id}'";
 				$result = execute_query($sql);
@@ -29,13 +26,13 @@ class position {
 				$this->justification = $line['justification'];
 				$this->issue_id = $line['issue_id'];
 				break;
-			case POS_LOAD_FROMPOST:
+			case LOAD_POST:
 				$this->id = $_POST['position_id'];
 				$this->name = $_POST['name'];
 				$this->justification = $_POST['justification'];
 				$this->issue_id = $_POST['issue_id'];
 				break;
-			case POS_LOAD_NEW:
+			case LOAD_NEW:
 			default:
 				$this->issue_id = $_GET['iid'];
 		}

@@ -1,11 +1,8 @@
 <?php
 
 require_once ("util.mysql.php");
-require_once ("ChromePhp.php");
-
-define ("ACT_LOAD_NEW", 0);
-define ("ACT_LOAD_FROMDB", 1);
-define ("ACT_LOAD_FROMPOST", 2);
+require_once ("util.democranet.php");
+//require_once ("ChromePhp.php");
 
 class action {
 	
@@ -22,7 +19,7 @@ class action {
 	public function load($source) {
 		
 		switch ($source) {
-			case ACT_LOAD_FROMDB:
+			case LOAD_DB:
 				$this->id = $_REQUEST['aid'];
 				$sql = "SELECT * FROM actions WHERE action_id = '{$this->id}'";
 				$result = execute_query($sql);
@@ -33,7 +30,7 @@ class action {
 				$this->location = $line['location'];
 				$this->position_id = $line['position_id'];
 				break;
-			case ACT_LOAD_FROMPOST:
+			case LOAD_POST:
 				$this->id = $_POST['action_id'];
 				$this->name = $_POST['name'];
 				$this->description = $_POST['description'];
@@ -41,7 +38,7 @@ class action {
 				$this->location = $_POST['location'];
 				$this->position_id = $_POST['position_id'];
 				break;
-			case ACT_LOAD_NEW:
+			case LOAD_NEW:
 			default:
 				$this->position_id = $_GET['pid'];
 		}

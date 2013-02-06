@@ -1,9 +1,7 @@
 <?php
 
 require_once ("util.mysql.php");
-
-define ("CIT_LOAD_FROMDB", 1);
-define ("CIT_LOAD_FROMPOST", 2);
+require_once ("util.democranet.php");
 
 class citizen {
 	
@@ -34,7 +32,7 @@ class citizen {
 	public function load($source) {
 		
 		switch ($source) {
-			case CIT_LOAD_FROMDB:
+			case LOAD_DB:
 				$sql = "SELECT * FROM citizens WHERE citizen_id = '{$this->id}'";
 				$result = execute_query($sql);
 				$line = fetch_line($result);
@@ -50,7 +48,7 @@ class citizen {
 				$this->postal_code = $line['postal_code'];
 				$this->telephone = $line['telephone'];
 				break;
-			case CIT_LOAD_FROMPOST:
+			case LOAD_POST:
 				$this->id = $_POST['citizen_id'];
 				$this->first_name = $_POST['first_name'];
 				$this->last_name = $_POST['last_name'];
@@ -65,6 +63,7 @@ class citizen {
 				$this->postal_code = $_POST['postal_code'];
 				$this->telephone = $_POST['telephone'];
 				break;
+			case LOAD_NEW:
 			default:
 		}
 	}

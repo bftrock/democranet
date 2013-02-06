@@ -1,11 +1,7 @@
 <?php
 
 require_once ("util.mysql.php");
-
-define ("ISS_LOAD_NEW", 0);
-define ("ISS_LOAD_FROMDB", 1);
-define ("ISS_LOAD_FROMPOST", 2);
-define ("ISS_DESC_MAXLEN", 3000);
+require_once ("util.democranet.php");
 
 class issue {
 
@@ -18,7 +14,7 @@ class issue {
 		
 		switch ($source) {
 			
-			case ISS_LOAD_FROMDB:
+			case LOAD_DB:
 				$this->id = $_GET['iid'];
 				$sql = "SELECT * FROM issues WHERE issue_id = '{$this->id}'";
 				$result = execute_query($sql);
@@ -31,13 +27,13 @@ class issue {
 					$this->categories[] = $line['category_id'];
 				}
 				break;
-			case ISS_LOAD_FROMPOST:
+			case LOAD_POST:
 				$this->id = $_POST['issue_id'];
 				$this->name = $_POST['name'];
 				$this->description = $_POST['description'];
 				$this->categories = $_POST['categories'];
 				break;
-			case ISS_LOAD_NEW:
+			case LOAD_NEW:
 			default:
 				
 		}
