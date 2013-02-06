@@ -84,7 +84,7 @@ echo DOC_TYPE;
 	<title>Democranet: Issue</title>
 	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
 	<link rel="stylesheet" type="text/css" href="style/issue.css" />
-	<script src="inc/jquery.js"></script>
+	<script src="js/jquery.js"></script>
 	<script type="text/javascript">
 	
 <?php if ($mode == "e" || $mode == "n") { ?>

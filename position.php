@@ -96,7 +96,7 @@ echo DOC_TYPE;
 	<title>Democranet: Position</title>
 	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
 	<link rel="stylesheet" type="text/css" href="style/position.css" />
-	<script src="inc/jquery.js"></script>
+	<script src="js/jquery.js"></script>
 	<script type="text/javascript">
 
 function setVote(vote) {

@@ -97,7 +97,7 @@ echo DOC_TYPE;
 	<title>Democranet: Action</title>
 	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
 	<link rel="stylesheet" type="text/css" href="style/action.css" />
-	<script src="inc/jquery.js"></script>
+	<script src="js/jquery.js"></script>
 	<script type="text/javascript">
 
 <?php if ($mode == "r") { ?>
