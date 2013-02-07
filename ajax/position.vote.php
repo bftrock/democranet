@@ -15,7 +15,7 @@ session_start();
 // The position id must be passed in the request.
 if (check_field('pid', $_REQUEST)) {
 	$position = new position();
-	$position->load(POS_LOAD_FROMDB);
+	$position->load(LOAD_DB);
 } else {
 	die("Position ID must be passed to this page.");
 }
@@ -23,7 +23,7 @@ if (check_field('pid', $_REQUEST)) {
 // A citizen must be logged in to vote.
 $citizen = new citizen();
 if ($citizen->in_session()) {
-	$citizen->load(CIT_LOAD_FROMDB);
+	$citizen->load(LOAD_DB);
 }
 
 // If a citizen is logged in, check if vo parameter was passed. If yes, set/update vote. The

@@ -1,4 +1,3 @@
 *.zip
-test.php
-test.html
+test*
 .DS_Store

@@ -16,7 +16,7 @@ session_start();
 // properties will be left = null.
 $citizen = new citizen();
 if ($citizen->in_session()) {
-	$citizen->load(CIT_LOAD_FROMDB);
+	$citizen->load(LOAD_DB);
 }
 
 echo DOC_TYPE;

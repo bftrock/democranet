@@ -3,6 +3,8 @@
 require_once ("util.mysql.php");
 require_once ("util.democranet.php");
 
+define ("ISS_DESC_MAXLEN", 3000);
+
 class issue {
 
 	public $id = null;
@@ -74,6 +76,7 @@ class issue {
 	public function get_description() {
 		
 		$str = str_replace("\r\n", "<br />", $this->description);
+		//$str = htmlentities($this->description, ENT_COMPAT, 'UTF-8', false);
 		return $str;
 	
 	}

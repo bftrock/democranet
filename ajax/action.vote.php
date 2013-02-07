@@ -15,7 +15,7 @@ session_start();
 // The action id must be passed in the request.
 if (check_field('aid', $_REQUEST)) {
 	$action = new action();
-	$action->load(ACT_LOAD_FROMDB);
+	$action->load(LOAD_DB);
 } else {
 	die("Action ID must be passed to this page.");
 }
@@ -23,7 +23,7 @@ if (check_field('aid', $_REQUEST)) {
 // A citizen must be logged in to vote.
 $citizen = new citizen();
 if ($citizen->in_session()) {
-	$citizen->load(CIT_LOAD_FROMDB);
+	$citizen->load(LOAD_DB);
 }
 
 // If a citizen is logged in, check if vo parameter was passed. If yes, set/update vote. The

@@ -1,7 +1,7 @@
 <?php
-// The main function of this page is to display an Issue. This same page is also used to edit, create new, 
-// insert and update Issues. The Model for this page is the Issue class, and the View and Control happens 
-// within this page.
+// The main function of this page is to display an Issue. This same page is also used to edit,
+// create new,  insert and update Issues. The Model for this page is the Issue class, and the View
+// and Control happens  within this page.
 
 include ("inc/util.mysql.php");			// functions for handling database
 include ("inc/util.democranet.php");	// common application functions
@@ -17,7 +17,7 @@ session_start();
 // be loaded. Otherwise, properties will be left = null.
 $citizen = new citizen();
 if ($citizen->in_session()) {
-	$citizen->load(CIT_LOAD_FROMDB);
+	$citizen->load(LOAD_DB);
 }
 
 // The mode variable controls the mode of this page.
@@ -38,11 +38,11 @@ if (isset($_GET['m'])) {
 // we're inserting or updating.  If we're adding a new issue, the object is mostly unloaded.
 $source = null;
 if ($mode == "r" || $mode == "e") {
-	$source = ISS_LOAD_FROMDB;
+	$source = LOAD_DB;
 } elseif ($mode == "u" || $mode == "i") {
-	$source = ISS_LOAD_FROMPOST;
+	$source = LOAD_POST;
 } else {
-	$source = ISS_LOAD_NEW;
+	$source = LOAD_NEW;
 }
 $issue = new issue();
 $issue->load($source);

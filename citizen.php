@@ -20,9 +20,9 @@ if (isset($_GET['m'])) {
 }
 
 if ($mode == "r") {
-	$citizen->load(CIT_LOAD_FROMDB);
+	$citizen->load(LOAD_DB);
 } elseif ($mode == "i" || $mode == "u" || $mode == "e") {
-	$citizen->load(CIT_LOAD_FROMPOST);
+	$citizen->load(LOAD_POST);
 }
 //var_dump($citizen);
 

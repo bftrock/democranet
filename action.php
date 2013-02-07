@@ -18,7 +18,7 @@ session_start();
 // loaded. Otherwise, properties will be left = null.
 $citizen = new citizen();
 if ($citizen->in_session()) {
-	$citizen->load(CIT_LOAD_FROMDB);
+	$citizen->load(LOAD_DB);
 }
 
 // Set the mode variable, which controls the mode of this page.
@@ -36,11 +36,11 @@ if (isset($_GET['m'])) {
 // if we're inserting or updating.  If we're adding a new action, the object is mostly unloaded.
 $source = null;
 if ($mode == "r" || $mode == "e") {
-	$source = ACT_LOAD_FROMDB;
+	$source = LOAD_DB;
 } elseif ($mode == "u" || $mode == "i") {
-	$source = ACT_LOAD_FROMPOST;
+	$source = LOAD_POST;
 } else {
-	$source = ACT_LOAD_NEW;
+	$source = LOAD_NEW;
 }
 $action = new action();
 $action->load($source);
