@@ -70,6 +70,7 @@ function get_issue_list() {
 		FROM issues i 
 		LEFT JOIN issue_category ic ON i.issue_id = ic.issue_id 
 		LEFT JOIN categories c ON ic.category_id = c.category_id 
+		WHERE i.version = (SELECT MAX(version) version FROM issues WHERE issue_id = i.issue_id)
 		ORDER BY c.name ASC";
 	$result = execute_query($sql);
 	$last_category = "";
