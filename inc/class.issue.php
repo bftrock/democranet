@@ -8,21 +8,32 @@ define ("ISS_DESC_MAXLEN", 3000);
 class issue {
 
 	public $id = null;
+	public $version = null;
 	public $name = null;
 	public $description = null;
 	public $categories = array();
+	public $citizen_id = null;
+	public $ts = null;
 	
-	public function load($source) {
+	public function load($source, $version = null) {
 		
 		switch ($source) {
 			
 			case LOAD_DB:
-				$this->id = $_GET['iid'];
-				$sql = "SELECT * FROM issues WHERE issue_id = '{$this->id}'";
+				$this->id = $_REQUEST['iid'];
+				if (isset($version)) {
+					$subsql = "{$version}";
+				} else {
+					$subsql = "(SELECT MAX(version) FROM issues WHERE issue_id = i.issue_id)";
+				}
+				$sql = "SELECT * FROM issues i WHERE i.issue_id = '{$this->id}' AND i.version = {$subsql}";
 				$result = execute_query($sql);
 				$line = fetch_line($result);
+				$this->version = $line['version'];
 				$this->name = $line['name'];
 				$this->description = $line['description'];
+				$this->citizen_id = $line['citizen_id'];
+				$this->ts = $line['ts'];
 				$sql = "SELECT * FROM issue_category WHERE issue_id = '{$this->id}'";
 				$result = execute_query($sql);
 				while($line = fetch_line($result)) {
@@ -31,8 +42,12 @@ class issue {
 				break;
 			case LOAD_POST:
 				$this->id = $_POST['issue_id'];
+				$this->version = $_POST['version'];
 				$this->name = $_POST['name'];
 				$this->description = $_POST['description'];
+				if (isset($_SESSION['citizen_id'])) {
+					$this->citizen_id = $_SESSION['citizen_id'];
+				}
 				$this->categories = $_POST['categories'];
 				break;
 			case LOAD_NEW:
@@ -44,41 +59,38 @@ class issue {
 	
 	public function insert() {
 		
-		$sql = "INSERT issues SET 
-			name = '" . safe_sql($this->name) . "',
-			description = '" . safe_sql($this->description) . "'";
-		execute_query($sql);
-		$this->id = get_insert_id();
+		$this->id = $this->get_next_id();
+		$this->version = 1;
+		$this->insert_issue();
 		
 	}
-	
+
 	public function update() {
 		
-		$sql = "UPDATE issues SET 
-			name = '" . safe_sql($this->name) . "',
-			description = '" . safe_sql(substr($this->description, 0, ISS_DESC_MAXLEN)) . "'
-			WHERE issue_id = '{$this->id}'";
-		execute_query($sql);
+		$this->version = $this->get_next_version();
 		$sql = "DELETE FROM issue_category WHERE issue_id = '{$this->id}'";
 		execute_query($sql);
-		if (count($this->categories) > 0) {
-			$sql = "INSERT issue_category (issue_id, category_id) VALUES ";
-			foreach ($this->categories as $cat_id) {
-				$sql .= "('{$this->id}','{$cat_id}'),";
-			}
-			execute_query(substr($sql, 0, -1));
-		}
-		
+		$this->insert_issue();
+
 	}
-	
+
 	// This function is used to display the description field in read mode. Right now this just means replacing
 	// carriage returns with <br />, but later there will be more sophisticated markup to convert.
 	public function get_description() {
 		
-		$str = str_replace("\r\n", "<br />", $this->description);
-		//$str = htmlentities($this->description, ENT_COMPAT, 'UTF-8', false);
+		$order = array("\r\n", "\n", "\r");
+		$replace = "<br />";
+		$str = str_replace($order, $replace, $this->description);
 		return $str;
 	
+	}
+
+	public function json_description() {
+
+		$utf8_encoded_description = utf8_encode($this->description);
+		$html_encoded_description = str_replace(array("\r\n", "\n", "\r"), "<br />", $utf8_encoded_description);
+		return json_encode($html_encoded_description);
+
 	}
 
 	// This function returns an array of category ids and names associated with this issue
@@ -111,6 +123,51 @@ class issue {
 		return $arr;
 
 	}
+
+	private function get_next_id() {
+
+		$sql = "SELECT MAX(issue_id) id FROM issues";
+		$result = execute_query($sql);
+		$line = fetch_line($result);
+		$id = $line['id'];
+		return ++$id;
+
+	}
+
+	private function get_next_version() {
+
+		$sql = "SELECT version FROM issues WHERE issue_id = '{$this->id}' ORDER BY version DESC LIMIT 1";
+		$result = execute_query($sql);
+		$line = fetch_line($result);
+		$version = $line['version'];
+		return ++$version;
+
+	}
+	
+	private function insert_issue() {
+
+		$date = new DateTime();
+		$ts = $date->format("Y-m-d H:i:s");
+		$sql = "INSERT issues SET 
+			issue_id = '{$this->id}',
+			version = '{$this->version}',
+			name = '" . safe_sql($this->name) . "',
+			description = '" . safe_sql($this->description) . "',
+			ts = '{$ts}'";
+		if (isset($this->citizen_id)) {
+			$sql .= ", citizen_id = '{$this->citizen_id}'";
+		}
+		execute_query($sql);
+		if (count($this->categories) > 0) {
+			$sql = "INSERT issue_category (issue_id, category_id) VALUES ";
+			foreach ($this->categories as $cat_id) {
+				$sql .= "('{$this->id}','{$cat_id}'),";
+			}
+			execute_query(substr($sql, 0, -1));
+		}
+
+	}
+	
 }
 
 ?>

@@ -36,16 +36,14 @@ if (isset($_GET['m'])) {
 
 // The issue object is loaded from the db if we're reading or editing, and from the $_POST global if
 // we're inserting or updating.  If we're adding a new issue, the object is mostly unloaded.
-$source = null;
-if ($mode == "r" || $mode == "e") {
-	$source = LOAD_DB;
-} elseif ($mode == "u" || $mode == "i") {
-	$source = LOAD_POST;
-} else {
-	$source = LOAD_NEW;
-}
 $issue = new issue();
-$issue->load($source);
+if ($mode == "r" || $mode == "e") {
+	$issue->load(LOAD_DB);
+} elseif ($mode == "u" || $mode == "i") {
+	$issue->load(LOAD_POST);
+} else {
+	$issue->load(LOAD_NEW);
+}
 
 switch ($mode) {
 
@@ -311,11 +309,20 @@ if ($citizen->id) {
 </table>
 <?php } else { ?>
 			<table>
-				<tr><th>Title:</th><td><input type="hidden" id="issue_id" value="<?php echo $issue->id; ?>" /><?php echo $issue->name; ?></td></tr>
+				<tr><th>Title:</th>
+					<td>
+						<input type="hidden" id="issue_id" value="<?php echo $issue->id; ?>" /><?php echo $issue->name; ?>
+					</td>
+				</tr>
 				<tr><th>Description:</th><td><?php echo $issue->get_description(); ?></td></tr>
 				<tr><th>Categories:</th><td><?php echo display_categories($issue->get_categories(), 1); ?></td></tr>
 				<tr><th>References:</th><td><div id="divRefs"></div></td></tr>
-				<tr><td></td><td><button id="edit">Edit</button></td></tr>
+				<tr>
+					<td></td>
+					<td>
+						<button id="edit">Edit</button>
+						<a href="issue_history.php?iid=<?php echo $issue->id; ?>">Show History</a>
+					</td></tr>
 			</table>
 			<hr />
 			<div id="positions"></div>
