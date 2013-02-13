@@ -4,6 +4,7 @@
 include ("inc/util.mysql.php");
 include ("inc/util.democranet.php");
 include ("inc/class.citizen.php");
+include ("inc/util.markdown.php");
 
 // This function is in util_mysql. It opens a connection to the db using hard-coded username and password.
 $db = open_db_connection();
@@ -82,7 +83,7 @@ function get_issue_list() {
 			$ret .= "<p class=\"is_ca\">(Uncategorized)</p>\n";
 		}
 		$ret .= "<p class=\"is_ti\"><a href=\"issue.php?iid={$line['issue_id']}\" />{$line['issue_name']}</a>
-				<p class=\"is_de\">{$line['issue_description']}</p>";
+				<div class=\"is_de\">" . Markdown($line['issue_description']) . "</div>";
 		$last_category = $this_category;
 	}
 	$ret .= "</div>";

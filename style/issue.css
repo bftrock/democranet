@@ -1,3 +1,22 @@
+h1#title {
+	font-size: 1.5em;
+	margin: 0 0 10px 0;
+}
+
+#description h1 {
+	font-size: 1.25em;
+	margin: 10px 0 5px 0;
+}
+
+#description h2 {
+	font-size: 1em;
+	margin: 10px 0 0 0;
+}
+
+#description p {
+	margin: 0 0 5px 0;
+}
+
 #content th {
 	text-align: left;
 	vertical-align: top;
@@ -11,6 +30,7 @@ p.ref {
 span.counter {
 	float: right;
 }
+
 #divRB {
 	border: solid 1px gray;
 	width: 760px;

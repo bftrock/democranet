@@ -2,6 +2,8 @@
 
 require_once ("util.mysql.php");
 require_once ("util.democranet.php");
+require_once ("util.markdown.php");
+// require_once ("ChromePhp.php");
 
 define ("ISS_DESC_MAXLEN", 3000);
 
@@ -78,19 +80,8 @@ class issue {
 	// carriage returns with <br />, but later there will be more sophisticated markup to convert.
 	public function get_description() {
 		
-		$order = array("\r\n", "\n", "\r");
-		$replace = "<br />";
-		$str = str_replace($order, $replace, $this->description);
-		return $str;
+		return Markdown(htmlentities(utf8_encode($this->description), ENT_COMPAT | ENT_HTML401, 'UTF-8', false));
 	
-	}
-
-	public function json_description() {
-
-		$utf8_encoded_description = utf8_encode($this->description);
-		$html_encoded_description = str_replace(array("\r\n", "\n", "\r"), "<br />", $utf8_encoded_description);
-		return json_encode($html_encoded_description);
-
 	}
 
 	// This function returns an array of category ids and names associated with this issue
@@ -116,6 +107,21 @@ class issue {
 
 		$arr = array();	// returned result
 		$sql = "SELECT * FROM refs WHERE issue_id = '{$this->id}'";
+		$result = execute_query($sql);
+		while($line = fetch_line($result)) {
+			$arr[] = $line;
+		}
+		return $arr;
+
+	}
+
+	public function get_history() {
+
+		$arr = array();	// returned result
+		$sql = "SELECT i.issue_id, i.version, i.ts, i.citizen_id, i.name issue_name, c.first_name, c.last_name
+			FROM issues i LEFT JOIN citizens c ON i.citizen_id = c.citizen_id
+			WHERE i.issue_id = '{$this->id}'
+			ORDER BY i.version DESC";
 		$result = execute_query($sql);
 		while($line = fetch_line($result)) {
 			$arr[] = $line;

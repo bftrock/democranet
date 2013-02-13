@@ -244,7 +244,7 @@ if ($citizen->id) {
 	</div>
 	<div id="header">
 		<h1>
-			<h1>Democranet</h1>
+			<h1>Democranet: Issue</h1>
 		</h1>
 	</div>
 	<div id="container-content">
@@ -256,7 +256,6 @@ if ($citizen->id) {
 			</ul>
 		</div>
 		<div id="content">
-			<h3>Issue</h3>
 <?php if ($mode == "e" || $mode == "n") { ?>
 <table>
 	<form id="editIssue" method="post" action="<?php echo $submit_action; ?>">
@@ -308,7 +307,16 @@ if ($citizen->id) {
 		</td></tr>
 </table>
 <?php } else { ?>
-			<table>
+			<h1 id="title"><?php echo $issue->name; ?></h1>
+			<input type="hidden" id="issue_id" value="<?php echo $issue->id; ?>" />
+			<div id="description"><?php echo $issue->get_description(); ?></div>
+			<p><strong>Categories</strong>: <?php echo display_categories($issue->get_categories(), 1); ?></p>
+			<h3>References</h3>
+			<div id="divRefs"></div>
+			<button id="edit">Edit</button>
+			<a href="isshist.php?iid=<?php echo $issue->id; ?>">Show History</a>
+
+<!-- 			<table>
 				<tr><th>Title:</th>
 					<td>
 						<input type="hidden" id="issue_id" value="<?php echo $issue->id; ?>" /><?php echo $issue->name; ?>
@@ -324,7 +332,7 @@ if ($citizen->id) {
 						<a href="issue_history.php?iid=<?php echo $issue->id; ?>">Show History</a>
 					</td></tr>
 			</table>
-			<hr />
+ -->			<hr />
 			<div id="positions"></div>
 <?php } ?>
 		</div>
