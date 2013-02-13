@@ -1,0 +1,34 @@
+table#history, table#history th, table#history td {
+	padding: 2px;
+	border-collapse: collapse;
+}
+
+table#history th, table#history td {
+	border: 1px solid gray;
+}
+
+table#history td.nb {
+	border: none;
+	min-width: 15px;
+}
+
+table#diffs {
+	border-collapse: collapse;	
+	width: 100%;
+}
+
+table#diffs th, table#diffs td {
+	border: 1px solid gray;
+}
+
+table#diffs td.del {
+	background-color: LightCoral;
+}
+
+table#diffs td.ins {
+	background-color: LightGreen;
+}
+
+table#diffs th {
+	text-align: center;
+}

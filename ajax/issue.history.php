@@ -32,8 +32,9 @@ $new_desc = preg_split($pattern, $new_iss->description);
 $diffs = diff($old_desc, $new_desc);
 //print_r($diffs);
 
-$json = "{\"issue_id\":{$issue_id},\"version\":{$new_iss->version},\"name\":\"{$new_iss->name}\",";
-$json .= "\"description\":{$new_iss->json_description()},\"diffs\":[ ";
+echo $new_iss->get_description();
+
+echo "<table id=\"diffs\">\n<tr><th>Line</th><th>Deleted</th><th>Inserted</th></tr>\n";
 foreach ($diffs as $key=>$val) {
 	$d = null; $i = null;
 	if (is_array($val)) {
@@ -44,18 +45,9 @@ foreach ($diffs as $key=>$val) {
 			$i = $val['i'][0];
 		}
 		if ($d || $i) {
-			$json .= "{\"index\":{$key},\"d\":\"";
-			if ($d) {
-				$json .= "{$d}";
-			}
-			$json .= "\",\"i\":\"";
-			if ($i) {
-				$json .= "{$i}";
-			}
-			$json .= "\"},";
+			echo "<tr><td>".($key+1)."</td><td class=\"del\">{$d}</td><td class=\"ins\">{$i}</td></tr>\n";
 		}
 	}
 }
-$json = substr($json, 0, -1) . "]}";
-echo $json;
+echo "</table>\n";
 ?>
