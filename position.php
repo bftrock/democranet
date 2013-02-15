@@ -165,9 +165,7 @@ if ($citizen->id) {
 ?>
 	</div>
 	<div id="header">
-		<h1>
-			<h1>Democranet</h1>
-		</h1>
+		<a href="index.php"><img src="img/democranet.png"></a>
 	</div>
 	<div id="container-content">
 		<div id="navigation-left">
@@ -175,7 +173,7 @@ if ($citizen->id) {
 <?php if (isset($position->issue_id)) { ?>
 				<li><a href="issue.php?iid=<?php echo $position->issue_id; ?>"><< Return to Issue</a></li>
 <?php } ?>
-				<li><a href="index.php">View All Issues</a></li>
+				<li><a href="issbrws.php">Browse Issues</a></li>
 				<li><a href="action.php?m=n&pid=<?php echo $position->id; ?>">Add New Action</a></li>
 			</ul>
 		</div>

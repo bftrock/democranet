@@ -1,0 +1,29 @@
+p.is_ca {
+	margin: 20px 0 2px 0;
+	font-size: 120%;
+}
+
+p.is_ti {
+	margin: 10px 0 2px 20px;
+}
+
+div.is_de p {
+	margin: 0 0 0 40px;
+}
+
+#issue_list a:link {
+	text-decoration: none;
+	color: gray;
+}
+
+#issue_list a:visited {
+	color: gray;
+}
+
+#issue_list a:hover {
+	text-decoration: underline;
+}
+
+#issue_list a:active {
+	text-decoration: underline;
+}

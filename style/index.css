@@ -1,29 +1,51 @@
-p.is_ca {
-	margin: 20px 0 2px 0;
-	font-size: 120%;
+#header {
+	text-align: center;
 }
 
-p.is_ti {
-	margin: 10px 0 2px 20px;
+#di_search {
+	text-align: center;
 }
 
-div.is_de p {
-	margin: 0 0 0 40px;
+#di_search #in_search {
+	width: 200px;
+	padding: 5px;
+	position: relative;
+	left: 10px;
 }
 
-#issue_list a:link {
-	text-decoration: none;
-	color: gray;
+#di_search #im_search {
+	position: relative;
+	top: 10px;
+	left: 10px;
 }
 
-#issue_list a:visited {
-	color: gray;
+#di_quick {
+	margin-top: 20px;
+	text-align: center;
 }
 
-#issue_list a:hover {
-	text-decoration: underline;
+#di_quick img {
+	margin: 0 10px 0 10px;
 }
 
-#issue_list a:active {
-	text-decoration: underline;
+table#frames {
+	width: 60%;
+	margin-top: 10px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.round_border {
+	border: 1px solid gray;
+	border-radius: 8px;
+	width: 250px;
+	height: 150px;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 2px;
+}
+
+img.im_label {
+	display: block;
+	margin: 10px auto 6px auto;
 }

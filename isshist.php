@@ -55,9 +55,7 @@ if ($citizen->id) {
 ?>
 	</div>
 	<div id="header">
-		<h1>
-			<h1>Democranet</h1>
-		</h1>
+		<a href="index.php"><img src="img/democranet.png"></a>
 	</div>
 	<div id="container-content">
 		<div id="navigation-left">

@@ -1,10 +1,9 @@
 <?php
 
 include ("inc/util.mysql.php");
+include ("inc/util.democranet.php");
 
 define ("SITE_NAME", "Democranet");
-define ("PAGE_NAME", "Log in");
-define ("PAGE_URL", "login.php");
 
 if (isset($_GET['m']) && $_GET['m'] == "lo") {
 
@@ -56,7 +55,7 @@ echo DOC_TYPE;
 
 <head>
 	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
-	<title>Log in</title>
+	<title>Democranet: Log in</title>
 	<style type="text/css">
 
 #login_box {
@@ -95,14 +94,12 @@ echo DOC_TYPE;
 		<p><a href="login.php">Log in / create account</a></p>
 	</div>
 	<div id="header">
-		<h1>
-			<h1><?php echo SITE_NAME; ?></h1>
-		</h1>
+		<a href="index.php"><img src="img/democranet.png"></a>
 	</div>
 	<div id="container-content">
 		<div id="navigation-left">
 			<ul>
-				<li><a href="index.php">View All Issues</a></li>
+				<li><a href="issbrws.php">Browse Issues</a></li>
 				<li><a href="issue.php">Add New Issue</a></li>
 			</ul>
 		</div>

@@ -243,14 +243,12 @@ if ($citizen->id) {
 ?>
 	</div>
 	<div id="header">
-		<h1>
-			<h1>Democranet: Issue</h1>
-		</h1>
+		<a href="index.php"><img src="img/democranet.png"></a>
 	</div>
 	<div id="container-content">
 		<div id="navigation-left">
 			<ul>
-				<li><a href="index.php">View All Issues</a></li>
+				<li><a href="issbrws.php">Browse Issues</a></li>
 				<li><a href="issue.php?m=n">Add New Issue</a></li>
 				<li><a href="position.php?m=n&iid=<?php echo $issue->id; ?>">Add New Position</a></li>
 			</ul>

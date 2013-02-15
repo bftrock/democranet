@@ -161,14 +161,14 @@ echo "<p><a href=\"login.php\">Log in / Become a Citizen</a></p>";
 	</div>
 
 	<div id="header">
-		<h1>Citizen</h1>
+		<a href="index.php"><img src="img/democranet.png"></a>
 	</div>
 
 	<div id="container-content">
 
 		<div id="navigation-left">
 			<ul>
-				<li><a href="index.php">View All Issues</a></li>
+				<li><a href="issbrws.php">Browse Issues</a></li>
 				<li><a href="issue.php">Add New Issue</a></li>
 			</ul>
 		</div>
