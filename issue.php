@@ -82,7 +82,9 @@ echo DOC_TYPE;
 	<title>Democranet: Issue</title>
 	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
 	<link rel="stylesheet" type="text/css" href="style/issue.css" />
+	<link rel="stylesheet" type="text/css" href="style/jquery-ui.css">
 	<script src="js/jquery.js"></script>
+	<script src="js/jquery-ui.js"></script>
 	<script type="text/javascript">
 	
 <?php if ($mode == "e" || $mode == "n") { ?>
@@ -100,6 +102,18 @@ $(document).ready(function() {
 	$("#bu_delete").on("click", function () {
 		postRef('d');
 	})
+	$('#desc_help').dialog({ autoOpen: false });
+	$('#im_desc_help').click(function () {
+		$('#desc_help').dialog({width: 500});
+		$('#desc_help').dialog({modal: true});
+	    $('#desc_help').dialog('open');
+	});
+	$('#ref_help').dialog({ autoOpen: false });
+	$('#im_ref_help').click(function () {
+		$('#ref_help').dialog({width: 500});
+		$('#ref_help').dialog({modal: true});
+	    $('#ref_help').dialog('open');
+	});
 	updateCount();
 	displayRefs();
 	adjustRB();
@@ -259,9 +273,26 @@ if ($citizen->id) {
 	<form id="editIssue" method="post" action="<?php echo $submit_action; ?>">
 	<tr><th>Title:<input name="issue_id" id="issue_id" type="hidden" value="<?php echo $issue->id; ?>" /></th>
 		<td><input name="name" size="50" value="<?php echo $issue->name; ?>" /></td></tr>
-	<tr><th>Description:</th>
+	<tr>
+		<th>Description:<br><a href="JAVASCRIPT:$('#im_desc_help').click()"><img id="im_desc_help" alt="Description Help" src="img/help.png"></a></th>
 		<td><textarea name="description" id="description" rows="20" cols="106" data-maxChars="<?php echo ISS_DESC_MAXLEN; ?>"><?php echo $issue->description; ?></textarea>
-			<span class="counter">Character count: <span id="charNum"></span> / <?php echo ISS_DESC_MAXLEN; ?> maximum</span></td></tr>
+			<span class="counter">Character count: <span id="charNum"></span> / <?php echo ISS_DESC_MAXLEN; ?> maximum</span>
+			<div id="desc_help" title="Description Help">
+				<p>You can format the Description by entering
+				Markdown. For example, to use italics, enclose the text with the asterisk character. 
+				To use Heading 1, start the line with '#' character. To create an unordered list, 
+				start each line with an asterisk, plus or hyphen character. For a full description 
+				of the Markdown syntax, see 
+				<a href="http://daringfireball.net/projects/markdown/syntax" target="_blank">
+					http://daringfireball.net/projects/markdown/syntax</a>.
+				</p>
+				<p>The length of the Description field is deliberately limited to 3000 characters in
+				 	order to keep the issue description brief. References are used to provide 
+				 	additional detail and to improve the credibility of the statements.
+				</p>
+			</div>
+		</td>
+	</tr>
 	<tr><th>Categories:</th>
 		<td>
 			<select name="categories[]" id="categories" multiple="multiple" size="6">
@@ -271,7 +302,8 @@ if ($citizen->id) {
 	<tr><td></td><td>
 		<input type="submit" value="Save Issue" /><button id="cancelEdit">Cancel</button></td></tr>
 	</form>
-	<tr><th>References:</th>
+	<tr>
+		<th>References:<br><img id="im_ref_help" alt="Reference Help" src="img/help.png"></th>
 		<td>
 			<div id="divRB">
 				<div id="divInput">
@@ -301,6 +333,11 @@ if ($citizen->id) {
 				<button name="bu_add" id="bu_add">Add</button>
 				<button name="bu_delete" id="bu_delete">Delete</button>
 				<div id="divRefs"></div>
+				<div id="ref_help" title="Reference Help">To add a new reference, fill in the form 
+					and click Add. To modify a reference, select it by hovering over it with your
+					mouse and clicking. Make any edits with the form, and click Save. To delete a 
+					reference, select it and click Delete.
+				</div>
 			</div>
 		</td></tr>
 </table>
@@ -313,24 +350,7 @@ if ($citizen->id) {
 			<div id="divRefs"></div>
 			<button id="edit">Edit</button>
 			<a href="isshist.php?iid=<?php echo $issue->id; ?>">Show History</a>
-
-<!-- 			<table>
-				<tr><th>Title:</th>
-					<td>
-						<input type="hidden" id="issue_id" value="<?php echo $issue->id; ?>" /><?php echo $issue->name; ?>
-					</td>
-				</tr>
-				<tr><th>Description:</th><td><?php echo $issue->get_description(); ?></td></tr>
-				<tr><th>Categories:</th><td><?php echo display_categories($issue->get_categories(), 1); ?></td></tr>
-				<tr><th>References:</th><td><div id="divRefs"></div></td></tr>
-				<tr>
-					<td></td>
-					<td>
-						<button id="edit">Edit</button>
-						<a href="issue_history.php?iid=<?php echo $issue->id; ?>">Show History</a>
-					</td></tr>
-			</table>
- -->			<hr />
+			<hr>
 			<div id="positions"></div>
 <?php } ?>
 		</div>
