@@ -3,20 +3,18 @@
 }
 
 #di_search {
+	margin-top: 20px;
 	text-align: center;
 }
 
 #di_search #in_search {
+	position: relative;
+	top: -10px;
 	width: 200px;
 	padding: 5px;
-	position: relative;
-	left: 10px;
 }
 
 #di_search #im_search {
-	position: relative;
-	top: 10px;
-	left: 10px;
 }
 
 #di_quick {
@@ -26,6 +24,14 @@
 
 #di_quick img {
 	margin: 0 10px 0 10px;
+}
+
+#di_results p.name {
+	margin: 15px 0 0 0;
+}
+
+#di_results p.desc {
+	margin: 5px 0 0 20px;
 }
 
 table#frames {

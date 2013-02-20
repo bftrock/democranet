@@ -19,13 +19,10 @@ echo DOC_TYPE;
 	<title>Democranet</title>
 	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
 	<link rel="stylesheet" type="text/css" href="style/index.css" />
+	<link rel="stylesheet" type="text/css" href="style/jquery-ui.css">
 	<script src="js/jquery.js"></script>
-	<script type="text/javascript">
-
-$(document).ready(function() {
-	$('#di_issfol').load('ajax/index.issues.php');
-})
-	</script>
+	<script src="js/index.js"></script>
+	<script src="js/jquery-ui.js"></script>
 </head>
 
 <body>
@@ -49,48 +46,57 @@ if ($citizen->id) {
 		</div>
 
 		<div id="di_search">
+			<a href="JAVASCRIPT:$('#im_search_help').click()" ><img src="img/help.png" alt="Help" id="im_search_help"></a>
 			<input type="text" id="in_search"/>
-			<img src="img/search.png" id="im_search" alt="Search">
+			<a href="JAVASCRIPT:$('#im_search').click()"><img src="img/search.png" id="im_search" alt="Search"></a>
+			<div id="search_help" title="Search Help">To search in Issues, Positions and Actions, 
+				enter a search phrase and click Search. To limit the search scope, start the search
+				phrase with "issue:", "position:" or "action:". The results will be limited to the 
+				entity you've entered.</div>
 		</div>
 		
-		<div id="di_quick">
-			<a href="issbrws.php"><img src="img/browse.png" alt="Browse Issues By Category"></a>
-			<img src="img/find_candidates.png">
-			<img src="img/find_groups.png">
-		</div>
+		<div id="di_results">
 
-		<table id="frames">
-			<tr>
-				<td>
-					<img class="im_label" src="img/issues_following.png">
-					<div class="round_border" id="di_issfol"></div>
-				</td>
-				<td>
-					<img class="im_label" src="img/candidates_following.png">
-					<div class="round_border"></div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<img class="im_label" src="img/positions_following.png">
-					<div class="round_border"></div>
-				</td>
-				<td>
-					<img class="im_label" src="img/groups_belong.png">
-					<div class="round_border"></div>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<img class="im_label" src="img/actions_following.png">
-					<div class="round_border"></div>
-				</td>
-				<td>
-					<img class="im_label" src="img/compatriots.png">
-					<div class="round_border"></div>
-				</td>
-			</tr>
-		</table>
+			<div id="di_quick">
+				<a href="issbrws.php" id="a_browse"><img src="img/browse.png" id="im_browse" alt="Browse Issues By Category"></a>
+				<a href="#"><img src="img/find_candidates.png" id="im_find_candidates" alt="Find Similar Candidates"></a>
+				<a href="#"><img src="img/find_groups.png" id="im_find_groups" alt="Find Similar Groups"></a>
+			</div>
+
+			<table id="frames">
+				<tr>
+					<td>
+						<img class="im_label" src="img/issues_following.png">
+						<div class="round_border" id="di_issfol"></div>
+					</td>
+					<td>
+						<img class="im_label" src="img/candidates_following.png">
+						<div class="round_border"></div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<img class="im_label" src="img/positions_following.png">
+						<div class="round_border"></div>
+					</td>
+					<td>
+						<img class="im_label" src="img/groups_belong.png">
+						<div class="round_border"></div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<img class="im_label" src="img/actions_following.png">
+						<div class="round_border"></div>
+					</td>
+					<td>
+						<img class="im_label" src="img/compatriots.png">
+						<div class="round_border"></div>
+					</td>
+				</tr>
+			</table>
+
+		</div>
 
 	</div>
 </div>
