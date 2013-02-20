@@ -210,12 +210,12 @@ if ($citizen->id) {
 				</ul></td></tr>
 			</table>
 
-			<hr />
+			<hr>
 
 			<h4>Actions</h4>
 			<div id="actions"></div>
 
-			<hr />
+			<hr>
 
 			<h4>Comments</h4>
 			<button id="bu_add_comment">Add Comment</button><br />

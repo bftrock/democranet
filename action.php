@@ -7,7 +7,7 @@ require_once ("inc/util.mysql.php");
 require_once ("inc/util.democranet.php");
 require_once ("inc/class.citizen.php");
 require_once ("inc/class.action.php");
-require_once ("inc/ChromePhp.php");
+//require_once ("inc/ChromePhp.php");
 
 $db = open_db_connection();
 
@@ -225,7 +225,7 @@ if ($citizen->id) {
 					<li id="citizens_against"></li>
 				</ul></td></tr>
 			</table>
-			<hr />
+			<hr>
 			<h4>Comments</h4>
 			<button id="bu_add_comment">Add Comment</button><br />
 			<div id="new_comment">
