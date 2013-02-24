@@ -46,9 +46,9 @@ if ($citizen->id) {
 		</div>
 
 		<div id="di_search">
-			<a href="JAVASCRIPT:$('#im_search_help').click()" ><img src="img/help.png" alt="Help" id="im_search_help"></a>
+			<button id="bu_search_help"></button>
 			<input type="text" id="in_search"/>
-			<a href="JAVASCRIPT:$('#im_search').click()"><img src="img/search.png" id="im_search" alt="Search"></a>
+			<button id="bu_search"></button>
 			<div id="search_help" title="Search Help">To search in Issues, Positions and Actions, 
 				enter a search phrase and click Search. To limit the search scope, start the search
 				phrase with "issue:", "position:" or "action:". The results will be limited to the 
@@ -58,9 +58,9 @@ if ($citizen->id) {
 		<div id="di_results">
 
 			<div id="di_quick">
-				<a href="issbrws.php" id="a_browse"><img src="img/browse.png" id="im_browse" alt="Browse Issues By Category"></a>
-				<a href="#"><img src="img/find_candidates.png" id="im_find_candidates" alt="Find Similar Candidates"></a>
-				<a href="#"><img src="img/find_groups.png" id="im_find_groups" alt="Find Similar Groups"></a>
+				<button id="bu_browse"></button>
+				<button id="bu_find_candidates"></button>
+				<button id="bu_find_groups"></button>
 			</div>
 
 			<table id="frames">

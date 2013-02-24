@@ -7,14 +7,39 @@
 	text-align: center;
 }
 
+#di_search #bu_search_help {
+	width: 30px;
+	height: 30px;
+	border: 0;
+	margin: 0;
+	padding: 0;
+	background-repeat: no-repeat;
+	background-color: transparent;
+	background-image: url('../img/help.png');
+	cursor: pointer;
+	vertical-align: middle;
+}
+
 #di_search #in_search {
-	position: relative;
-	top: -10px;
 	width: 200px;
 	padding: 5px;
 }
 
-#di_search #im_search {
+#di_search #bu_search {
+	width: 80px;
+	height: 30px;
+	border: 0;
+	margin: 0;
+	padding: 0;
+	background-repeat: no-repeat;
+	background-color: transparent;
+	background-image: url('../img/search.png');
+	cursor: pointer;
+	vertical-align: middle;
+}
+
+#di_search #bu_search:hover {
+	background-image: url('../img/search1.png');
 }
 
 #di_quick {
@@ -22,8 +47,39 @@
 	text-align: center;
 }
 
-#di_quick img {
-	margin: 0 10px 0 10px;
+#di_quick button {
+	width: 112px;
+	height: 30px;
+	border: 0;
+	margin: 0 10px;
+	padding: 0;
+	background-repeat: no-repeat;
+	background-color: transparent;
+	cursor: pointer;
+}
+
+#di_quick #bu_browse {
+	background-image: url('../img/browse.png');
+}
+
+#di_quick #bu_browse:hover {
+	background-image: url('../img/browse1.png');
+}
+
+#di_quick #bu_find_candidates {
+	background-image: url('../img/find_candidates.png');
+}
+
+#di_quick #bu_find_candidates:hover {
+	background-image: url('../img/find_candidates1.png');
+}
+
+#di_quick #bu_find_groups {
+	background-image: url('../img/find_groups.png');
+}
+
+#di_quick #bu_find_groups:hover {
+	background-image: url('../img/find_groups1.png');
 }
 
 #di_results p.name {
