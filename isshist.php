@@ -34,10 +34,30 @@ echo DOC_TYPE;
 	<script src="js/jquery.js"></script>
 	<script type="text/javascript">
 
+$(document).ready(function () {
+	$('#dv_history').load('ajax/isshist.history.php', {iid: <?php echo $issue->id; ?>}, attachClick);
+})
+
+function attachClick() {
+	curPage = $('span#cp').text();
+	$('#bu_first').on('click', function () {
+		$('#dv_history').load('ajax/isshist.history.php', {iid: <?php echo $issue->id; ?>, cp: curPage, rp: 'f'}, attachClick);
+	})
+	$('#bu_previous').on('click', function () {
+		$('#dv_history').load('ajax/isshist.history.php', {iid: <?php echo $issue->id; ?>, cp: curPage, rp: 'p'}, attachClick);
+	})
+	$('#bu_next').on('click', function () {
+		$('#dv_history').load('ajax/isshist.history.php', {iid: <?php echo $issue->id; ?>, cp: curPage, rp: 'n'}, attachClick);
+	})
+	$('#bu_last').on('click', function () {
+		$('#dv_history').load('ajax/isshist.history.php', {iid: <?php echo $issue->id; ?>, cp: curPage, rp: 'l'}, attachClick);
+	})
+}
+
 function getVersion(ver) {
-	$('#version').load('ajax/issue.history.php', {iid: <?php echo $issue->id; ?>, v: ver});
-	$('table#history td.nb').empty();
-	$('table#history td#td' + ver).html('<img src="img/select.jpg" />');
+	$('#dv_version').load('ajax/isshist.version.php', {iid: <?php echo $issue->id; ?>, v: ver});
+	$('table#tb_history td.nb').empty();
+	$('table#tb_history td#td' + ver).html('<img src="img/select.png">');
 }
 
 	</script>
@@ -66,15 +86,8 @@ if ($citizen->id) {
 		<div id="content">
 			<h3>Issue History</h3>
 			<p>Click timestamp to view content and see differences with previous version</p>
-			<table id="history">
-				<tr><td class="nb"></td><th>Timestamp</th><th>Citizen</th><th>Title</th></tr>
-<?php
-foreach ($issue_history as $line) {
-	echo "<tr><td class=\"nb\" id=\"td{$line['version']}\"></td><td><a href=\"JAVASCRIPT:getVersion({$line['version']})\">{$line['ts']}</a></td><td>{$line['first_name']} {$line['last_name']}</td><td>{$line['issue_name']}</td></tr>\n";
-}
-?>
-			</table>
-			<div id="version"></div>
+			<div id="dv_history"></div>
+			<div id="dv_version"></div>
 		</div>
 	</div>
 </div>

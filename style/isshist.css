@@ -1,15 +1,78 @@
-table#history, table#history th, table#history td {
+table#tb_history {
+	min-width: 500px;
+}
+
+table#tb_history, table#tb_history th, table#tb_history td {
 	padding: 2px;
 	border-collapse: collapse;
 }
 
-table#history th, table#history td {
+table#tb_history th, table#tb_history td {
 	border: 1px solid gray;
 }
 
-table#history td.nb {
+table#tb_history td.nb {
 	border: none;
-	min-width: 15px;
+	width: 15px;
+}
+
+table#tb_history div#di_loc, table#tb_history div#di_chgpag {
+	line-height: 22px;
+	white-space: nowrap;
+	padding: 0 5px;
+}
+
+table#tb_history div#di_chgpag {
+	float: left;
+}
+
+table#tb_history div#di_loc {
+	float: right;
+}
+
+table#tb_history button.page_button {
+	width: 22px;
+	height: 22px;
+	border: 0;
+	margin: 0;
+	padding: 0;
+	background-repeat: no-repeat;
+	background-color: transparent;
+	background-image: url('../img/imgres.png');
+	cursor: pointer;
+	vertical-align: middle;
+}
+
+table#tb_history button#bu_first {
+	background-position: 0 -550px;
+}
+
+table#tb_history button#bu_first:hover {
+	background-position: 0 -600px;
+}
+
+table#tb_history button#bu_previous {
+	background-position: 0 -700px;
+}
+
+table#tb_history button#bu_previous:hover {
+	background-position: 0 -750px;
+}
+
+table#tb_history button#bu_next {
+	background-position: 0 -850px;
+}
+
+table#tb_history button#bu_next:hover {
+	background-position: 0 -900px;
+}
+
+table#tb_history button#bu_last {
+	background-position: 0 -1000px;
+}
+
+table#tb_history button#bu_last:hover {
+	background-position: 0 -1050px;
 }
 
 table#diffs {
