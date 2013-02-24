@@ -152,22 +152,22 @@ function adjustRB() {
 
 	var selectedType = $("#rb_type option:selected").val();
 	switch (selectedType) {
-		case '<?php REF_TYPE_BOOK; ?>':
+		case '<?php echo REF_TYPE_BOOK; ?>':
 			$("#sp_isbn").show();
 			$("#sp_location").show();
 			$("#sp_page").show();
 			$("#sp_volume").hide();
 			$("#sp_number").hide();
 			break;
-		case '<?php REF_TYPE_JOURNAL; ?>':
+		case '<?php echo REF_TYPE_JOURNAL; ?>':
 			$("#sp_isbn").hide();
 			$("#sp_location").hide();
 			$("#sp_page").show();
 			$("#sp_volume").show();
 			$("#sp_number").show();
 			break;
-		case '<?php REF_TYPE_WEB; ?>':
-		case '<?php REF_TYPE_NEWS; ?>':
+		case '<?php echo REF_TYPE_WEB; ?>':
+		case '<?php echo REF_TYPE_NEWS; ?>':
 		default:
 			$("#sp_isbn").hide();
 			$("#sp_location").hide();
