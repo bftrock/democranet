@@ -5,9 +5,18 @@ include ("../inc/util.democranet.php");
 
 $db = open_db_connection();
 
-$issue_id = $_REQUEST['iid'];
+if (check_field('tid', $_REQUEST)) {
+	$type_id = $_REQUEST['tid'];
+} else {
+	die("Error: Type ID parameter (tid) must be passed.");
+}
+if (check_field('t', $_REQUEST)) {
+	$type = $_REQUEST['t'];
+} else {
+	die("Error: Type parameter (t) must be passed.");
+}
 
-$sql = "SELECT * FROM refs WHERE issue_id = '{$issue_id}'";
+$sql = "SELECT * FROM refs WHERE type = '{$type}' AND type_id = '{$type_id}'";
 $result = execute_query($sql);
 $ref_arr = array();
 while($line = fetch_line($result)) {
@@ -23,9 +32,9 @@ function get_formatted_refs($ref_arr) {
 	$index = 0;
 	foreach($ref_arr as $ref) {
 		$index++;
-		$type = $ref['type'];
+		$ref_type = $ref['ref_type'];
 		$h .= "<p class=\"ref\"><span class=\"hidden\">{$ref['ref_id']}</span>{$index}. ";
-		switch ($type) {
+		switch ($ref_type) {
 			case REF_TYPE_WEB:
 			case REF_TYPE_NEWS:
 				if (check_field('author', $ref)) {

@@ -7,27 +7,34 @@ include ("../inc/util.democranet.php");
 
 $db = open_db_connection();
 
-$action = $_REQUEST['a'];
-//debug("action = {$action}");
-$fields = array('type','title','author','publisher','url','date','isbn','location','page','volume',
-	'number','issue_id');
+if (check_field('a', $_REQUEST)) {
+	$action = $_REQUEST['a'];
+} else {
+	die("Error: the Action parameter (a) must be passed.");
+}
+if (check_field('ref_id', $_REQUEST)) {
+	$reference_id = $_REQUEST['ref_id'];
+}
+
+$fields = array('ref_type','title','author','publisher','url','date','isbn','location','page',
+	'volume','number','type','type_id');
 
 switch ($action) {
 
 	case "r":	// read a single reference record
 
-		$sql = "SELECT * FROM refs WHERE ref_id = '{$_REQUEST['ref_id']}'";
+		$sql = "SELECT * FROM refs WHERE ref_id = '{$reference_id}'";
 		$result = execute_query($sql);
 		$line = fetch_line($result);
 		$json = json_encode($line);
+		debug($json);
 		break;
 
 	case "u":	// update a reference record
 
-		$sql = "UPDATE refs SET " . build_sql($fields) . " WHERE ref_id = '{$_REQUEST['ref_id']}'";
-		//debug(safe_sql($sql));
+		$sql = "UPDATE refs SET " . build_sql($fields) . " WHERE ref_id = '{$reference_id}'";
 		execute_query($sql);
-		$sql = "SELECT * FROM refs WHERE ref_id = '{$_REQUEST['ref_id']}'";
+		$sql = "SELECT * FROM refs WHERE ref_id = '{$reference_id}'";
 		$result = execute_query($sql);
 		$line = fetch_line($result);
 		$json = json_encode($line);
@@ -36,24 +43,22 @@ switch ($action) {
 	case "i":	// insert a new reference record
 
 		$sql = "INSERT refs SET " . build_sql($fields);
-		//debug(safe_sql($sql));
 		execute_query($sql);
-		$ref_id = get_insert_id();
-		$sql = "SELECT * FROM refs WHERE ref_id = '{$ref_id}'";
+		$reference_id = get_insert_id();
+		$sql = "SELECT * FROM refs WHERE ref_id = '{$reference_id}'";
 		$result = execute_query($sql);
 		$line = fetch_line($result);
 		$json = json_encode($line);
 		break;
 
 	case "d":	// delete a reference record
-		$sql = "DELETE FROM refs WHERE ref_id = '{$_REQUEST['ref_id']}'";
+		$sql = "DELETE FROM refs WHERE ref_id = '{$reference_id}'";
 		execute_query($sql);
-		$json = "{\"type\":1,\"title\":\"\",\"author\":\"\"}";
+		$json = "{\"ref_type\":1,\"title\":\"\",\"author\":\"\"}";
 		break;
 
 }
 
-//debug($json);
 echo $json;
 
 function build_sql($fields) {

@@ -92,7 +92,7 @@ echo DOC_TYPE;
 $(document).ready(function() {
 	$("#description").on("keyup blur", updateCount);
 	$("#cancelEdit").on("click", cancelEdit);
-	$("#rb_type").on("change", adjustRB);
+	$("#rb_ref_type").on("change", adjustRB);
 	$("#bu_add").on("click", function () {
 		postRef('i');
 	});
@@ -130,7 +130,7 @@ function updateCount() {
 function displayRefs() {
 
 	var issue_id = $("#issue_id").val();
-	$.post("ajax/issue.reflist.php", {iid: issue_id}, function(data) {
+	$.post("ajax/issue.reflist.php", {t: 'i', tid: issue_id}, function(data) {
 		$("#divRefs").html(data);
 		$("#divRefs p.ref").on({
 			mouseenter: function () {
@@ -141,7 +141,7 @@ function displayRefs() {
 			},
 			click: function () {
 				var id = $(this).find('span.hidden').text();
-				$.getJSON('ajax/issue.ref.php', {"a": "r", "ref_id": id}, loadRB);
+				$.getJSON('ajax/issue.ref.php', {a: "r", ref_id: id}, loadRB);
 			}
 		});
 	}, 'html')
@@ -150,7 +150,7 @@ function displayRefs() {
 
 function adjustRB() {
 
-	var selectedType = $("#rb_type option:selected").val();
+	var selectedType = $("#rb_ref_type option:selected").val();
 	switch (selectedType) {
 		case '<?php echo REF_TYPE_BOOK; ?>':
 			$("#sp_isbn").show();
@@ -226,7 +226,7 @@ $(document).ready(function() {
 function displayRefs() {
 
 	var issue_id = $("#issue_id").val();
-	$.post("ajax/issue.reflist.php", {iid: issue_id}, function(data) {
+	$.post("ajax/issue.reflist.php", {t: 'i', tid: issue_id}, function(data) {
 		$("#divRefs").html(data);
 	}, 'html')
 
@@ -308,10 +308,11 @@ if ($citizen->id) {
 			<div id="divRB">
 				<div id="divInput">
 					<span id="sp_ref_id"><input type="hidden" name="rb_ref_id" id="rb_ref_id"/></span>
-					<span id="sp_issue_id"><input type="hidden" name="rb_issue_id" id="rb_issue_id" value="<?php echo $issue->id; ?>"/></span>
-					<span id="sp_type">
-						<label for="rb_type">Reference Type:</label>
-						<select name="rb_type" id="rb_type">
+					<span id="sp_typ_id"><input type="hidden" name="rb_type_id" id="rb_type_id" value="<?php echo $issue->id; ?>"/></span>
+					<span id="sp_type"><input type="hidden" name="rb_type" id="rb_type" value="i"/></span>
+					<span id="sp_ref_type">
+						<label for="rb_ref_type">Reference Type:</label>
+						<select name="rb_ref_type" id="rb_ref_type">
 							<option value="<?php echo REF_TYPE_WEB; ?>">Web</option>
 							<option value="<?php echo REF_TYPE_BOOK; ?>">Book</option>
 							<option value="<?php echo REF_TYPE_NEWS; ?>">News</option>
