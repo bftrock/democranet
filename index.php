@@ -25,6 +25,7 @@ echo DOC_TYPE;
     <meta name="description" content="">
     <meta name="HandheldFriendly" content="True">
 	<meta name="viewport" content="initial-scale=1.0, width=device-width" />
+	<link href='http://fonts.googleapis.com/css?family=Dosis:400,600|Quattrocento+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="/style/bootstrap-responsive.css" />
 	<link rel="stylesheet" type="text/css" href="/style/jquery-ui.css">
 	<link rel="stylesheet" type="text/css" href="/style/index.css" />
@@ -49,7 +50,7 @@ if ($citizen->id) {
 	<div id="container-content">
 
 		<div id="header">
-			<a href="index.php"><img src="img/democranet.png"></a>
+			<h1><a href="/index.php">Democra.net</a></h1>
 		</div>
 
 		<div id="di_search">
@@ -111,8 +112,8 @@ if ($citizen->id) {
         <script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
 	<script src="/js/index.js"></script>
 	<script src="/js/jquery-ui.js"></script>
-	<script src="js/vendor/bootstrap.js"></script>
-	<script src="js/main.js"></script>
+	<script src="/js/vendor/bootstrap.js"></script>
+	<script src="/js/main.js"></script>
 	<script>
             var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
             (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];

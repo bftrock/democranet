@@ -43,34 +43,34 @@ if ($mode == "r" || $mode == "e") {
 $position = new position();
 $position->load($source);
 
- 
+
 switch ($mode) {
-	
+
 	case "i":	// insert newly created position and reload page
-	
+
 		$position->insert();
 		header("Location:position.php?m=r&pid={$position->id}");
 		break;
-		
+
 	case "u":	// update edited position and reload page
-	
+
 		$position->update();
 		header("Location:position.php?m=r&pid={$position->id}");
 		break;
-		
+
 	case "e":	// edit existing position
-	
+
 		$submit_action = "position.php?m=u";
 		break;
-		
+
 	case "n":	// create new position
-	
+
 		$submit_action = "position.php?m=i";
 		break;
-		
+
 	case "r":	// display position specified in query string in read-only mode
 	default:
-	
+
 		if ($citizen->id) {
 			$position->get_vote($citizen->id);
 			$vote = $position->vote;
@@ -94,62 +94,17 @@ echo DOC_TYPE;
 
 <head>
 	<title>Democranet: Position</title>
-	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
-	<link rel="stylesheet" type="text/css" href="style/position.css" />
-	<script src="js/jquery.js"></script>
-	<script type="text/javascript">
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="description" content="">
+    <meta name="HandheldFriendly" content="True">
+	<meta name="viewport" content="initial-scale=1.0, width=device-width" />
+	<link href='http://fonts.googleapis.com/css?family=Dosis:400,600|Quattrocento+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="/style/bootstrap-responsive.css" />
+	<link rel="stylesheet" type="text/css" href="/style/democranet.css" />
+	<link rel="stylesheet" type="text/css" href="/style/position.css" />
+	<script src="/js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
 
-function setVote(vote) {
-	$.post('ajax/position.vote.php', {pid: <?php echo $position->id; ?>, vo: vote}, updateVoteFields, 'json');
-}
-
-function updateVoteFields(data) {
-	var j = data;
-<?php if ($citizen->id) { ?>
-	var v = j.vote;
-	if (v == 1) {
-		$('#your_vote').html('<img src="img/for.png"/>');
-	} else if (v == 2) {
-		$('#your_vote').html('<img src="img/against.png"/>');
-	} else {
-		$('#your_vote').html('(none)');
-	}
-<?php } ?>
-	$('#citizens_for').html(j.for);
-	$('#citizens_against').html(j.against);
-}
-
-$(document).ready(function () {
-<?php if ($mode == "r") { ?>
-	$.post('ajax/position.vote.php', {pid: <?php echo $position->id; ?>}, updateVoteFields, 'json');
-	$('#actions').load('ajax/position.actions.php', {pid: <?php echo $position->id; ?>});
-	$('#comments').load('ajax/position.comments.php', {pid: <?php echo $position->id; ?>});
-	$('#bu_edit_pos').click(function () {
-		window.location.assign('position.php?m=e&pid=<?php echo $position->id; ?>');
-	});
-	$('#bu_add_comment').click(function () {
-		$('#new_comment').show();
-	});
-	$('#bu_save_comment').click(function () {
-		$('#comments').load(
-			'ajax/position.comments.php', 
-			{co: $('#comment').val(), pid: <?php echo $position->id; ?>}
-		);
-		$('#comment').val('');
-		$('#new_comment').hide();
-	});
-	$('#bu_cancel_comment').click(function () {
-		$('#comment').val('');
-		$('#new_comment').hide();
-	});
-<?php } ?>
-	$('#bu_cancel_pos').click(function () {
-		window.location.assign('position.php?m=r&pid=<?php echo $position->id; ?>');
-		return false;
-	});
-})
-
-	</script>
 </head>
 
 <body>
@@ -165,7 +120,7 @@ if ($citizen->id) {
 ?>
 	</div>
 	<div id="header">
-		<a href="index.php"><img src="img/democranet.png"></a>
+		<h1><a href="/index.php">Democra.net</a></h1>
 	</div>
 	<div id="container-content">
 		<div id="navigation-left">
@@ -229,6 +184,70 @@ if ($citizen->id) {
 		</div>
 	</div>
 </div>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+	<script src="/js/index.js"></script>
+	<script src="/js/jquery-ui.js"></script>
+	<script src="/js/vendor/bootstrap.js"></script>
+	<script src="/js/main.js"></script>
+	<script type="text/javascript">
 
+function setVote(vote) {
+	$.post('ajax/position.vote.php', {pid: <?php echo $position->id; ?>, vo: vote}, updateVoteFields, 'json');
+}
+
+function updateVoteFields(data) {
+	var j = data;
+<?php if ($citizen->id) { ?>
+	var v = j.vote;
+	if (v == 1) {
+		$('#your_vote').html('<img src="img/for.png"/>');
+	} else if (v == 2) {
+		$('#your_vote').html('<img src="img/against.png"/>');
+	} else {
+		$('#your_vote').html('(none)');
+	}
+<?php } ?>
+	$('#citizens_for').html(j.for);
+	$('#citizens_against').html(j.against);
+}
+
+$(document).ready(function () {
+<?php if ($mode == "r") { ?>
+	$.post('ajax/position.vote.php', {pid: <?php echo $position->id; ?>}, updateVoteFields, 'json');
+	$('#actions').load('ajax/position.actions.php', {pid: <?php echo $position->id; ?>});
+	$('#comments').load('ajax/position.comments.php', {pid: <?php echo $position->id; ?>});
+	$('#bu_edit_pos').click(function () {
+		window.location.assign('position.php?m=e&pid=<?php echo $position->id; ?>');
+	});
+	$('#bu_add_comment').click(function () {
+		$('#new_comment').show();
+	});
+	$('#bu_save_comment').click(function () {
+		$('#comments').load(
+			'ajax/position.comments.php',
+			{co: $('#comment').val(), pid: <?php echo $position->id; ?>}
+		);
+		$('#comment').val('');
+		$('#new_comment').hide();
+	});
+	$('#bu_cancel_comment').click(function () {
+		$('#comment').val('');
+		$('#new_comment').hide();
+	});
+<?php } ?>
+	$('#bu_cancel_pos').click(function () {
+		window.location.assign('position.php?m=r&pid=<?php echo $position->id; ?>');
+		return false;
+	});
+})
+
+	</script>
+	<script>
+            var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
 </body>
 </html>

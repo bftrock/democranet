@@ -25,9 +25,17 @@ echo DOC_TYPE;
 <html>
 
 <head>
-	<title>Democranet</title>
-	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
-	<link rel="stylesheet" type="text/css" href="style/issbrws.css" />
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Democranet</title>
+    <meta name="description" content="">
+    <meta name="HandheldFriendly" content="True">
+	<meta name="viewport" content="initial-scale=1.0, width=device-width" />
+	<link href='http://fonts.googleapis.com/css?family=Dosis:400,600|Quattrocento+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="/style/bootstrap-responsive.css" />
+	<link rel="stylesheet" type="text/css" href="/style/democranet.css" />
+	<link rel="stylesheet" type="text/css" href="/style/issbrws.css" />
+	<script src="/js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
 </head>
 
 <body>
@@ -43,7 +51,7 @@ if ($citizen->id) {
 ?>
 	</div>
 	<div id="header">
-		<a href="index.php"><img src="img/democranet.png"></a>
+		<h1><a href="/index.php">Democra.net</a></h1>
 	</div>
 	<div id="container-content">
 		<div id="navigation-left">
@@ -57,7 +65,18 @@ if ($citizen->id) {
 		</div>
 	</div>
 </div>
-
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+	<script src="/js/index.js"></script>
+	<script src="/js/jquery-ui.js"></script>
+	<script src="/js/vendor/bootstrap.js"></script>
+	<script src="/js/main.js"></script>
+	<script>
+            var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
 </body>
 </html>
 
@@ -68,9 +87,9 @@ function get_issue_list() {
 
 	$ret = "<div id=\"issue_list\">";
 	$sql = "SELECT c.name category_name, i.issue_id issue_id, i.name issue_name, CONCAT(LEFT(i.description, 270), '...') issue_description
-		FROM issues i 
-		LEFT JOIN issue_category ic ON i.issue_id = ic.issue_id 
-		LEFT JOIN categories c ON ic.category_id = c.category_id 
+		FROM issues i
+		LEFT JOIN issue_category ic ON i.issue_id = ic.issue_id
+		LEFT JOIN categories c ON ic.category_id = c.category_id
 		WHERE i.version = (SELECT MAX(version) version FROM issues WHERE issue_id = i.issue_id)
 		ORDER BY c.name ASC";
 	$result = execute_query($sql);
@@ -88,7 +107,7 @@ function get_issue_list() {
 	}
 	$ret .= "</div>";
 	return $ret;
-	
+
 }
 
 ?>
