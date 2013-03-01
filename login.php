@@ -24,9 +24,9 @@ if (isset($_GET['m']) && $_GET['m'] == "lo") {
 
 	// Finally, destroy the session.
 	session_destroy();
-	
+
 	header("Location: {$_GET['r']}");
-	
+
 }
 
 $db = open_db_connection();
@@ -54,10 +54,21 @@ echo DOC_TYPE;
 <html>
 
 <head>
-	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
-	<title>Democranet: Log in</title>
-	<style type="text/css">
 
+	<title>Democranet: Log in</title>
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Democranet</title>
+    <meta name="description" content="">
+    <meta name="HandheldFriendly" content="True">
+	<meta name="viewport" content="initial-scale=1.0, width=device-width" />
+	<link href='http://fonts.googleapis.com/css?family=Dosis:400,600|Quattrocento+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="/style/bootstrap-responsive.css" />
+    <link rel="stylesheet" type="text/css" href="/style/democranet.css" />
+	<script src="/js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+
+
+	<style type="text/css">
 #login_box {
 	background: #f9f9f9;
 	border-style: solid;
@@ -83,18 +94,17 @@ echo DOC_TYPE;
 }
 
 	</style>
-	<script type="text/javascript">
-	</script>
+
 </head>
 
 <body>
-	
+
 <div id="container">
 	<div id="login">
 		<p><a href="login.php">Log in / create account</a></p>
 	</div>
 	<div id="header">
-		<a href="index.php"><img src="img/democranet.png"></a>
+		<h1><a href="/index.php">Democra.net</a></h1>
 	</div>
 	<div id="container-content">
 		<div id="navigation-left">
@@ -121,7 +131,18 @@ echo DOC_TYPE;
 		</div>
 	</div>
 </div>
-
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+	<script src="/js/index.js"></script>
+	<script src="/js/jquery-ui.js"></script>
+	<script src="/js/vendor/bootstrap.js"></script>
+	<script src="/js/main.js"></script>
+	<script>
+            var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
 </body>
 
 </html>
