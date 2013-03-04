@@ -1,6 +1,6 @@
 <?php
 
-define ("DOC_TYPE", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\n");
+define ("DOC_TYPE", "<!DOCTYPE html>\n");
 
 define ("VOTE_FOR", 1);
 define ("VOTE_AGAINST", 2);
@@ -28,18 +28,18 @@ function check_field($field_name, $arr) {
 	Paul's Simple Diff Algorithm v 0.1
 	(C) Paul Butler 2007 <http://www.paulbutler.org/>
 	May be used and distributed under the zlib/libpng license.
-	
+
 	This code is intended for learning purposes; it was written with short
 	code taking priority over performance. It could be used in a practical
 	application, but there are a few ways it could be optimized.
-	
+
 	Given two arrays, the function diff will return an array of the changes.
 	I won't describe the format of the array, but it will be obvious
 	if you use print_r() on the result of a diff on some test data.
-	
+
 	htmlDiff is a wrapper for the diff command, it takes two strings and
 	returns the differences in HTML. The tags used are <ins> and <del>,
-	which can easily be styled with CSS.  
+	which can easily be styled with CSS.
 */
 
 function diff($old, $new){
@@ -55,7 +55,7 @@ function diff($old, $new){
 				$omax = $oindex + 1 - $maxlen;
 				$nmax = $nindex + 1 - $maxlen;
 			}
-		}	
+		}
 	}
 	if($maxlen == 0) return array(array('d'=>$old, 'i'=>$new));
 	return array_merge(
