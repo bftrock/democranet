@@ -35,10 +35,10 @@ echo DOC_TYPE;
     <meta name="HandheldFriendly" content="True">
 	<meta name="viewport" content="initial-scale=1.0, width=device-width" />
 	<link href='http://fonts.googleapis.com/css?family=Dosis:400,600|Quattrocento+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="/style/bootstrap-responsive.css" />
-	<link rel="stylesheet" type="text/css" href="/style/democranet.css" />
-	<link rel="stylesheet" type="text/css" href="/style/isshist.css" />
-	<script src="/js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style/bootstrap-responsive.css" />
+	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
+	<link rel="stylesheet" type="text/css" href="style/isshist.css" />
+	<script src="js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
 
 
 </head>
@@ -71,11 +71,11 @@ if ($citizen->id) {
 	</div>
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
-	<script src="/js/index.js"></script>
-	<script src="/js/jquery-ui.js"></script>
-	<script src="/js/vendor/bootstrap.js"></script>
-	<script src="/js/main.js"></script>
+        <script>window.jQuery || document.write('<script src="js/jquery.js"><\/script>')</script>
+	<script src="js/index.js"></script>
+	<script src="js/jquery-ui.js"></script>
+	<script src="js/vendor/bootstrap.js"></script>
+	<script src="js/main.js"></script>
 	<script type="text/javascript">
 
 $(document).ready(function () {

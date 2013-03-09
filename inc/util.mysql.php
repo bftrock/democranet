@@ -2,7 +2,7 @@
 
 define ("DB_HOST", "localhost");
 define ("DB_UNAME", "root");
-define ("DB_PWD", "yarm95");
+define ("DB_PWD", "");
 define ("DB_NAME", "democranet");
 
 // Opens a connection to the database and returns a link.
