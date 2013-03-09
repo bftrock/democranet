@@ -97,30 +97,115 @@ echo DOC_TYPE;
 	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
 	<link rel="stylesheet" type="text/css" href="style/position.css" />
 	<script src="js/jquery.js"></script>
+	<script src="js/jquery-ui.js"></script>
 	<script type="text/javascript">
 
-function setVote(vote) {
-	$.post('ajax/position.vote.php', {pid: <?php echo $position->id; ?>, vo: vote}, updateVoteFields, 'json');
-}
-
-function updateVoteFields(data) {
-	var j = data;
-<?php if ($citizen->id) { ?>
-	var v = j.vote;
-	if (v == 1) {
-		$('#your_vote').html('<img src="img/for.png"/>');
-	} else if (v == 2) {
-		$('#your_vote').html('<img src="img/against.png"/>');
-	} else {
-		$('#your_vote').html('(none)');
-	}
-<?php } ?>
-	$('#citizens_for').html(j.for);
-	$('#citizens_against').html(j.against);
-}
+<?php if ($mode == "e" || $mode == "n") { ?>
 
 $(document).ready(function () {
-<?php if ($mode == "r") { ?>
+	$('#bu_cancel_pos').click(function () {
+		window.location.assign('position.php?m=r&pid=<?php echo $position->id; ?>');
+		return false;
+	});
+	$("#rb_ref_type").on("change", adjustRB);
+	$("#bu_add").on("click", function () {
+		postRef('i');
+	});
+	$("#bu_save").on("click", function () {
+		postRef('u');
+	});
+	$("#bu_delete").on("click", function () {
+		postRef('d');
+	})
+	$('#ref_help').dialog({ autoOpen: false });
+	$('#im_ref_help').click(function () {
+		$('#ref_help').dialog({width: 500});
+		$('#ref_help').dialog({modal: true});
+	    $('#ref_help').dialog('open');
+	});
+	displayRefs();
+	adjustRB();
+})
+
+function displayRefs() {
+
+	var type_id = $("#position_id").val();
+	$.post("ajax/issue.reflist.php", {t: 'i', tid: type_id}, function(data) {
+		$("#divRefs").html(data);
+		$("#divRefs p.ref").on({
+			mouseenter: function () {
+				$(this).addClass("highlight");
+			},
+			mouseleave: function () {
+				$(this).removeClass("highlight");
+			},
+			click: function () {
+				var id = $(this).find('span.hidden').text();
+				$.getJSON('ajax/issue.ref.php', {a: "r", ref_id: id}, loadRB);
+			}
+		});
+	}, 'html')
+
+}
+
+function adjustRB() {
+
+	var selectedType = $("#rb_ref_type option:selected").val();
+	switch (selectedType) {
+		case '<?php echo REF_TYPE_BOOK; ?>':
+			$("#sp_isbn").show();
+			$("#sp_location").show();
+			$("#sp_page").show();
+			$("#sp_volume").hide();
+			$("#sp_number").hide();
+			break;
+		case '<?php echo REF_TYPE_JOURNAL; ?>':
+			$("#sp_isbn").hide();
+			$("#sp_location").hide();
+			$("#sp_page").show();
+			$("#sp_volume").show();
+			$("#sp_number").show();
+			break;
+		case '<?php echo REF_TYPE_WEB; ?>':
+		case '<?php echo REF_TYPE_NEWS; ?>':
+		default:
+			$("#sp_isbn").hide();
+			$("#sp_location").hide();
+			$("#sp_page").hide();
+			$("#sp_volume").hide();
+			$("#sp_number").hide();
+			break;
+	}
+
+}
+
+function loadRB(data) {
+
+	$.each(data, function (ref_key, ref_val) {
+		$("#rb_" + ref_key).val(ref_val);
+	})
+	adjustRB();
+
+}
+
+function postRef(mode) {
+
+	var ref = '';
+	if (mode == 'd') {
+		ref = 'ref_id=' + $("#rb_ref_id").val();
+	} else {
+		$("#divInput :input").each(function (i) {
+			ref += $(this).attr('name').substr(3) + '=' + encodeURI($(this).val()) + '&';
+		})
+	}
+	$.ajax("ajax/issue.ref.php?a=" + mode, {data: ref, type: "post", success: loadRB, async: false, dataType: "json"})
+	displayRefs();
+
+}
+
+<?php } else { ?>
+
+$(document).ready(function () {
 	$.post('ajax/position.vote.php', {pid: <?php echo $position->id; ?>}, updateVoteFields, 'json');
 	$('#actions').load('ajax/position.actions.php', {pid: <?php echo $position->id; ?>});
 	$('#comments').load('ajax/position.comments.php', {pid: <?php echo $position->id; ?>});
@@ -142,12 +227,29 @@ $(document).ready(function () {
 		$('#comment').val('');
 		$('#new_comment').hide();
 	});
-<?php } ?>
-	$('#bu_cancel_pos').click(function () {
-		window.location.assign('position.php?m=r&pid=<?php echo $position->id; ?>');
-		return false;
-	});
 })
+
+function setVote(vote) {
+	$.post('ajax/position.vote.php', {pid: <?php echo $position->id; ?>, vo: vote}, updateVoteFields, 'json');
+}
+
+function updateVoteFields(data) {
+	var j = data;
+<?php if ($citizen->id) { ?>
+	var v = j.vote;
+	if (v == 1) {
+		$('#your_vote').html('<img src="img/for.png"/>');
+	} else if (v == 2) {
+		$('#your_vote').html('<img src="img/against.png"/>');
+	} else {
+		$('#your_vote').html('(none)');
+	}
+<?php } ?>
+	$('#citizens_for').html(j.for);
+	$('#citizens_against').html(j.against);
+}
+
+<?php } ?>
 
 	</script>
 </head>
@@ -168,6 +270,7 @@ if ($citizen->id) {
 		<a href="index.php"><img src="img/democranet.png"></a>
 	</div>
 	<div id="container-content">
+
 		<div id="navigation-left">
 			<ul>
 <?php if (isset($position->issue_id)) { ?>
@@ -177,39 +280,79 @@ if ($citizen->id) {
 				<li><a href="action.php?m=n&pid=<?php echo $position->id; ?>">Add New Action</a></li>
 			</ul>
 		</div>
+
 		<div id="content">
 			<h3>Position</h3>
 <?php if ($mode == "e" || $mode == "n") { ?>
 			<form method="post" action="<?php echo $submit_action; ?>"><table>
 				<tr><th>Position:
-						<input name="position_id" type="hidden" value="<?php echo $position->id; ?>" />
-						<input name="issue_id" type="hidden" value="<?php echo $position->issue_id; ?>" />
+						<input name="position_id" id="position_id" type="hidden" value="<?php echo $position->id; ?>" />
 					</th>
 					<td><input name="name" size="100" value="<?php echo $position->name; ?>" /></td></tr>
 				<tr><th>Justification:</th><td><textarea name="justification" rows="15" cols="90"><?php echo $position->justification; ?></textarea></td></tr>
 				<tr><td></td><td><input type="submit" value="Save" /><button id="bu_cancel_pos">Cancel</button></td></tr>
+				<tr>
+					<th>References:<br><img id="im_ref_help" alt="Reference Help" src="img/help.png"></th>
+					<td>
+						<div id="divRB">
+							<div id="divInput">
+								<span id="sp_ref_id"><input type="hidden" name="rb_ref_id" id="rb_ref_id"/></span>
+								<span id="sp_typ_id"><input type="hidden" name="rb_type_id" id="rb_type_id" value="<?php echo $position->id; ?>"/></span>
+								<span id="sp_type"><input type="hidden" name="rb_type" id="rb_type" value="i"/></span>
+								<span id="sp_ref_type">
+									<label for="rb_ref_type">Reference Type:</label>
+									<select name="rb_ref_type" id="rb_ref_type">
+										<option value="<?php echo REF_TYPE_WEB; ?>">Web</option>
+										<option value="<?php echo REF_TYPE_BOOK; ?>">Book</option>
+										<option value="<?php echo REF_TYPE_NEWS; ?>">News</option>
+										<option value="<?php echo REF_TYPE_JOURNAL; ?>">Journal</option>
+									</select>
+								</span>
+								<span id="sp_author"><label for="rb_author">Author:</label><input type="text" name="rb_author" id="rb_author" /></span>
+								<span id="sp_title"><label for="rb_title">Title:</label><input type="text" name="rb_title" id="rb_title" size="70" /></span><br>
+								<span id="sp_publisher"><label for="rb_publisher">Publisher:</label><input type="text" name="rb_publisher" id="rb_publisher" /></span>
+								<span id="sp_date"><label for="rb_date">Date:</label><input type="text" name="rb_date" id="rb_date" /></span>
+								<span id="sp_url"><label for="rb_url">URL:</label><input type="text" name="rb_url" id="rb_url" size="70" /></span><br>
+								<span id="sp_isbn"><label for="rb_isbn">ISBN:</label><input type="text" name="rb_isbn" id="rb_isbn" /></span>
+								<span id="sp_location"><label for="rb_location">Location:</label><input type="text" name="rb_location" id="rb_location" /></span>
+								<span id="sp_page"><label for="rb_page">Page:</label><input type="text" name="rb_page" id="rb_page" /></span>
+								<span id="sp_volume"><label for="rb_volume">Volume:</label><input type="text" name="rb_volume" id="rb_volume" /></span>
+								<span id="sp_number"><label for="rb_number">Number:</label><input type="text" name="rb_number" id="rb_number" /></span>
+							</div>
+							<button name="bu_save" id="bu_save">Save</button>
+							<button name="bu_add" id="bu_add">Add</button>
+							<button name="bu_delete" id="bu_delete">Delete</button>
+							<div id="divRefs"></div>
+							<div id="ref_help" title="Reference Help">To add a new reference, fill in the form 
+								and click Add. To modify a reference, select it by hovering over it with your
+								mouse and clicking. Make any edits with the form, and click Save. To delete a 
+								reference, select it and click Delete.
+							</div>
+						</div>
+					</td>
+				</tr>
 			</table></form>
 <?php } else { ?>
-			<table>
-				<tr><th>Position:</th><td><?php echo $position->name; ?></td></tr>
-				<tr><th>Justification:</th><td><?php echo $position->display_justification(); ?></td></tr>
-				<tr><td></td><td><button id="bu_edit_pos">Edit</button></td></tr>
-				<tr><td></td><td><ul id="votes">
+			<p id="title"><?php echo $position->name; ?></p>
+			<h3>Justification</h3>
+			<p><?php echo $position->display_justification(); ?></p>
+			<h3>References</h3>
+			<div id="divRefs"></div>
+			<button id="bu_edit_pos">Edit</button>
+			<ul id="votes">
 <?php if ($citizen->id) { ?>
-					<li class="label">Your vote:</li>
-					<li id="your_vote"></li>
-					<li class="label">Add/change vote:</li>
-					<li><a id="vote_for" href="JAVASCRIPT: setVote(1)">For</a>&nbsp;
-						<a id="vote_against" href="JAVASCRIPT: setVote(2)">Against</a>
-					</li>
+				<li class="label">Your vote:</li>
+				<li id="your_vote"></li>
+				<li class="label">Add/change vote:</li>
+				<li><a id="vote_for" href="JAVASCRIPT: setVote(1)">For</a>&nbsp;
+					<a id="vote_against" href="JAVASCRIPT: setVote(2)">Against</a>
+				</li>
 <?php } ?>
-					<li class="label">Citizens for:</li>
-					<li id="citizens_for"></li>
-					<li class="label">Citizens against:</li>
-					<li id="citizens_against"></li>
-				</ul></td></tr>
-			</table>
-
+				<li class="label">Citizens for:</li>
+				<li id="citizens_for"></li>
+				<li class="label">Citizens against:</li>
+				<li id="citizens_against"></li>
+			</ul>
 			<hr>
 
 			<h4>Actions</h4>
