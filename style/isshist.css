@@ -38,7 +38,7 @@ table#tb_history button.page_button {
 	padding: 0;
 	background-repeat: no-repeat;
 	background-color: transparent;
-	background-image: url('../img/imgres.png');
+	background-image: url('/img/imgres.png');
 	cursor: pointer;
 	vertical-align: middle;
 }

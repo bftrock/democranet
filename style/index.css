@@ -15,7 +15,7 @@
 	padding: 0;
 	background-repeat: no-repeat;
 	background-color: transparent;
-	background-image: url('../img/help.png');
+	background-image: url('/img/help.png');
 	cursor: pointer;
 	vertical-align: middle;
 }
@@ -33,13 +33,13 @@
 	padding: 0;
 	background-repeat: no-repeat;
 	background-color: transparent;
-	background-image: url('../img/search.png');
+	background-image: url('/img/search.png');
 	cursor: pointer;
 	vertical-align: middle;
 }
 
 #di_search #bu_search:hover {
-	background-image: url('../img/search1.png');
+	background-image: url('/img/search1.png');
 }
 
 #di_quick {
@@ -58,28 +58,12 @@
 	cursor: pointer;
 }
 
-#di_quick #bu_browse {
-	background-image: url('../img/browse.png');
+#bu_browse, #bu_find_candidates, #bu_find_groups {
+	background-image: url('/img/browse.png');
 }
 
-#di_quick #bu_browse:hover {
-	background-image: url('../img/browse1.png');
-}
-
-#di_quick #bu_find_candidates {
-	background-image: url('../img/find_candidates.png');
-}
-
-#di_quick #bu_find_candidates:hover {
-	background-image: url('../img/find_candidates1.png');
-}
-
-#di_quick #bu_find_groups {
-	background-image: url('../img/find_groups.png');
-}
-
-#di_quick #bu_find_groups:hover {
-	background-image: url('../img/find_groups1.png');
+#bu_browse:hover, #bu_find_candidates:hover, #bu_find_groups:hover {
+	background-image: url('/img/browse1.png');
 }
 
 #di_results p.name {
@@ -97,7 +81,7 @@ table#frames {
 	margin-right: auto;
 }
 
-.round_border {
+table#frames .round_border {
 	border: 1px solid gray;
 	border-radius: 8px;
 	width: 250px;
@@ -105,6 +89,11 @@ table#frames {
 	margin-left: auto;
 	margin-right: auto;
 	padding: 2px;
+}
+
+table#frames p {
+	text-align: center;
+	margin-bottom: 0;
 }
 
 img.im_label {

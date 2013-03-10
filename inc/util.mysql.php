@@ -1,8 +1,8 @@
 <?php
 
 define ("DB_HOST", "localhost");
-define ("DB_UNAME", "root");
-define ("DB_PWD", "");
+define ("DB_UNAME", "dnetuser");
+define ("DB_PWD", "SystemChange");
 define ("DB_NAME", "democranet");
 
 // Opens a connection to the database and returns a link.
@@ -10,7 +10,7 @@ function open_db_connection() {
 
 	// The link is defined with global scope.
 	$db = mysql_connect(DB_HOST, DB_UNAME, DB_PWD)
-	    or die("Could not connect to database: " . mysql_error());
+	    or die("Could not connect to database (host=".DB_HOST.", username=".DB_UNAME.", password=".DB_PWD."): " . mysql_error());
 	mysql_select_db(DB_NAME, $db)
 		or die("Could not select database: " . DB_NAME);
 	return $db;

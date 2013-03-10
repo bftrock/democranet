@@ -63,7 +63,7 @@ echo DOC_TYPE;
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
-	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
+	<link rel="stylesheet" type="text/css" href="/style/democranet.css" />
 	<title>Democranet: Citizen</title>
 	<style type="text/css">
 
@@ -161,7 +161,7 @@ echo "<p><a href=\"login.php\">Log in / Become a Citizen</a></p>";
 	</div>
 
 	<div id="header">
-		<a href="index.php"><img src="img/democranet.png"></a>
+		<a href="/index.php"><img src="img/democranet.png"></a>
 	</div>
 
 	<div id="container-content">
