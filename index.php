@@ -26,11 +26,11 @@ echo DOC_TYPE;
     <meta name="HandheldFriendly" content="True">
 	<meta name="viewport" content="initial-scale=1.0, width=device-width" />
 	<link href='http://fonts.googleapis.com/css?family=Dosis:400,600|Quattrocento+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="style/bootstrap-responsive.css" />
-	<link rel="stylesheet" type="text/css" href="style/jquery-ui.css">
-	<link rel="stylesheet" type="text/css" href="style/index.css" />
-	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
-	<script src="js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/stylesheet/bootstrap-responsive.css" />
+	<link rel="stylesheet" type="text/css" href="/style/jquery-ui.css">
+	<link rel="stylesheet" type="text/css" href="/style/index.css" />
+	<link rel="stylesheet" type="text/css" href="/style/democranet.css" />
+	<script src="/js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
 </head>
 
 <body>
@@ -56,49 +56,50 @@ if ($citizen->id) {
 		<div id="di_search">
 			<button id="bu_search_help"></button>
 			<input type="text" id="in_search"/>
-			<button id="bu_search"></button>
+			<button id="bu_search">Search</button>
 			<div id="search_help" title="Search Help">To search in Issues, Positions and Actions, 
 				enter a search phrase and click Search. To limit the search scope, start the search
 				phrase with "issue:", "position:" or "action:". The results will be limited to the
-				entity you've entered.</div>
+				entity you've entered.
+			</div>
 		</div>
 
 		<div id="di_results">
 
 			<div id="di_quick">
-				<button id="bu_browse"></button>
-				<button id="bu_find_candidates"></button>
-				<button id="bu_find_groups"></button>
+				<button id="bu_browse">Browse<br>Issues</button>
+				<button id="bu_find_candidates">Find Similar<br>Candidates</button>
+				<button id="bu_find_groups">Find Similar<br>Groups</button>
 			</div>
 
 			<table id="frames">
 				<tr>
 					<td>
-						<img class="im_label" src="img/issues_following.png">
+						<p>Issues I'm Following</p>
 						<div class="round_border" id="di_issfol"></div>
 					</td>
 					<td>
-						<img class="im_label" src="img/candidates_following.png">
+						<p>Candidates I'm Following</p>
 						<div class="round_border"></div>
 					</td>
 				</tr>
 				<tr>
 					<td>
-						<img class="im_label" src="img/positions_following.png">
+						<p>Positions I'm Following</p>
 						<div class="round_border"></div>
 					</td>
 					<td>
-						<img class="im_label" src="img/groups_belong.png">
+						<p>Groups I Belong To</p>
 						<div class="round_border"></div>
 					</td>
 				</tr>
 				<tr>
 					<td>
-						<img class="im_label" src="img/actions_following.png">
+						<p>Actions I'm Following</p>
 						<div class="round_border"></div>
 					</td>
 					<td>
-						<img class="im_label" src="img/compatriots.png">
+						<p>Compatriots</p>
 						<div class="round_border"></div>
 					</td>
 				</tr>
@@ -109,11 +110,11 @@ if ($citizen->id) {
 	</div>
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="js/jquery.js"><\/script>')</script>
-	<script src="js/index.js"></script>
-	<script src="js/jquery-ui.js"></script>
-	<script src="js/vendor/bootstrap.js"></script>
-	<script src="js/main.js"></script>
+        <script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+	<script src="/js/index.js"></script>
+	<script src="/js/jquery-ui.js"></script>
+	<script src="/js/vendor/bootstrap.js"></script>
+	<script src="/js/main.js"></script>
 	<script>
             var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
             (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
