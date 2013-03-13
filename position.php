@@ -104,162 +104,6 @@ echo DOC_TYPE;
 	<link rel="stylesheet" type="text/css" href="/style/democranet.css" />
 	<link rel="stylesheet" type="text/css" href="/style/position.css" />
 	<script src="/js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
-	<script src="/js/jquery.js"></script>
-	<script src="/js/jquery-ui.js"></script>
-	<script type="text/javascript">
-
-<?php if ($mode == "e" || $mode == "n") { ?>
-
-$(document).ready(function () {
-	$('#bu_cancel_pos').click(function () {
-		window.location.assign('position.php?m=r&pid=<?php echo $position->id; ?>');
-		return false;
-	});
-	$("#rb_ref_type").on("change", adjustRB);
-	$("#bu_add").on("click", function () {
-		postRef('i');
-	});
-	$("#bu_save").on("click", function () {
-		postRef('u');
-	});
-	$("#bu_delete").on("click", function () {
-		postRef('d');
-	})
-	$('#ref_help').dialog({ autoOpen: false });
-	$('#im_ref_help').click(function () {
-		$('#ref_help').dialog({width: 500});
-		$('#ref_help').dialog({modal: true});
-		$('#ref_help').dialog('open');
-	});
-	displayRefs();
-	adjustRB();
-})
-
-function displayRefs() {
-
-	var type_id = $("#position_id").val();
-	$.post("ajax/issue.reflist.php", {t: 'i', tid: type_id}, function(data) {
-		$("#divRefs").html(data);
-		$("#divRefs p.ref").on({
-			mouseenter: function () {
-				$(this).addClass("highlight");
-			},
-			mouseleave: function () {
-				$(this).removeClass("highlight");
-			},
-			click: function () {
-				var id = $(this).find('span.hidden').text();
-				$.getJSON('ajax/issue.ref.php', {a: "r", ref_id: id}, loadRB);
-			}
-		});
-	}, 'html')
-
-}
-
-function adjustRB() {
-
-	var selectedType = $("#rb_ref_type option:selected").val();
-	switch (selectedType) {
-		case '<?php echo REF_TYPE_BOOK; ?>':
-			$("#sp_isbn").show();
-			$("#sp_location").show();
-			$("#sp_page").show();
-			$("#sp_volume").hide();
-			$("#sp_number").hide();
-			break;
-		case '<?php echo REF_TYPE_JOURNAL; ?>':
-			$("#sp_isbn").hide();
-			$("#sp_location").hide();
-			$("#sp_page").show();
-			$("#sp_volume").show();
-			$("#sp_number").show();
-			break;
-		case '<?php echo REF_TYPE_WEB; ?>':
-		case '<?php echo REF_TYPE_NEWS; ?>':
-		default:
-			$("#sp_isbn").hide();
-			$("#sp_location").hide();
-			$("#sp_page").hide();
-			$("#sp_volume").hide();
-			$("#sp_number").hide();
-			break;
-	}
-
-}
-
-function loadRB(data) {
-
-	$.each(data, function (ref_key, ref_val) {
-		$("#rb_" + ref_key).val(ref_val);
-	})
-	adjustRB();
-
-}
-
-function postRef(mode) {
-
-	var ref = '';
-	if (mode == 'd') {
-		ref = 'ref_id=' + $("#rb_ref_id").val();
-	} else {
-		$("#divInput :input").each(function (i) {
-			ref += $(this).attr('name').substr(3) + '=' + encodeURI($(this).val()) + '&';
-		})
-	}
-	$.ajax("ajax/issue.ref.php?a=" + mode, {data: ref, type: "post", success: loadRB, async: false, dataType: "json"})
-	displayRefs();
-
-}
-
-<?php } else { ?>
-
-$(document).ready(function () {
-	$.post('ajax/position.vote.php', {pid: <?php echo $position->id; ?>}, updateVoteFields, 'json');
-	$('#actions').load('ajax/position.actions.php', {pid: <?php echo $position->id; ?>});
-	$('#comments').load('ajax/position.comments.php', {pid: <?php echo $position->id; ?>});
-	$('#bu_edit_pos').click(function () {
-		window.location.assign('position.php?m=e&pid=<?php echo $position->id; ?>');
-	});
-	$('#bu_add_comment').click(function () {
-		$('#new_comment').show();
-	});
-	$('#bu_save_comment').click(function () {
-		$('#comments').load(
-			'ajax/position.comments.php', 
-			{co: $('#comment').val(), pid: <?php echo $position->id; ?>}
-		);
-		$('#comment').val('');
-		$('#new_comment').hide();
-	});
-	$('#bu_cancel_comment').click(function () {
-		$('#comment').val('');
-		$('#new_comment').hide();
-	});
-})
-
-function setVote(vote) {
-	$.post('ajax/position.vote.php', {pid: <?php echo $position->id; ?>, vo: vote}, updateVoteFields, 'json');
-}
-
-function updateVoteFields(data) {
-	var j = data;
-<?php if ($citizen->id) { ?>
-	var v = j.vote;
-	if (v == 1) {
-		$('#your_vote').html('<img src="img/for.png"/>');
-	} else if (v == 2) {
-		$('#your_vote').html('<img src="img/against.png"/>');
-	} else {
-		$('#your_vote').html('(none)');
-	}
-<?php } ?>
-	$('#citizens_for').html(j.for);
-	$('#citizens_against').html(j.against);
-}
-
-<?php } ?>
-
-	</script>
 </head>
 
 <body>
@@ -290,8 +134,8 @@ if ($citizen->id) {
 		</div>
 
 		<div id="content">
-			<h3>Position</h3>
 <?php if ($mode == "e" || $mode == "n") { ?>
+			<h3>Position</h3>
 			<form method="post" action="<?php echo $submit_action; ?>"><table>
 				<tr><th>Position:
 						<input name="position_id" id="position_id" type="hidden" value="<?php echo $position->id; ?>" />
@@ -340,7 +184,22 @@ if ($citizen->id) {
 					</td>
 				</tr>
 			</table></form>
-<?php } else { ?>
+<?php
+} else {
+	$button_disabled = "";
+	$button_text = "Follow";
+	if ($citizen->id == null) {
+		$button_disabled = " disabled";
+	} else {
+		if (following_position()) {
+			$button_text = "Unfollow";
+		}
+	}
+?>
+			<h3>
+				Position
+				<button type="button" id="bu_follow"<?php echo $button_disabled; ?>><?php echo $button_text; ?></button>
+			</h3>
 			<p id="title"><?php echo $position->name; ?></p>
 			<h3>Justification</h3>
 			<p><?php echo $position->display_justification(); ?></p>
@@ -380,36 +239,24 @@ if ($citizen->id) {
 		</div>
 	</div>
 </div>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-		<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
-	<script src="/js/index.js"></script>
-	<script src="/js/jquery-ui.js"></script>
-	<script src="/js/vendor/bootstrap.js"></script>
-	<script src="/js/main.js"></script>
-	<script type="text/javascript">
+<script src="/js/jquery.js"></script>
+<script src="/js/jquery-ui.js"></script>
+<script src="/js/vendor/bootstrap.js"></script>
+<script src="/js/main.js"></script>
+<script type="text/javascript">
 
-function setVote(vote) {
-	$.post('ajax/position.vote.php', {pid: <?php echo $position->id; ?>, vo: vote}, updateVoteFields, 'json');
-}
-
-function updateVoteFields(data) {
-	var j = data;
-<?php if ($citizen->id) { ?>
-	var v = j.vote;
-	if (v == 1) {
-		$('#your_vote').html('<img src="img/for.png"/>');
-	} else if (v == 2) {
-		$('#your_vote').html('<img src="img/against.png"/>');
-	} else {
-		$('#your_vote').html('(none)');
-	}
-<?php } ?>
-	$('#citizens_for').html(j.for);
-	$('#citizens_against').html(j.against);
-}
+<?php if ($mode == "e" || $mode == "n") { ?>
 
 $(document).ready(function () {
-<?php if ($mode == "r") { ?>
+	$('#bu_cancel_pos').click(function () {
+		window.location.assign('position.php?m=r&pid=<?php echo $position->id; ?>');
+		return false;
+	});
+}
+
+<?php } else { ?>
+
+$(document).ready(function () {
 	$.post('ajax/position.vote.php', {pid: <?php echo $position->id; ?>}, updateVoteFields, 'json');
 	$('#actions').load('ajax/position.actions.php', {pid: <?php echo $position->id; ?>});
 	$('#comments').load('ajax/position.comments.php', {pid: <?php echo $position->id; ?>});
@@ -431,19 +278,71 @@ $(document).ready(function () {
 		$('#comment').val('');
 		$('#new_comment').hide();
 	});
-<?php } ?>
-	$('#bu_cancel_pos').click(function () {
-		window.location.assign('position.php?m=r&pid=<?php echo $position->id; ?>');
-		return false;
-	});
-})
+	$("#bu_follow").on("click", displayFollow);
 
-	</script>
-	<script>
-		var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
-		(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-		g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
-		s.parentNode.insertBefore(g,s)}(document,'script'));
-	</script>
+});
+
+function displayFollow() {
+	var bt = $('#bu_follow').text();
+	var act = '';
+	if (bt == 'Follow') {
+		act = 'f';
+	} else if (bt == 'Unfollow') {
+		act = 'u';
+	}
+	$.post('/ajax/item.follow.php', {t: 'p', tid: <?php echo $position->id; ?>, a: act}, function (data) {
+		$('#bu_follow').text(data);
+	})
+}
+
+function setVote(vote) {
+	$.post('ajax/position.vote.php', {pid: <?php echo $position->id; ?>, vo: vote}, updateVoteFields, 'json');
+}
+
+function updateVoteFields(data) {
+	var j = data;
+<?php if ($citizen->id) { ?>
+	var v = j.vote;
+	if (v == 1) {
+		$('#your_vote').html('<img src="img/for.png"/>');
+	} else if (v == 2) {
+		$('#your_vote').html('<img src="img/against.png"/>');
+	} else {
+		$('#your_vote').html('(none)');
+	}
+<?php } ?>
+	$('#citizens_for').html(j.for);
+	$('#citizens_against').html(j.against);
+}
+
+<?php } ?>
+
+</script>
+<script>
+	var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+	(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+	g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+	s.parentNode.insertBefore(g,s)}(document,'script'));
+</script>
+
 </body>
 </html>
+
+<?php
+
+function following_position() {
+
+	global $position, $citizen;
+	$ret = false;
+	$sql = "SELECT COUNT(*) count FROM follow WHERE type = 'p' AND type_id = '{$position->id}' AND citizen_id = '{$citizen->id}'";
+	$result = execute_query($sql);
+	$line = fetch_line($result);
+	$count = $line['count'];
+	if ($count > 0) {
+		$ret = true;
+	}
+	return $ret;
+
+}
+
+?>

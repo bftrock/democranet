@@ -96,10 +96,7 @@ echo DOC_TYPE;
 
 </head>
 
-
-<?php if ($mode == "r") { ?>
 <body>
-<?php } ?>
 	
 <div id="container">
 	<div id="login">
@@ -197,8 +194,22 @@ if ($citizen->id) {
 			</div>
 		</td></tr>
 </table>
-<?php } else { ?>
-			<h1 id="title"><?php echo $issue->name; ?></h1>
+<?php 
+} else {
+	$button_disabled = "";
+	$button_text = "Follow";
+	if ($citizen->id == null) {
+		$button_disabled = " disabled";
+	} else {
+		if (following_issue()) {
+			$button_text = "Unfollow";
+		}
+	}
+?>
+			<h1 id="title">
+				<?php echo $issue->name; ?>
+				<button type="button" id="bu_follow"<?php echo $button_disabled; ?>><?php echo $button_text; ?></button>
+			</h1>
 			<input type="hidden" id="issue_id" value="<?php echo $issue->id; ?>" />
 			<div id="description"><?php echo $issue->get_description(); ?></div>
 			<p><strong>Categories</strong>: <?php echo display_categories($issue->get_categories(), 1); ?></p>
@@ -347,19 +358,30 @@ function cancelEdit() {
 
 $(document).ready(function() {
 	$("#edit").on("click", edit);
+	$("#bu_follow").on("click", displayFollow);
 	$("#positions").load('ajax/issue.positions.php',
 		{iid: <?php echo $issue->id; ?>}
 	);
 	displayRefs();
 });
 
-function displayRefs() {
+function displayFollow() {
+	var bt = $('#bu_follow').text();
+	var act = '';
+	if (bt == 'Follow') {
+		act = 'f';
+	} else if (bt == 'Unfollow') {
+		act = 'u';
+	}
+	$.post('/ajax/item.follow.php', {t: 'i', tid: <?php echo $issue->id; ?>, a: act}, function (data) {
+		$('#bu_follow').text(data);
+	})
+}
 
-	var issue_id = $("#issue_id").val();
-	$.post("ajax/issue.reflist.php", {t: 'i', tid: issue_id}, function(data) {
+function displayRefs() {
+	$.post("ajax/issue.reflist.php", {t: 'i', tid: <?php echo $issue->id; ?>}, function(data) {
 		$("#divRefs").html(data);
 	}, 'html')
-
 }
 
 function edit() {
@@ -375,6 +397,21 @@ function edit() {
 </html>
 
 <?php
+
+function following_issue() {
+
+	global $issue, $citizen;
+	$ret = false;
+	$sql = "SELECT COUNT(*) count FROM follow WHERE type = 'i' AND type_id = '{$issue->id}' AND citizen_id = '{$citizen->id}'";
+	$result = execute_query($sql);
+	$line = fetch_line($result);
+	$count = $line['count'];
+	if ($count > 0) {
+		$ret = true;
+	}
+	return $ret;
+
+}
 
 // Returns selected categories to be displayed with issue.
 function display_categories($selected_categories) {

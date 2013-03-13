@@ -14,11 +14,14 @@ define ("LOAD_NEW", 0);
 define ("LOAD_DB", 1);
 define ("LOAD_POST", 2);
 
-function check_field($field_name, $arr) {
+function check_field($field_name, $arr, $is_required = false) {
 
 	if (isset($arr[$field_name]) && strlen($arr[$field_name]) > 0) {
 		return true;
 	} else {
+		if ($is_required) {
+			die("Error: the parameter '{$field_name}' is required to be passed but was not.");
+		}
 		return false;
 	}
 

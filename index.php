@@ -20,13 +20,13 @@ echo DOC_TYPE;
 <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
 <head>
 	<meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Democranet</title>
-    <meta name="description" content="">
-    <meta name="HandheldFriendly" content="True">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>Democranet</title>
+	<meta name="description" content="">
+	<meta name="HandheldFriendly" content="True">
 	<meta name="viewport" content="initial-scale=1.0, width=device-width" />
 	<link href='http://fonts.googleapis.com/css?family=Dosis:400,600|Quattrocento+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="/stylesheet/bootstrap-responsive.css" />
+	<link rel="stylesheet" type="text/css" href="/stylesheet/bootstrap-responsive.css" />
 	<link rel="stylesheet" type="text/css" href="/style/jquery-ui.css">
 	<link rel="stylesheet" type="text/css" href="/style/index.css" />
 	<link rel="stylesheet" type="text/css" href="/style/democranet.css" />
@@ -71,12 +71,12 @@ if ($citizen->id) {
 				<button id="bu_find_candidates">Find Similar<br>Candidates</button>
 				<button id="bu_find_groups">Find Similar<br>Groups</button>
 			</div>
-
+<?php if ($citizen->id) { ?>
 			<table id="frames">
 				<tr>
 					<td>
 						<p>Issues I'm Following</p>
-						<div class="round_border" id="di_issfol"></div>
+						<div class="round_border" id="di_issfol"><?php get_issues(); ?></div>
 					</td>
 					<td>
 						<p>Candidates I'm Following</p>
@@ -86,7 +86,7 @@ if ($citizen->id) {
 				<tr>
 					<td>
 						<p>Positions I'm Following</p>
-						<div class="round_border"></div>
+						<div class="round_border" id="di_posfol"><?php get_postions(); ?></div>
 					</td>
 					<td>
 						<p>Groups I Belong To</p>
@@ -96,7 +96,7 @@ if ($citizen->id) {
 				<tr>
 					<td>
 						<p>Actions I'm Following</p>
-						<div class="round_border"></div>
+						<div class="round_border"><?php get_actions(); ?></div>
 					</td>
 					<td>
 						<p>Compatriots</p>
@@ -104,22 +104,75 @@ if ($citizen->id) {
 					</td>
 				</tr>
 			</table>
-
+<?php } ?>
 		</div>
 
 	</div>
 </div>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
-	<script src="/js/index.js"></script>
-	<script src="/js/jquery-ui.js"></script>
-	<script src="/js/vendor/bootstrap.js"></script>
-	<script src="/js/main.js"></script>
-	<script>
-            var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
-            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
-            s.parentNode.insertBefore(g,s)}(document,'script'));
-        </script>
+<script src="/js/jquery.js"></script>
+<script src="/js/jquery-ui.js"></script>
+<script src="/js/vendor/bootstrap.js"></script>
+<script src="/js/index.js"></script>
+<script src="/js/main.js"></script>
+<script>
+	var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+	(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+	g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+	s.parentNode.insertBefore(g,s)}(document,'script'));
+</script>
 </body>
 </html>
+<?php
+
+function get_issues() {
+
+	global $citizen;
+	$sql = "SELECT i.issue_id, i.name 
+		FROM follow f INNER JOIN issues i ON f.type_id = i.issue_id 
+		WHERE f.type = 'i' 
+		AND f.citizen_id = {$citizen->id} 
+		AND i.version = (SELECT MAX(version) FROM issues WHERE issue_id = i.issue_id) 
+		ORDER BY i.issue_id";
+	$result = execute_query($sql);
+	$html = "";
+	while ($line = fetch_line($result)) {
+		$html .= "<a href=\"/issue.php?iid={$line['issue_id']}&m=r\">{$line['name']}</a><br>\n";
+	}
+	echo $html;
+
+}
+
+function get_postions() {
+
+	global $citizen;
+	$sql = "SELECT p.position_id, p.name, p.issue_id 
+		FROM follow f INNER JOIN positions p ON f.type_id = p.position_id 
+		WHERE f.type = 'p' 
+		AND f.citizen_id = {$citizen->id}
+		ORDER BY p.position_id";
+	$result = execute_query($sql);
+	$html = "";
+	while ($line = fetch_line($result)) {
+		$html .= "<a href=\"/position.php?m=r&pid={$line['position_id']}&iid={$line['issue_id']}\">{$line['name']}</a><br>\n";
+	}
+	echo $html;
+
+}
+
+function get_actions() {
+
+	global $citizen;
+	$sql = "SELECT a.action_id, a.name, a.position_id 
+		FROM follow f INNER JOIN actions a ON f.type_id = a.action_id 
+		WHERE f.type = 'a' 
+		AND f.citizen_id = {$citizen->id}
+		ORDER BY a.action_id";
+	$result = execute_query($sql);
+	$html = "";
+	while ($line = fetch_line($result)) {
+		$html .= "<a href=\"/action.php?m=r&aid={$line['action_id']}&pid={$line['position_id']}\">{$line['name']}</a><br>\n";
+	}
+	echo $html;
+
+}
+?>

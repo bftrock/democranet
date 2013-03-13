@@ -163,3 +163,9 @@ ul#votes li.label {
 #new_comment {
 	display: none;
 }
+
+#bu_follow {
+	position: relative;
+	top: -4px;
+	left: 10px;
+}

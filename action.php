@@ -134,8 +134,8 @@ if ($citizen->id) {
 			</ul>
 		</div>
 		<div id="content">
-			<h3>Action</h3>
 <?php if ($mode == "e" || $mode == "n") { ?>
+			<h3>Action</h3>
 			<form method="post" action="<?php echo $submit_action; ?>"><table>
 				<tr><th>Name:
 						<input name="action_id" type="hidden" value="<?php echo $action->id; ?>" />
@@ -148,7 +148,22 @@ if ($citizen->id) {
 				<tr><th>Description:</th><td><textarea name="description" rows="15" cols="90"><?php echo $action->description; ?></textarea></td></tr>
 				<tr><td></td><td><input type="submit" value="Save" /><button id="bu_cancel_act">Cancel</button></td></tr>
 			</table></form>
-<?php } else { ?>
+<?php 
+} else {
+	$button_disabled = "";
+	$button_text = "Follow";
+	if ($citizen->id == null) {
+		$button_disabled = " disabled";
+	} else {
+		if (following_action()) {
+			$button_text = "Unfollow";
+		}
+	}
+?>
+			<h3>
+				Action
+				<button type="button" id="bu_follow"<?php echo $button_disabled; ?>><?php echo $button_text; ?></button>
+			</h3>
 			<table>
 				<tr><th>Name:</th><td><?php echo $action->name; ?></td></tr>
 				<tr><th>When:</th><td><?php echo $action->date; ?></td></tr>
@@ -183,42 +198,34 @@ if ($citizen->id) {
 		</div>
 	</div>
 </div>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
-	<script src="/js/index.js"></script>
-	<script src="/js/jquery-ui.js"></script>
-	<script src="/js/vendor/bootstrap.js"></script>
-	<script src="/js/main.js"></script>
-	<script type="text/javascript">
 
-<?php if ($mode == "r") { ?>
+<script src="/js/jquery.js"></script>')
+<script src="/js/jquery-ui.js"></script>
+<script src="/js/vendor/bootstrap.js"></script>
+<script src="/js/main.js"></script>
+<script type="text/javascript">
 
-function setVote(vote) {
-	$.post('ajax/action.vote.php', {aid: <?php echo $action->id; ?>, vo: vote}, updateVoteFields, 'json');
-}
-
-<?php } ?>
-
-<?php if ($mode == "r") { ?>
-function updateVoteFields(data) {
-	var j = data;
-<?php if ($citizen->id) { ?>
-	var v = j.vote;
-	if (v == 1) {
-		$('#your_vote').html('<img src="img/for.png"/>');
-	} else if (v == 2) {
-		$('#your_vote').html('<img src="img/against.png"/>');
-	} else {
-		$('#your_vote').html('(none)');
-	}
-<?php } ?>
-	$('#citizens_for').html(j.for);
-	$('#citizens_against').html(j.against);
-}
-<?php } ?>
+<?php if ($mode == "e") { ?>
 
 $(document).ready(function () {
-<?php if ($mode == "r") { ?>
+	$('#bu_cancel_act').click(function () {
+		window.location = 'action.php?m=r&aid=<?php echo $action->id; ?>';
+		return false;
+	});
+});
+
+<?php } else if ($mode == "n") { ?>
+
+$(document).ready(function () {
+	$('#bu_cancel_act').click(function () {
+		window.location = 'position.php?m=r&pid=<?php echo $action->position_id; ?>';
+		return false;
+	});
+});
+
+<?php } else { ?>
+
+$(document).ready(function () {
 	$.post('ajax/action.vote.php', {aid: <?php echo $action->id; ?>}, updateVoteFields, 'json');
 	$('#comments').load('ajax/action.comments.php', {aid: <?php echo $action->id; ?>});
 	$('#bu_edit_act').click(function () {
@@ -239,25 +246,69 @@ $(document).ready(function () {
 		$('#comment').val('');
 		$('#new_comment').hide();
 	});
-<?php } elseif ($mode == "e") { ?>
-	$('#bu_cancel_act').click(function () {
-		window.location = 'action.php?m=r&aid=<?php echo $action->id; ?>';
-		return false;
-	});
-<?php } else { ?>
-	$('#bu_cancel_act').click(function () {
-		window.location = 'position.php?m=r&pid=<?php echo $action->position_id; ?>';
-		return false;
-	});
-<?php } ?>
-})
+	$("#bu_follow").on("click", displayFollow);
+});
 
-	</script>
-	<script>
-            var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
-            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
-            s.parentNode.insertBefore(g,s)}(document,'script'));
-        </script>
+function displayFollow() {
+	var bt = $('#bu_follow').text();
+	var act = '';
+	if (bt == 'Follow') {
+		act = 'f';
+	} else if (bt == 'Unfollow') {
+		act = 'u';
+	}
+	$.post('/ajax/item.follow.php', {t: 'a', tid: <?php echo $action->id; ?>, a: act}, function (data) {
+		$('#bu_follow').text(data);
+	})
+}
+
+function setVote(vote) {
+	$.post('ajax/action.vote.php', {aid: <?php echo $action->id; ?>, vo: vote}, updateVoteFields, 'json');
+}
+
+function updateVoteFields(data) {
+	var j = data;
+<?php if ($citizen->id) { ?>
+	var v = j.vote;
+	if (v == 1) {
+		$('#your_vote').html('<img src="img/for.png"/>');
+	} else if (v == 2) {
+		$('#your_vote').html('<img src="img/against.png"/>');
+	} else {
+		$('#your_vote').html('(none)');
+	}
+<?php } ?>
+	$('#citizens_for').html(j.for);
+	$('#citizens_against').html(j.against);
+}
+
+<?php } ?>
+
+</script>
+<script>
+	var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+	(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+	g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+	s.parentNode.insertBefore(g,s)}(document,'script'));
+</script>
+
 </body>
 </html>
+<?php
+
+function following_action() {
+
+	global $action, $citizen;
+	$ret = false;
+	$sql = "SELECT COUNT(*) count FROM follow WHERE type = 'a' AND type_id = '{$action->id}' AND citizen_id = '{$citizen->id}'";
+	$result = execute_query($sql);
+	$line = fetch_line($result);
+	$count = $line['count'];
+	if ($count > 0) {
+		$ret = true;
+	}
+	return $ret;
+
+}
+
+?>

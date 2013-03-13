@@ -75,7 +75,7 @@
 }
 
 table#frames {
-	width: 60%;
+	width: 80%;
 	margin-top: 10px;
 	margin-left: auto;
 	margin-right: auto;
@@ -84,11 +84,12 @@ table#frames {
 table#frames .round_border {
 	border: 1px solid gray;
 	border-radius: 8px;
-	width: 250px;
+	width: 380px;
 	height: 150px;
 	margin-left: auto;
 	margin-right: auto;
 	padding: 2px;
+	overflow: scroll;
 }
 
 table#frames p {
