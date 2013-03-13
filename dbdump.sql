@@ -191,7 +191,7 @@ CREATE TABLE `debug` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `msg` varchar(1000) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=13092 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=13101 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -200,8 +200,32 @@ CREATE TABLE `debug` (
 
 LOCK TABLES `debug` WRITE;
 /*!40000 ALTER TABLE `debug` DISABLE KEYS */;
-INSERT INTO `debug` VALUES (13086,'{\"ref_id\":\"25\",\"ref_type\":\"1\",\"title\":\"Wind Power\",\"author\":\"Wikipedia contributors\",\"publisher\":\"Wikipedia, the Free Encyclopedia\",\"url\":\"http://en.wikipedia.org/wiki/Wind_power\",\"date\":\"15 January 2013\",\"isbn\":\"\",\"location\":\"\",\"page\":\"\",\"volume\":\"\",\"number\":\"\",\"type\":\"i\",\"type_id\":\"2\"}'),(13087,'{\"ref_id\":\"25\",\"ref_type\":\"1\",\"title\":\"Wind Power\",\"author\":\"Wikipedia contributors\",\"publisher\":\"Wikipedia, the Free Encyclopedia\",\"url\":\"http://en.wikipedia.org/wiki/Wind_power\",\"date\":\"15 January 2013\",\"isbn\":\"\",\"location\":\"\",\"page\":\"\",\"volume\":\"\",\"number\":\"\",\"type\":\"i\",\"type_id\":\"2\"}'),(13088,'{\"ref_id\":\"25\",\"ref_type\":\"1\",\"title\":\"Wind Power\",\"author\":\"Wikipedia contributors\",\"publisher\":\"Wikipedia, the Free Encyclopedia\",\"url\":\"http://en.wikipedia.org/wiki/Wind_power\",\"date\":\"15 January 2013\",\"isbn\":\"\",\"location\":\"\",\"page\":\"\",\"volume\":\"\",\"number\":\"\",\"type\":\"i\",\"type_id\":\"2\"}'),(13089,'{\"ref_id\":\"25\",\"ref_type\":\"1\",\"title\":\"Wind Power\",\"author\":\"Wikipedia contributors\",\"publisher\":\"Wikipedia, the Free Encyclopedia\",\"url\":\"http://en.wikipedia.org/wiki/Wind_power\",\"date\":\"15 January 2013\",\"isbn\":\"\",\"location\":\"\",\"page\":\"\",\"volume\":\"\",\"number\":\"\",\"type\":\"i\",\"type_id\":\"2\"}'),(13090,'{\"ref_id\":\"25\",\"ref_type\":\"1\",\"title\":\"Wind Power\",\"author\":\"Wikipedia contributors\",\"publisher\":\"Wikipedia, the Free Encyclopedia\",\"url\":\"http://en.wikipedia.org/wiki/Wind_power\",\"date\":\"15 January 2013\",\"isbn\":\"\",\"location\":\"\",\"page\":\"\",\"volume\":\"\",\"number\":\"\",\"type\":\"i\",\"type_id\":\"2\"}'),(13091,'{\"ref_id\":\"32\",\"ref_type\":\"1\",\"title\":\"Wind Power\",\"author\":\"Wikipedia contributors\",\"publisher\":\"Wikipedia, the Free Encyclopedia\",\"url\":\"http://en.wikipedia.org/wiki/Wind_power\",\"date\":\"15 January 2013\",\"isbn\":\"\",\"location\":\"\",\"page\":\"\",\"volume\":\"\",\"number\":\"\",\"type\":\"i\",\"type_id\":\"2\"}');
+INSERT INTO `debug` VALUES (13086,'{\"ref_id\":\"25\",\"ref_type\":\"1\",\"title\":\"Wind Power\",\"author\":\"Wikipedia contributors\",\"publisher\":\"Wikipedia, the Free Encyclopedia\",\"url\":\"http://en.wikipedia.org/wiki/Wind_power\",\"date\":\"15 January 2013\",\"isbn\":\"\",\"location\":\"\",\"page\":\"\",\"volume\":\"\",\"number\":\"\",\"type\":\"i\",\"type_id\":\"2\"}'),(13087,'{\"ref_id\":\"25\",\"ref_type\":\"1\",\"title\":\"Wind Power\",\"author\":\"Wikipedia contributors\",\"publisher\":\"Wikipedia, the Free Encyclopedia\",\"url\":\"http://en.wikipedia.org/wiki/Wind_power\",\"date\":\"15 January 2013\",\"isbn\":\"\",\"location\":\"\",\"page\":\"\",\"volume\":\"\",\"number\":\"\",\"type\":\"i\",\"type_id\":\"2\"}'),(13088,'{\"ref_id\":\"25\",\"ref_type\":\"1\",\"title\":\"Wind Power\",\"author\":\"Wikipedia contributors\",\"publisher\":\"Wikipedia, the Free Encyclopedia\",\"url\":\"http://en.wikipedia.org/wiki/Wind_power\",\"date\":\"15 January 2013\",\"isbn\":\"\",\"location\":\"\",\"page\":\"\",\"volume\":\"\",\"number\":\"\",\"type\":\"i\",\"type_id\":\"2\"}'),(13089,'{\"ref_id\":\"25\",\"ref_type\":\"1\",\"title\":\"Wind Power\",\"author\":\"Wikipedia contributors\",\"publisher\":\"Wikipedia, the Free Encyclopedia\",\"url\":\"http://en.wikipedia.org/wiki/Wind_power\",\"date\":\"15 January 2013\",\"isbn\":\"\",\"location\":\"\",\"page\":\"\",\"volume\":\"\",\"number\":\"\",\"type\":\"i\",\"type_id\":\"2\"}'),(13090,'{\"ref_id\":\"25\",\"ref_type\":\"1\",\"title\":\"Wind Power\",\"author\":\"Wikipedia contributors\",\"publisher\":\"Wikipedia, the Free Encyclopedia\",\"url\":\"http://en.wikipedia.org/wiki/Wind_power\",\"date\":\"15 January 2013\",\"isbn\":\"\",\"location\":\"\",\"page\":\"\",\"volume\":\"\",\"number\":\"\",\"type\":\"i\",\"type_id\":\"2\"}'),(13091,'{\"ref_id\":\"32\",\"ref_type\":\"1\",\"title\":\"Wind Power\",\"author\":\"Wikipedia contributors\",\"publisher\":\"Wikipedia, the Free Encyclopedia\",\"url\":\"http://en.wikipedia.org/wiki/Wind_power\",\"date\":\"15 January 2013\",\"isbn\":\"\",\"location\":\"\",\"page\":\"\",\"volume\":\"\",\"number\":\"\",\"type\":\"i\",\"type_id\":\"2\"}'),(13092,'{\"ref_id\":\"1\",\"ref_type\":\"1\",\"title\":\"Global warming\",\"author\":\"Wikipedia contributors\",\"publisher\":\"Wikipedia, the Free Encyclopedia\",\"url\":\"http://en.wikipedia.org/wiki/Global_warming\",\"date\":\"19 January 2013\",\"isbn\":\"\",\"location\":\"\",\"page\":\"\",\"volume\":\"\",\"number\":\"\",\"type\":\"i\",\"type_id\":\"9\"}'),(13093,'{\"ref_id\":\"23\",\"ref_type\":\"4\",\"title\":\"Robust responses of the hydrological cycle to global warming\",\"author\":\"Held, Isaac M., and Brian J. Soden\",\"publisher\":\"Journal of Climate\",\"url\":\"http://journals.ametsoc.org/doi/pdf/10.1175/JCLI3990.1\",\"date\":\"2006\",\"isbn\":\"\",\"location\":\"\",\"page\":\"5686-5699\",\"volume\":\"19\",\"number\":\"21\",\"type\":\"i\",\"type_id\":\"9\"}'),(13094,'{\"ref_id\":\"1\",\"ref_type\":\"1\",\"title\":\"Global warming\",\"author\":\"Wikipedia contributors\",\"publisher\":\"Wikipedia, the Free Encyclopedia\",\"url\":\"http://en.wikipedia.org/wiki/Global_warming\",\"date\":\"19 January 2013\",\"isbn\":\"\",\"location\":\"\",\"page\":\"\",\"volume\":\"\",\"number\":\"\",\"type\":\"i\",\"type_id\":\"9\"}'),(13095,'{\"ref_id\":\"23\",\"ref_type\":\"4\",\"title\":\"Robust responses of the hydrological cycle to global warming\",\"author\":\"Held, Isaac M., and Brian J. Soden\",\"publisher\":\"Journal of Climate\",\"url\":\"http://journals.ametsoc.org/doi/pdf/10.1175/JCLI3990.1\",\"date\":\"2006\",\"isbn\":\"\",\"location\":\"\",\"page\":\"5686-5699\",\"volume\":\"19\",\"number\":\"21\",\"type\":\"i\",\"type_id\":\"9\"}'),(13096,'{\"ref_id\":\"1\",\"ref_type\":\"1\",\"title\":\"Global warming\",\"author\":\"Wikipedia contributors\",\"publisher\":\"Wikipedia, the Free Encyclopedia\",\"url\":\"http://en.wikipedia.org/wiki/Global_warming\",\"date\":\"19 January 2013\",\"isbn\":\"\",\"location\":\"\",\"page\":\"\",\"volume\":\"\",\"number\":\"\",\"type\":\"i\",\"type_id\":\"9\"}'),(13097,'{\"ref_id\":\"23\",\"ref_type\":\"4\",\"title\":\"Robust responses of the hydrological cycle to global warming\",\"author\":\"Held, Isaac M., and Brian J. Soden\",\"publisher\":\"Journal of Climate\",\"url\":\"http://journals.ametsoc.org/doi/pdf/10.1175/JCLI3990.1\",\"date\":\"2006\",\"isbn\":\"\",\"location\":\"\",\"page\":\"5686-5699\",\"volume\":\"19\",\"number\":\"21\",\"type\":\"i\",\"type_id\":\"9\"}'),(13098,'{\"ref_id\":\"24\",\"ref_type\":\"1\",\"title\":\"Abortion\",\"author\":\"Wikipedia contributors\",\"publisher\":\"Wikipedia, the Free Encyclopedia\",\"url\":\"http://en.wikipedia.org/wiki/Abortion\",\"date\":\"15 January 2013\",\"isbn\":\"\",\"location\":\"\",\"page\":\"\",\"volume\":\"\",\"number\":\"\",\"type\":\"i\",\"type_id\":\"1\"}'),(13099,'{\"ref_id\":\"24\",\"ref_type\":\"1\",\"title\":\"Abortion\",\"author\":\"Wikipedia contributors\",\"publisher\":\"Wikipedia, the Free Encyclopedia\",\"url\":\"http://en.wikipedia.org/wiki/Abortion\",\"date\":\"15 January 2013\",\"isbn\":\"\",\"location\":\"\",\"page\":\"\",\"volume\":\"\",\"number\":\"\",\"type\":\"i\",\"type_id\":\"1\"}'),(13100,'{\"ref_id\":\"24\",\"ref_type\":\"1\",\"title\":\"Abortion\",\"author\":\"Wikipedia contributors\",\"publisher\":\"Wikipedia, the Free Encyclopedia\",\"url\":\"http://en.wikipedia.org/wiki/Abortion\",\"date\":\"15 January 2013\",\"isbn\":\"\",\"location\":\"\",\"page\":\"\",\"volume\":\"\",\"number\":\"\",\"type\":\"i\",\"type_id\":\"1\"}');
 /*!40000 ALTER TABLE `debug` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `follow`
+--
+
+DROP TABLE IF EXISTS `follow`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `follow` (
+  `type` char(1) NOT NULL DEFAULT '',
+  `type_id` int(11) NOT NULL,
+  `citizen_id` int(11) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `follow`
+--
+
+LOCK TABLES `follow` WRITE;
+/*!40000 ALTER TABLE `follow` DISABLE KEYS */;
+INSERT INTO `follow` VALUES ('i',1,1),('i',2,1),('i',12,1),('i',9,1),('i',14,1),('i',13,1),('p',1,1),('p',2,1),('p',6,1),('a',1,1),('p',10,1);
+/*!40000 ALTER TABLE `follow` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -352,4 +376,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2013-02-25  6:40:41
+-- Dump completed on 2013-03-13  6:56:31
