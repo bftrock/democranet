@@ -1,54 +1,101 @@
+/* colors
+cadet blue #326aa1
+turquoise gray #75bbd4
+powder blue: #cbdce4
+rust orange #cb4e06
+canary #f0f261
+gray #666
+*/
+
 
 body {
 	font-family: 'Quattrocento Sans', helvetica, arial, sans-serif;
 	font-size: 100%;
 	line-height: 1.4;
+	background-color: #75bbd4;
 }
 
 h1, h2, h3, h4, h5 {
 	font-family: 'Dosis', sans-serif;
+	font-weight: 600;
 	line-height: 1.2;
+	margin-bottom: .5em;
 }
 
 h1 {
 	font-size: 2.3em;
-	margin-bottom: 1.5em;
 }
 
 h2 {
 	font-size: 2em;
-	margin-bottom: 1.5em;
 }
 
 h3 {
 	font-size: 1.6em;
-	margin-bottom: 1.5em;
 }
 
 p {
 	font-family: 'Quattrocento Sans', helvetica, arial, sans-serif;
 	font-size: 1em;
-	margin-bottom: .8em;
+	font-weight: 400;
+	margin-bottom: .5em;
 }
 
 li {
 	font-size: 0.9em;
 }
 
+.bold {font-weight: 700;}
+
 table {
 	font-size: 0.9em;
+}
+
+/* links */
+a:link {
+	text-decoration: none;
+	color: #cb4e06;
+	-webkit-transition: all .2s linear;
+-moz-transition: all .2s linear;
+-ms-transition: all .2s linear;
+-o-transition: all .2s linear;
+transition: all .2s linear;
+}
+
+a:visited {
+	color: #cb4e06;
+}
+
+a:hover {
+	color: #222;
+}
+
+a:active {
+	color: #222;
+}
+
+#header h1 a {
+color: #fff;
+-webkit-transition: all .1s linear;
+-moz-transition: all .1s linear;
+-ms-transition: all .1s linear;
+-o-transition: all .1s linear;
+transition: all .1s linear;
+}
+
+#header h1 a:hover, #header h1 a:active {
+	color: #cbdce4;
+	text-decoration: none;
 }
 
 #container {
 	margin: 0 auto;
 	width: 1000px;
-	background: #fff;
 }
 
 #login {
-	background: #fff;
 	text-align: right;
-	padding: 5px 0 5px 0;
+	padding: 5px;
 }
 
 #login p {
@@ -56,21 +103,16 @@ table {
 }
 
 #header {
-	background: #EAF3F8;
-	border-style: solid;
-	border-width: 1px;
-	border-color: #dddddd;
+	text-align: center;
 	padding: 5px 0 0 5px;
 }
 
 #header h1 {
-	margin: 0;
+	font-size: 4em;
 }
 
 #container-content {
-	float: left;
 	width: 1000px;
-	background: #fff;
 }
 
 #navigation-left {
@@ -92,22 +134,9 @@ table {
 	list-style-type: none;
 }
 
-a:link {
-	text-decoration: none;
-	color: gray;
-}
 
-a:visited {
-	color: gray;
-}
 
-a:hover {
-	text-decoration: underline;
-}
 
-a:active {
-	text-decoration: underline;
-}
 
 #content {
 	min-height: 650px;
