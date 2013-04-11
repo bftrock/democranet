@@ -74,6 +74,11 @@ a:active {
 	color: #222;
 }
 
+#header h1 {
+	margin-top:0;
+	margin-bottom: 0;
+}
+
 #header h1 a {
 color: #fff;
 -webkit-transition: all .1s linear;
@@ -95,7 +100,6 @@ transition: all .1s linear;
 
 #login {
 	text-align: right;
-	padding: 5px;
 }
 
 #login p {

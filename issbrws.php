@@ -66,17 +66,17 @@ if ($citizen->id) {
 	</div>
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
-	<script src="/js/index.js"></script>
-	<script src="/js/jquery-ui.js"></script>
-	<script src="/js/vendor/bootstrap.js"></script>
-	<script src="/js/main.js"></script>
-	<script>
-            var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
-            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
-            s.parentNode.insertBefore(g,s)}(document,'script'));
-        </script>
+<script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
+<script src="/js/index.js"></script>
+<script src="/js/jquery-ui.js"></script>
+<script src="/js/vendor/bootstrap.js"></script>
+<script src="/js/main.js"></script>
+<script>
+	var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+	(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+	g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+	s.parentNode.insertBefore(g,s)}(document,'script'));
+</script>
 </body>
 </html>
 
@@ -86,7 +86,7 @@ if ($citizen->id) {
 function get_issue_list() {
 
 	$ret = "<div id=\"issue_list\">";
-	$sql = "SELECT c.name category_name, i.issue_id issue_id, i.name issue_name, CONCAT(LEFT(i.description, 270), '...') issue_description
+	$sql = "SELECT c.name category_name, i.issue_id issue_id, i.name issue_name, CONCAT(LEFT(i.description, 210), '...') issue_description
 		FROM issues i
 		LEFT JOIN issue_category ic ON i.issue_id = ic.issue_id
 		LEFT JOIN categories c ON ic.category_id = c.category_id
