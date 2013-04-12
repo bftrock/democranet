@@ -1,13 +1,14 @@
 <?php
 // This page is used to retrieve the table of version histories with pagination.
 
-include ("../inc/util.mysql.php");
-include ("../inc/util.democranet.php");
-include ("../inc/class.issue.php");
+require_once ("../inc/class.database.php");
+require_once ("../inc/util.democranet.php");
+require_once ("../inc/class.issue.php");
 
 define ("PAGE_SIZE", 10);
 
-$db = open_db_connection();
+$db = new database();
+$db->open_connection();
 
 if (check_field('iid', $_REQUEST)) {
 	$issue_id = $_REQUEST['iid'];

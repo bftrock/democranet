@@ -1,10 +1,11 @@
 <?php
 
-include ("inc/util.mysql.php");
-include ("inc/util.democranet.php");
-include ("inc/class.citizen.php");
+require_once ("inc/class.database.php");
+require_once ("inc/util.democranet.php");
+require_once ("inc/class.citizen.php");
 
-$db = open_db_connection();
+$db = new database();
+$db->open_connection();
 session_start();
 $citizen = new citizen();
 
@@ -63,7 +64,7 @@ echo DOC_TYPE;
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
-	<link rel="stylesheet" type="text/css" href="/style/democranet.css" />
+	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
 	<title>Democranet: Citizen</title>
 	<style type="text/css">
 
@@ -161,7 +162,7 @@ echo "<p><a href=\"login.php\">Log in / Become a Citizen</a></p>";
 	</div>
 
 	<div id="header">
-		<a href="/index.php"><img src="img/democranet.png"></a>
+		<a href="index.php"><img src="img/democranet.png"></a>
 	</div>
 
 	<div id="container-content">
@@ -241,9 +242,9 @@ function get_gender_input($gender_id) {
 function get_country_select($country_id) {
 	
 	$sql = "SELECT * FROM countries ORDER BY name";
-	$result = execute_query($sql);
+	$db->execute_query($sql);
 	$ret = "<select name=\"country\">";
-	while ($line = fetch_line($result)) {
+	while ($line = $db->fetch_line()) {
 		$ret .= "<option value=\"{$line['country_id']}\"";
 		if ($line['country_id'] == $country_id) {
 			$ret .= " selected=true";

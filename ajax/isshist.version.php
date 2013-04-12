@@ -2,11 +2,12 @@
 // This page is used to display any version of an issue, and show the differences with the previous
 // version.
 
-include ("../inc/util.mysql.php");
-include ("../inc/util.democranet.php");
-include ("../inc/class.issue.php");
+require_once ("../inc/class.database.php");
+require_once ("../inc/util.democranet.php");
+require_once ("../inc/class.issue.php");
 
-$db = open_db_connection();
+$db = new database();
+$db->open_connection();
 
 if (check_field('iid', $_REQUEST)) {
 	$issue_id = $_REQUEST['iid'];

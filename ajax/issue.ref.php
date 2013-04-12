@@ -2,10 +2,11 @@
 // This page is used to create, read, update, and delete references for issues. It returns JSON
 // formated data.
 
-include ("../inc/util.mysql.php");
-include ("../inc/util.democranet.php");
+require_once ("../inc/class.database.php");
+require_once ("../inc/util.democranet.php");
 
-$db = open_db_connection();
+$db = new database();
+$db->open_connection();
 
 if (check_field('a', $_REQUEST)) {
 	$action = $_REQUEST['a'];
@@ -24,8 +25,8 @@ switch ($action) {
 	case "r":	// read a single reference record
 
 		$sql = "SELECT * FROM refs WHERE ref_id = '{$reference_id}'";
-		$result = execute_query($sql);
-		$line = fetch_line($result);
+		$db->execute_query($sql);
+		$line = $db->fetch_line();
 		$json = json_encode($line);
 		debug($json);
 		break;
@@ -35,8 +36,8 @@ switch ($action) {
 		$sql = "UPDATE refs SET " . build_sql($fields) . " WHERE ref_id = '{$reference_id}'";
 		execute_query($sql);
 		$sql = "SELECT * FROM refs WHERE ref_id = '{$reference_id}'";
-		$result = execute_query($sql);
-		$line = fetch_line($result);
+		$db->execute_query($sql);
+		$line = $db->fetch_line();
 		$json = json_encode($line);
 		break;
 
@@ -46,8 +47,8 @@ switch ($action) {
 		execute_query($sql);
 		$reference_id = get_insert_id();
 		$sql = "SELECT * FROM refs WHERE ref_id = '{$reference_id}'";
-		$result = execute_query($sql);
-		$line = fetch_line($result);
+		$db->execute_query($sql);
+		$line = $db->fetch_line();
 		$json = json_encode($line);
 		break;
 

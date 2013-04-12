@@ -1,10 +1,11 @@
 <?php
 // This page is used to make an AJAX call to get Actions for a Position.
 
-include ("../inc/util.mysql.php");
-include ("../inc/util.democranet.php");
+require_once ("../inc/class.database.php");
+require_once ("../inc/util.democranet.php");
 
-$db = open_db_connection();
+$db = new database();
+$db->open_connection();
 
 session_start();
 
@@ -39,9 +40,9 @@ if ($citizen_id) {
 		FROM action_citizen ac LEFT JOIN actions a ON ac.action_id = a.action_id
 		WHERE a.position_id = '{$position_id}'
 		AND ac.citizen_id = '{$citizen_id}'";
-	$result = execute_query($sql);
+	$db->execute_query($sql);
 	$citizen_votes = array();
-	while ($line = fetch_line($result)) {
+	while ($line = $db->fetch_line()) {
 		$citizen_votes[$line['action_id']] = $line['vote'];
 	}
 }
@@ -52,10 +53,10 @@ $sql = "SELECT a.action_id, a.name,
 	(SELECT COUNT(*) FROM action_citizen ac WHERE ac.action_id = a.action_id AND ac.vote = '".VOTE_AGAINST."') vote_against
 	FROM actions a
 	WHERE a.position_id = '{$position_id}'";
-$result = execute_query($sql);
+$db->execute_query($sql);
 
 // Iterate over result to build each row of the table.
-while ($line = fetch_line($result)) {
+while ($line = $db->fetch_line()) {
 	$ret .= "<tr><td><a href=\"action.php?m=r&aid={$line['action_id']}&pid={$position_id}\" class=\"action\">{$line['name']}</a></td>";
 	if ($citizen_id) {
 		if (isset($citizen_votes[$line['action_id']])) {

@@ -2,10 +2,11 @@
 // This page is used to make an AJAX call to get comments for an action. It's also used
 // to post a comment to an action.
 
-include ("../inc/util.mysql.php");
-include ("../inc/util.democranet.php");
+require_once ("../inc/class.database.php");
+require_once ("../inc/util.democranet.php");
 
-$db = open_db_connection();
+$db = new database();
+$db->open_connection();
 
 session_start();
 
@@ -39,11 +40,11 @@ $sql .= "SELECT co.comment, CONCAT(ci.first_name, ' ', ci.last_name) name, co.ts
 	WHERE co.type_id = '{$action_id}'
 	AND co.type = 'a'
 	ORDER BY ts DESC";
-$result = execute_query($sql);
+$db->execute_query($sql);
 $ret = "";
 if (get_num_rows($result)) {
 	$ret .= "<table>";
-	while ($line = fetch_line($result)) {
+	while ($line = $db->fetch_line()) {
 		$ret .= "<tr><td>{$line['name']}<br />{$line['ts']}</td><td>{$line['comment']}</td></tr>";
 	}
 	$ret .= "</table>\n";

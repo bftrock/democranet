@@ -3,50 +3,65 @@
 // create new,  insert and update Issues. The Model for this page is the Issue class, and the View
 // and Control happens  within this page.
 
-include ("inc/util.mysql.php");			// functions for handling database
-include ("inc/util.democranet.php");	// common application functions
-include ("inc/class.issue.php");		// the issue object, which is the model for this page
-include ("inc/class.citizen.php");		// the citizen object, which is needed for user management
+require_once ("inc/class.database.php");		// functions for handling database
+require_once ("inc/util.democranet.php");	// common application functions
+require_once ("inc/class.issue.php");		// the issue object, which is the model for this page
+require_once ("inc/class.citizen.php");		// the citizen object, which is needed for user management
 
-$db = open_db_connection();
-
-session_start();
+$db = new database();
+$db->open_connection();
 
 // Create the citizen object, which represents a user. It is not necessary for a user to be logged
 // on to use the site, but if there is a citizen id in the $_SESSION array, the citizen fields will
 // be loaded. Otherwise, properties will be left = null.
-$citizen = new citizen();
-if ($citizen->in_session()) {
+$citizen = new citizen($db);
+$citizen->check_session();
+if ($citizen->in_session)
+{
 	$citizen->load(LOAD_DB);
+} 
+else 
+{
+	die("Citizen must be logged in to access this page.");
 }
 
 // The mode variable controls the mode of this page.
 // r = read, e = edit, n = new, u = update, i = insert
 $mode = "";
-if (isset($_GET['m'])) {
+if (isset($_GET['m'])) 
+{
 	// typical case
 	$mode = $_GET['m'];
-} elseif (isset($_GET['iid'])) {
+} 
+elseif (isset($_GET['iid'])) 
+{
 	// if only the issue id is passed, we assume read mode
 	$mode = "r";
-} else {
+} 
+else 
+{
 	// otherwise we're adding a new issue
 	$mode = "n";
 }
 
 // The issue object is loaded from the db if we're reading or editing, and from the $_POST global if
 // we're inserting or updating.  If we're adding a new issue, the object is mostly unloaded.
-$issue = new issue();
-if ($mode == "r" || $mode == "e") {
+$issue = new issue($db);
+if ($mode == "r" || $mode == "e") 
+{
 	$issue->load(LOAD_DB);
-} elseif ($mode == "u" || $mode == "i") {
+} 
+elseif ($mode == "u" || $mode == "i") 
+{
 	$issue->load(LOAD_POST);
-} else {
+} 
+else 
+{
 	$issue->load(LOAD_NEW);
 }
 
-switch ($mode) {
-
+switch ($mode) 
+{
 	case "i":	// inserting newly created issue and reloading page
 	
 		$issue->insert();
@@ -71,11 +86,11 @@ switch ($mode) {
 
 	case "r":	// displaying issue specified in query string in read-only mode
 	default:
-
 }
 
 echo DOC_TYPE;
 ?>
+<html>
 <head>
 
 	<title>Democranet: Issue</title>
@@ -84,50 +99,47 @@ echo DOC_TYPE;
 	<meta name="description" content="">
 	<meta name="HandheldFriendly" content="True">
 	<meta name="viewport" content="initial-scale=1.0, width=device-width" />
-	<link rel="stylesheet" type="text/css" href="/style/democranet.css" />
-	<link rel="stylesheet" type="text/css" href="/style/issue.css" />
-	<link rel="stylesheet" type="text/css" href="/style/jquery-ui.css">
-	<link href='http://fonts.googleapis.com/css?family=Dosis:400,600|Quattrocento+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" type="text/css" href="/style/bootstrap-responsive.css" />
-	<link rel="stylesheet" type="text/css" href="/style/democranet.css" />
-	<link rel="stylesheet" type="text/css" href="/style/issue.css" />
-	<link rel="stylesheet" type="text/css" href="/style/jquery-ui.css">
-	<script src="/js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
+	<link rel="stylesheet" type="text/css" href="style/issue.css" />
+	<link rel="stylesheet" type="text/css" href="style/jquery-ui.css">
+	<link href="http://fonts.googleapis.com/css?family=Dosis:400,600|Quattrocento+Sans:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" type="text/css" href="style/bootstrap-responsive.css" />
+	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
+	<link rel="stylesheet" type="text/css" href="style/issue.css" />
+	<link rel="stylesheet" type="text/css" href="style/jquery-ui.css">
+	<script src="js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
 
 </head>
 
 <body>
 	
 <div id="container">
+
 	<div id="login">
-<?php
-if ($citizen->id) {
-	echo "<p><a href=\"citizen.php\">{$citizen->name}</a>&nbsp;<a href=\"login.php?a=lo&r=index.php\">Log out</a></p>";
-} else {
-	echo "<p><a href=\"login.php\">Log in / Become a Citizen</a></p>";
-}
-?>
+		<p><a href="citizen.php"><?php echo $citizen->name; ?></a>&nbsp;|&nbsp;<a href="login.php?a=lo&r=index.php">Log out</a></p>
 	</div>
+	
 	<div id="header">
-		<h1><a href="/index.php">Democra.net</a></h1>
+		<h1><a href="index.php">Democra.net</a></h1>
 	</div>
-	<div id="container-content">
-		<div id="navigation-left">
-			<ul>
-				<li><a href="issbrws.php">Browse Issues</a></li>
-				<li><a href="issue.php?m=n">Add New Issue</a></li>
-				<li><a href="position.php?m=n&iid=<?php echo $issue->id; ?>">Add New Position</a></li>
-			</ul>
-		</div>
-		<div id="content">
+	
+	<div id="content">
 <?php if ($mode == "e" || $mode == "n") { ?>
 <table>
 	<form id="editIssue" method="post" action="<?php echo $submit_action; ?>">
-	<tr><th>Title:<input name="issue_id" id="issue_id" type="hidden" value="<?php echo $issue->id; ?>" /></th>
-		<td><input name="name" size="50" value="<?php echo $issue->name; ?>" /></td></tr>
 	<tr>
-		<th>Description:<br><a href="JAVASCRIPT:$('#im_desc_help').click()"><img id="im_desc_help" alt="Description Help" src="img/help.png"></a></th>
-		<td><textarea name="description" id="description" rows="20" cols="106" data-maxChars="<?php echo ISS_DESC_MAXLEN; ?>"><?php echo $issue->description; ?></textarea>
+		<th>Title:<input name="issue_id" id="issue_id" type="hidden" value="<?php echo $issue->id; ?>" /></th>
+		<td><input name="name" size="50" value="<?php echo $issue->name; ?>" /></td>
+	</tr>
+	<tr>
+		<th>
+			Description:<br>
+			<a href="JAVASCRIPT:$('#im_desc_help').click()">
+			<img id="im_desc_help" alt="Description Help" src="img/help.png"></a>
+		</th>
+		<td>
+			<textarea name="description" id="description" rows="20" cols="106" data-maxChars="<?php echo ISS_DESC_MAXLEN; ?>">
+				<?php echo $issue->description; ?></textarea>
 			<span class="counter">Character count: <span id="charNum"></span> / <?php echo ISS_DESC_MAXLEN; ?> maximum</span>
 			<div id="desc_help" title="Description Help">
 				<p>You can format the Description by entering
@@ -145,14 +157,18 @@ if ($citizen->id) {
 			</div>
 		</td>
 	</tr>
-	<tr><th>Categories:</th>
+	<tr>
+		<th>Categories:</th>
 		<td>
 			<select name="categories[]" id="categories" multiple="multiple" size="6">
 				<?php echo get_category_options($issue->get_categories()); ?>
 			</select>
-		</td></tr>
-	<tr><td></td><td>
-		<input type="submit" value="Save Issue" /><button id="cancelEdit">Cancel</button></td></tr>
+		</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td><input type="submit" value="Save Issue" /><button id="cancelEdit">Cancel</button></td>
+	</tr>
 	</form>
 	<tr>
 		<th>References:<br><img id="im_ref_help" alt="Reference Help" src="img/help.png"></th>
@@ -192,40 +208,34 @@ if ($citizen->id) {
 					reference, select it and click Delete.
 				</div>
 			</div>
-		</td></tr>
+		</td>
+	</tr>
 </table>
+
 <?php 
 } else {
-	$button_disabled = "";
-	$button_text = "Follow";
-	if ($citizen->id == null) {
-		$button_disabled = " disabled";
+	if (following_issue()) {
+		$button_text = "Unfollow";
 	} else {
-		if (following_issue()) {
-			$button_text = "Unfollow";
-		}
+		$button_text = "Follow";
 	}
 ?>
-			<h1 id="title">
-				<?php echo $issue->name; ?>
-				<button type="button" id="bu_follow"<?php echo $button_disabled; ?>><?php echo $button_text; ?></button>
-			</h1>
+			<p><a href="issbrws.php">Issues</a> / <span class="title" class="bold"><?php echo $issue->name; ?></span><a class="btn" href="#" id="bu_follow"><?php echo $button_text; ?></a></p>
 			<input type="hidden" id="issue_id" value="<?php echo $issue->id; ?>" />
 			<div id="description"><?php echo $issue->get_description(); ?></div>
 			<p><strong>Categories</strong>: <?php echo display_categories($issue->get_categories(), 1); ?></p>
-			<h3>References</h3>
+			<p class="title">References</p>
 			<div id="divRefs"></div>
-			<button id="edit">Edit</button>
-			<a href="isshist.php?iid=<?php echo $issue->id; ?>">Show History</a>
+			<a class="btn" href="issue.php?m=e&iid=<?php echo $issue->id; ?>">Edit</a>
+			<a class="btn" href="isshist.php?iid=<?php echo $issue->id; ?>">Show History</a>
 			<hr>
 			<div id="positions"></div>
 <?php } ?>
 		</div>
 	</div>
-</div>
 
-<script src="/js/jquery.js"></script>
-<script src="/js/jquery-ui.js"></script>
+<script src="js/jquery.js"></script>
+<script src="js/jquery-ui.js"></script>
 <script type="text/javascript">
 	
 <?php if ($mode == "e" || $mode == "n") { ?>
@@ -400,11 +410,12 @@ function edit() {
 
 function following_issue() {
 
-	global $issue, $citizen;
+	global $issue, $citizen, $db;
+
 	$ret = false;
-	$sql = "SELECT COUNT(*) count FROM follow WHERE type = 'i' AND type_id = '{$issue->id}' AND citizen_id = '{$citizen->id}'";
-	$result = execute_query($sql);
-	$line = fetch_line($result);
+	$sql = "SELECT COUNT(*) count FROM follow WHERE type = 'i' AND type_id = '{$issue->id}' AND citizen_id = '{$citizen->citizen_id}'";
+	$db->execute_query($sql);
+	$line = $db->fetch_line();
 	$count = $line['count'];
 	if ($count > 0) {
 		$ret = true;
@@ -427,10 +438,12 @@ function display_categories($selected_categories) {
 // Returns options to display in select control.
 function get_category_options($selected_categories) {
 
+	global $db;
+
 	$options = "";
 	$sql = "SELECT * FROM categories ORDER BY name";
-	$result = execute_query($sql);
-	while($line = fetch_line($result)) {
+	$db->execute_query($sql);
+	while($line = $db->fetch_line()) {
 		$options .= "<option value=\"{$line['category_id']}\"";
 		if (array_key_exists($line['category_id'], $selected_categories)) {
 			$options .= " selected=\"selected\"";

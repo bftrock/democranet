@@ -22,8 +22,8 @@ class action {
 			case LOAD_DB:
 				$this->id = $_REQUEST['aid'];
 				$sql = "SELECT * FROM actions WHERE action_id = '{$this->id}'";
-				$result = execute_query($sql);
-				$line = fetch_line($result);
+				$db->execute_query($sql);
+				$line = $db->fetch_line();
 				$this->name = $line['name'];
 				$this->description = $line['description'];
 				$this->date = $line['date'];
@@ -74,21 +74,21 @@ class action {
 		
 		if (isset($citizen_id)) {
 			$sql = "SELECT vote FROM action_citizen WHERE action_id = '{$this->id}' AND citizen_id = '{$citizen_id}'";
-			$result = execute_query($sql);
+			$db->execute_query($sql);
 			if (get_num_rows($result)) {
-				$line = fetch_line($result);
+				$line = $db->fetch_line();
 				$this->vote = $line['vote'];
 			} else {
 				$this->vote = 0;
 			}
 		}
 		$sql = "SELECT COUNT(*) cnt FROM action_citizen WHERE action_id = '{$this->id}' AND vote = '" . VOTE_FOR . "'";
-		$result = execute_query($sql);
-		$line = fetch_line($result);
+		$db->execute_query($sql);
+		$line = $db->fetch_line();
 		$this->for_count = $line['cnt'];
 		$sql = "SELECT COUNT(*) cnt FROM action_citizen WHERE action_id = '{$this->id}' AND vote = '" . VOTE_AGAINST . "'";
-		$result = execute_query($sql);
-		$line = fetch_line($result);
+		$db->execute_query($sql);
+		$line = $db->fetch_line();
 		$this->against_count = $line['cnt'];
 		
 	}

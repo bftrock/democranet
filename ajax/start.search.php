@@ -1,12 +1,12 @@
 <?php
 
-include ("../inc/util.mysql.php");
-include ("../inc/util.democranet.php");
+require_once ("../inc/class.database.php");
+require_once ("../inc/util.democranet.php");
 
-$db = open_db_connection();
+$db = new database();
+$db->open_connection();
 
 session_start();
-
 $citizen_id = null;
 if (check_field('citizen_id', $_SESSION)) {
 	$citizen_id = $_SESSION['citizen_id'];
@@ -47,8 +47,8 @@ if ($include_issue) {
 		WHERE (INSTR(i.name, '{$search}')>0 
 		OR INSTR(i.description, '{$search}')>0)
 		AND i.version = (SELECT MAX(version) FROM issues WHERE issue_id = i.issue_id)";
-	$result = execute_query($sql);
-	while ($line = fetch_line($result)) {
+	$db->execute_query($sql);
+	while ($line = $db->fetch_line()) {
 		$no_results = false;
 		if ($line['desc_pos'] > 0) {
 			if ($line['desc_pos'] > 75) {
@@ -71,8 +71,8 @@ if ($include_position) {
 		FROM positions p 
 		WHERE (INSTR(p.name, '{$search}')>0 
 		OR INSTR(p.justification, '{$search}')>0)";
-	$result = execute_query($sql);
-	while ($line = fetch_line($result)) {
+	$db->execute_query($sql);
+	while ($line = $db->fetch_line()) {
 		$no_results = false;
 		if ($line['just_pos'] > 0) {
 			if ($line['just_pos'] > 75) {
@@ -96,8 +96,8 @@ if ($include_action) {
 		FROM actions a
 		WHERE (INSTR(a.name, '{$search}')>0 
 		OR INSTR(a.description, '{$search}')>0)";
-	$result = execute_query($sql);
-	while ($line = fetch_line($result)) {
+	$db->execute_query($sql);
+	while ($line = $db->fetch_line()) {
 		// debug("A line was found.");
 		$no_results = false;
 		if ($line['desc_pos'] > 0) {

@@ -1,10 +1,11 @@
 <?php
 // This page is used to follow or unfollow an issue, position, or action.
 
-include ("../inc/util.mysql.php");
-include ("../inc/util.democranet.php");
+require_once ("../inc/class.database.php");
+require_once ("../inc/util.democranet.php");
 
-$db = open_db_connection();
+$db = new database();
+$db->open_connection();
 
 session_start();
 
@@ -40,7 +41,7 @@ switch ($action) {
 }
 
 $sql = "SELECT * FROM follow WHERE type = '{$type}' AND type_id = '{$type_id}' AND citizen_id = '{$citizen_id}'";
-$result = execute_query($sql);
+$db->execute_query($sql);
 $html = "";
 if (get_num_rows($result) > 0) {
 	$html = "Unfollow";

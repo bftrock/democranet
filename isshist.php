@@ -1,11 +1,12 @@
 <?php
 
-include ("inc/util.mysql.php");			// functions for handling database
-include ("inc/util.democranet.php");	// common application functions
-include ("inc/class.issue.php");		// the issue object, which is the model for this page
-include ("inc/class.citizen.php");		// the citizen object, which is needed for user management
+require_once ("inc/class.database.php");			// functions for handling database
+require_once ("inc/util.democranet.php");	// common application functions
+require_once ("inc/class.issue.php");		// the issue object, which is the model for this page
+require_once ("inc/class.citizen.php");		// the citizen object, which is needed for user management
 
-$db = open_db_connection();
+$db = new database();
+$db->open_connection();
 
 session_start();
 
@@ -35,10 +36,10 @@ echo DOC_TYPE;
     <meta name="HandheldFriendly" content="True">
 	<meta name="viewport" content="initial-scale=1.0, width=device-width" />
 	<link href='http://fonts.googleapis.com/css?family=Dosis:400,600|Quattrocento+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="/style/bootstrap-responsive.css" />
-	<link rel="stylesheet" type="text/css" href="/style/democranet.css" />
-	<link rel="stylesheet" type="text/css" href="/style/isshist.css" />
-	<script src="/js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style/bootstrap-responsive.css" />
+	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
+	<link rel="stylesheet" type="text/css" href="style/isshist.css" />
+	<script src="js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
 
 
 </head>
@@ -54,7 +55,7 @@ if ($citizen->id) {
 ?>
 	</div>
 	<div id="header">
-		<h1><a href="/index.php">Democra.net</a></h1>
+		<h1><a href="index.php">Democra.net</a></h1>
 	</div>
 	<div id="container-content">
 		<div id="navigation-left">
@@ -70,12 +71,12 @@ if ($citizen->id) {
 		</div>
 	</div>
 </div>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="/js/jquery.js"><\/script>')</script>
-	<script src="/js/index.js"></script>
-	<script src="/js/jquery-ui.js"></script>
-	<script src="/js/vendor/bootstrap.js"></script>
-	<script src="/js/main.js"></script>
+<script src="/ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/jquery.js"><\/script>')</script>
+	<script src="js/index.js"></script>
+	<script src="js/jquery-ui.js"></script>
+	<script src="js/vendor/bootstrap.js"></script>
+	<script src="js/main.js"></script>
 	<script type="text/javascript">
 
 $(document).ready(function () {

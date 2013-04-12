@@ -1,13 +1,14 @@
 <?php
 
-require_once ("util.mysql.php");
+require_once ("class.database.php");
 require_once ("util.democranet.php");
 require_once ("util.markdown.php");
-// require_once ("ChromePhp.php");
 
 define ("ISS_DESC_MAXLEN", 3000);
 
 class issue {
+
+	private $db = null;
 
 	public $id = null;
 	public $version = null;
@@ -17,6 +18,11 @@ class issue {
 	public $citizen_id = null;
 	public $ts = null;
 	
+	public function __construct($db)
+	{
+		$this->db = $db;
+	}
+
 	public function load($source, $version = null) {
 		
 		switch ($source) {
@@ -29,16 +35,16 @@ class issue {
 					$subsql = "(SELECT MAX(version) FROM issues WHERE issue_id = i.issue_id)";
 				}
 				$sql = "SELECT * FROM issues i WHERE i.issue_id = '{$this->id}' AND i.version = {$subsql}";
-				$result = execute_query($sql);
-				$line = fetch_line($result);
+				$this->db->execute_query($sql);
+				$line = $this->db->fetch_line();
 				$this->version = $line['version'];
 				$this->name = $line['name'];
 				$this->description = $line['description'];
 				$this->citizen_id = $line['citizen_id'];
 				$this->ts = $line['ts'];
 				$sql = "SELECT * FROM issue_category WHERE issue_id = '{$this->id}'";
-				$result = execute_query($sql);
-				while($line = fetch_line($result)) {
+				$this->db->execute_query($sql);
+				while($line = $this->db->fetch_line()) {
 					$this->categories[] = $line['category_id'];
 				}
 				break;
@@ -92,9 +98,9 @@ class issue {
 			LEFT JOIN categories c on ic.category_id = c.category_id
 			WHERE ic.issue_id = '{$this->id}'
 			ORDER BY c.name ASC";
-		$result = execute_query($sql);
+		$this->db->execute_query($sql);
 		$arr = array();
-		while($line = fetch_line($result)) {
+		while($line = $this->db->fetch_line()) {
 			$arr[$line['category_id']] = $line['category_name'];
 		}
 		return $arr;
@@ -107,8 +113,8 @@ class issue {
 
 		$arr = array();	// returned result
 		$sql = "SELECT * FROM refs WHERE issue_id = '{$this->id}'";
-		$result = execute_query($sql);
-		while($line = fetch_line($result)) {
+		$this->db->execute_query($sql);
+		while($line = $this->db->fetch_line()) {
 			$arr[] = $line;
 		}
 		return $arr;
@@ -122,8 +128,8 @@ class issue {
 			FROM issues i LEFT JOIN citizens c ON i.citizen_id = c.citizen_id
 			WHERE i.issue_id = '{$this->id}'
 			ORDER BY i.version DESC";
-		$result = execute_query($sql);
-		while($line = fetch_line($result)) {
+		$this->db->execute_query($sql);
+		while($line = $this->db->fetch_line()) {
 			$arr[] = $line;
 		}
 		return $arr;
@@ -133,8 +139,8 @@ class issue {
 	private function get_next_id() {
 
 		$sql = "SELECT MAX(issue_id) id FROM issues";
-		$result = execute_query($sql);
-		$line = fetch_line($result);
+		$this->db->execute_query($sql);
+		$line = $this->db->fetch_line();
 		$id = $line['id'];
 		return ++$id;
 
@@ -143,8 +149,8 @@ class issue {
 	private function get_next_version() {
 
 		$sql = "SELECT version FROM issues WHERE issue_id = '{$this->id}' ORDER BY version DESC LIMIT 1";
-		$result = execute_query($sql);
-		$line = fetch_line($result);
+		$this->db->execute_query($sql);
+		$line = $this->db->fetch_line();
 		$version = $line['version'];
 		return ++$version;
 

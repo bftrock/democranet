@@ -1,88 +1,72 @@
 <?php
 // This page is used to make an AJAX call to get positions for an issue.
 
-include ("../inc/util.mysql.php");
-include ("../inc/util.democranet.php");
+require_once ("../inc/class.database.php");
+require_once ("../inc/class.citizen.php");
+require_once ("../inc/util.democranet.php");
 
-$db = open_db_connection();
-
-session_start();
+$db = new database();
+$db->open_connection();
 
 // The issue id must be passed in the query string.
-$issue_id = null;
-if (check_field('iid', $_REQUEST)) {
+if (check_field('iid', $_REQUEST, true)) 
+{
 	$issue_id = $_REQUEST['iid'];
-} else {
-	die("Issue ID must be passed to this page.");
 }
 
-// The citizen id may be stored in the session if a citizen (user) is logged in.
-$citizen_id = null;
-if (check_field('citizen_id', $_SESSION)) {
-	$citizen_id = $_SESSION['citizen_id'];
-	//debug("Citizen ID = {$citizen_id}");
-}
+$citizen = new citizen($db);
+$citizen->check_session();
 
-// Start building the output in a string.
-// The first bit is the title of the section.
-$ret = "";
-$ret .= "<p><span id=\"pos_title\">Positions</span>";
-if (!$citizen_id) {
-	$ret .= "&nbsp;(Log in to vote on Positions)";
+// Execute a separate query to get the citizen's vote on each issue, and store results in an array.
+$sql = "SELECT pc.position_id, pc.vote 
+	FROM position_citizen pc LEFT JOIN positions p ON pc.position_id = p.position_id
+	WHERE p.issue_id = '{$issue_id}'
+	AND pc.citizen_id = '{$citizen->citizen_id}'";
+$db->execute_query($sql);
+$citizen_votes = array();
+while ($line = $db->fetch_line())
+{
+	$citizen_votes[$line['position_id']] = $line['vote'];
 }
-$ret .= "</p>\n";
-
-// Now build the table to display the results. If there is a citizen in session, add a column that
-// displays their vote on each issue.
-$ret .= "<table><tr><th id=\"th_position\">Position</th>";
-if ($citizen_id) {
-	$ret .= "<th id=\"th_your_vote\">Your Vote</th>";
-}
-$ret .= "<th id=\"th_citizens_for\">Citizens <img src=\"img/for.png\"/></th><th id=\"th_citizens_against\">Citizens <img src=\"img/against.png\"/></th></tr>\n";
-
-// If a citizen is in session, execute a separate query to get their vote on each issue, and store
-// results in an array.
-if ($citizen_id) {	
-	$sql = "SELECT pc.position_id, pc.vote 
-		FROM position_citizen pc LEFT JOIN positions p ON pc.position_id = p.position_id
-		WHERE p.issue_id = '{$issue_id}'
-		AND pc.citizen_id = '{$citizen_id}'";
-	$result = execute_query($sql);
-	$citizen_votes = array();
-	while ($line = fetch_line($result)) {
-		$citizen_votes[$line['position_id']] = $line['vote'];
-	}
-}
-
+?>
+<p class="title">Positions</p>
+<table>
+	<tr>
+		<th id="th_position"></th>
+		<th id="th_your_vote">Your Vote</th>
+		<th id="th_citizens_for"><img src="img/for.png" title="Citizens For"/></th>
+		<th id="th_citizens_against"><img src="img/against.png" title="Citizens Against"/></th>
+	</tr>
+<?php
 // Execute a query that counts the votes on each position for this issue.
 $sql = "SELECT p.position_id, p.name,
 	(SELECT COUNT(*) FROM position_citizen pc WHERE pc.position_id = p.position_id AND pc.vote = '".VOTE_FOR."') vote_for,
 	(SELECT COUNT(*) FROM position_citizen pc WHERE pc.position_id = p.position_id AND pc.vote = '".VOTE_AGAINST."') vote_against
 	FROM positions p
 	WHERE issue_id = '{$issue_id}'";
-$result = execute_query($sql);
+$db->execute_query($sql);
 
 // Iterate over result to build each row of the table.
-while ($line = fetch_line($result)) {
-	$ret .= "<tr><td><a href=\"position.php?m=r&pid={$line['position_id']}&iid={$issue_id}\" class=\"position\">{$line['name']}</a></td>";
-	if ($citizen_id) {
-		if (isset($citizen_votes[$line['position_id']])) {
-			$ret .= "<td>" . get_vote_html($citizen_votes[$line['position_id']]) . "</td>";
-		} else {
-			$ret .= "<td></td>";
-		}
+while ($line = $db->fetch_line()) 
+{
+	echo "<tr><td><a href=\"position.php?m=r&pid={$line['position_id']}&iid={$issue_id}\" >{$line['name']}</a></td>";
+	if (isset($citizen_votes[$line['position_id']])) 
+	{
+		echo "<td class=\"ac\">" . get_vote_html($citizen_votes[$line['position_id']]) . "</td>";
 	}
-	$ret .= "<td>{$line['vote_for']}</td><td>{$line['vote_against']}</td></tr>\n";
+	else 
+	{
+		echo "<td></td>";
+	}
+	echo "<td class=\"ac\">{$line['vote_for']}</td><td class=\"ac\">{$line['vote_against']}</td></tr>\n";
 }
-$ret .= "</table>\n";
-
-// Now echo the html.
-echo $ret;
+echo "</table>\n";
 
 function get_vote_html($vote) {
 	
 	$ret = "";
-	switch ($vote) {
+	switch ($vote) 
+	{
 		case VOTE_FOR:
 			$src = "img/for.png";
 			break;

@@ -1,98 +1,61 @@
-h1#title {
+.title
+{
 	font-size: 1.5em;
 	margin: 0 0 10px 0;
+	font-weight: 700;
 }
 
-#description h1 {
+#description h1 
+{
 	font-size: 1.25em;
 	margin: 10px 0 5px 0;
 }
 
-#description h2 {
+#description h2 
+{
 	font-size: 1em;
 	margin: 10px 0 0 0;
 }
 
-#description p {
-	margin: 0 0 5px 0;
-}
+#description p {margin: 0 0 5px 0}
 
-#content th {
+#content th 
+{
 	text-align: left;
 	vertical-align: top;
 }
 
-p.ref {
+p.ref 
+{
 	margin-top: 0;
 	margin-bottom: 10px;
 }
 
-span.counter {
-	float: right;
-}
+span.counter {float: right}
 
-#divRB {
+#divRB 
+{
 	border: solid 1px gray;
 	width: 760px;
 }
 
-.italics {
-	font-style: italic;
+#positions th, #positions td {border-bottom: solid 1px #BED2D9}
+
+#positions #th_position {width: 500px}
+
+#positions #th_your_vote 
+{
+	width: 100px;
+	text-align: center;
+	vertical-align: bottom;
 }
 
-#pos_title {
-	font-weight: bold;
-	font-size: 1.2em;
+#positions #th_citizens_for, #positions #th_citizens_against {
+	text-align: center;
 }
 
-a.position {
-	color: #000;
-}
-
-a.for {
-	color: #66cc66;
-}
-
-a.against {
-	color: #cc6666;
-}
-
-a.comment {
-	color: #6666cc;
-}
-
-#positions table, #positions th, #positions td {
-	border: 1px solid gray;
-	border-collapse: collapse;
-}
-
-#positions #th_position {
-	width: 60%;
-	text-align: left;
-}
-
-#positions #th_your_vote {
-	width: 10%;
-	text-align: left;
-}
-
-#positions #th_add_vote {
-	width: 20%;
-	text-align: left;
-}
-
-#positions #th_comment {
-	text-align: left;
-}
-
-.exceeded {
-	background-color : red;
-}
-
-.highlight {
-	background-color: #ccccff;
-}
-
-.hidden {
-	display: none;
+#positions td.ac
+{
+	text-align: center;
+	font-size: 1.4em;
 }

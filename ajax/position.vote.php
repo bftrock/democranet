@@ -3,12 +3,13 @@
 // if a citizen is in session, his/her vote. Also, a citizen's vote can be added or changed with
 // this page.
 
-include ("../inc/util.mysql.php");
-include ("../inc/util.democranet.php");
-include ("../inc/class.citizen.php");
-include ("../inc/class.position.php");
+require_once ("../inc/class.database.php");
+require_once ("../inc/util.democranet.php");
+require_once ("../inc/class.citizen.php");
+require_once ("../inc/class.position.php");
 
-$db = open_db_connection();
+$db = new database();
+$db->open_connection();
 
 session_start();
 

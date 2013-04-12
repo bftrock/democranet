@@ -1,9 +1,10 @@
 <?php
 
-include ("../inc/util.mysql.php");
-include ("../inc/util.democranet.php");
+require_once ("../inc/class.database.php");
+require_once ("../inc/util.democranet.php");
 
-$db = open_db_connection();
+$db = new database();
+$db->open_connection();
 
 if (check_field('tid', $_REQUEST)) {
 	$type_id = $_REQUEST['tid'];
@@ -17,9 +18,9 @@ if (check_field('t', $_REQUEST)) {
 }
 
 $sql = "SELECT * FROM refs WHERE type = '{$type}' AND type_id = '{$type_id}'";
-$result = execute_query($sql);
+$db->execute_query($sql);
 $ref_arr = array();
-while($line = fetch_line($result)) {
+while($line = $db->fetch_line()) {
 	$ref_arr[] = $line;
 }
 

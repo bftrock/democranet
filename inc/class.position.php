@@ -20,8 +20,8 @@ class position {
 			case LOAD_DB:
 				$this->id = $_REQUEST['pid'];
 				$sql = "SELECT * FROM positions WHERE position_id = '{$this->id}'";
-				$result = execute_query($sql);
-				$line = fetch_line($result);
+				$db->execute_query($sql);
+				$line = $db->fetch_line();
 				$this->name = $line['name'];
 				$this->justification = $line['justification'];
 				$this->issue_id = $line['issue_id'];
@@ -65,19 +65,19 @@ class position {
 		
 		if (isset($citizen_id)) {
 			$sql = "SELECT vote FROM position_citizen WHERE position_id = '{$this->id}' AND citizen_id = '{$citizen_id}'";
-			$result = execute_query($sql);
+			$db->execute_query($sql);
 			if (get_num_rows($result)) {
-				$line = fetch_line($result);
+				$line = $db->fetch_line();
 				$this->vote = $line['vote'];
 			}
 		}
 		$sql = "SELECT COUNT(*) cnt FROM position_citizen WHERE position_id = '{$this->id}' AND vote = '" . VOTE_FOR . "'";
-		$result = execute_query($sql);
-		$line = fetch_line($result);
+		$db->execute_query($sql);
+		$line = $db->fetch_line();
 		$this->for_count = $line['cnt'];
 		$sql = "SELECT COUNT(*) cnt FROM position_citizen WHERE position_id = '{$this->id}' AND vote = '" . VOTE_AGAINST . "'";
-		$result = execute_query($sql);
-		$line = fetch_line($result);
+		$db->execute_query($sql);
+		$line = $db->fetch_line();
 		$this->against_count = $line['cnt'];
 		
 	}

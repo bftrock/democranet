@@ -3,13 +3,14 @@
 // Position. This same page is also used to edit, create new, insert and update Actions. The model
 // for this page is the Action class, and the View and Control happens within this page.
 
-require_once ("inc/util.mysql.php");
+require_once ("inc/class.database.php");
 require_once ("inc/util.democranet.php");
 require_once ("inc/class.citizen.php");
 require_once ("inc/class.action.php");
 //require_once ("inc/ChromePhp.php");
 
-$db = open_db_connection();
+$db = new database();
+$db->open_connection();
 
 session_start();
 
@@ -102,10 +103,10 @@ echo DOC_TYPE;
     <meta name="HandheldFriendly" content="True">
 	<meta name="viewport" content="initial-scale=1.0, width=device-width" />
 	<link href='http://fonts.googleapis.com/css?family=Dosis:400,600|Quattrocento+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="/style/bootstrap-responsive.css" />
-	<link rel="stylesheet" type="text/css" href="/style/democranet.css" />
-	<link rel="stylesheet" type="text/css" href="/style/action.css" />
-	<script src="/js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style/bootstrap-responsive.css" />
+	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
+	<link rel="stylesheet" type="text/css" href="style/action.css" />
+	<script src="js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
 
 </head>
 
@@ -122,7 +123,7 @@ if ($citizen->id) {
 ?>
 	</div>
 	<div id="header">
-		<h1><a href="/index.php">Democra.net</a></h1>
+		<h1><a href="index.php">Democra.net</a></h1>
 	</div>
 	<div id="container-content">
 		<div id="navigation-left">
@@ -199,10 +200,10 @@ if ($citizen->id) {
 	</div>
 </div>
 
-<script src="/js/jquery.js"></script>')
-<script src="/js/jquery-ui.js"></script>
-<script src="/js/vendor/bootstrap.js"></script>
-<script src="/js/main.js"></script>
+<script src="js/jquery.js"></script>')
+<script src="js/jquery-ui.js"></script>
+<script src="js/vendor/bootstrap.js"></script>
+<script src="js/main.js"></script>
 <script type="text/javascript">
 
 <?php if ($mode == "e") { ?>
@@ -301,8 +302,8 @@ function following_action() {
 	global $action, $citizen;
 	$ret = false;
 	$sql = "SELECT COUNT(*) count FROM follow WHERE type = 'a' AND type_id = '{$action->id}' AND citizen_id = '{$citizen->id}'";
-	$result = execute_query($sql);
-	$line = fetch_line($result);
+	$db->execute_query($sql);
+	$line = $db->fetch_line();
 	$count = $line['count'];
 	if ($count > 0) {
 		$ret = true;
