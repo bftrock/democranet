@@ -44,7 +44,7 @@ switch ($mode) {
 	case "i":
 		if ($citizen->check_email()) {
 			$citizen->insert();
-			$_SESSION['citizen_id'] = $citizen->id;
+			$_SESSION['citizen_id'] = $citizen->citizen_id;
 			header("Location:citizen.php");
 		} else {
 			$err_msg = "The email address you submitted is already in use. Please use another email address.";
@@ -153,7 +153,7 @@ function displayErrMsg(errMsg) {
 
 	<div id="login">
 <?php
-if ($citizen->id) {
+if ($citizen->citizen_id) {
 echo "<p><a href=\"citizen.php\">{$citizen->name}</a>&nbsp;<a href=\"login.php?a=lo&r=index.php\">Log out</a></p>";
 } else {
 echo "<p><a href=\"login.php\">Log in / Become a Citizen</a></p>";
@@ -206,7 +206,7 @@ echo "<p><a href=\"login.php\">Log in / Become a Citizen</a></p>";
 						<td><?php echo get_gender_input($citizen->gender); ?></td></tr>
 					<tr><td>Phone:</td>
 						<td><input type="text" size="25" name="telephone" value="<?php echo $citizen->telephone; ?>" /></td></tr>
-					<tr><td><input type="hidden" name="citizen_id" value="<?php echo $citizen->id; ?>"></td>
+					<tr><td><input type="hidden" name="citizen_id" value="<?php echo $citizen->citizen_id; ?>"></td>
 						<td><input type="button" value="Save" onclick="submitForm()" /></td></tr>
 				</table>
 			</form>

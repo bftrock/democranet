@@ -1,9 +1,22 @@
+/*
+Democranet palette
+http://www.colourlovers.com/palette/452030/you_will_be_free?widths=1
+
+Lightest to darkest:
+Persistence Pays: #F7F9FE
+Handsome Dividends: #ECF1F2
+In Good Time: #DCE8EB
+You Will Be Free: #CBDBE0
+Breathe Then: #BED2D9
+Orange: #C86C06
+*/
 body
 {
 	font-family: 'Quattrocento Sans', helvetica, arial, sans-serif;
 	font-size: 100%;
 	line-height: 1.4;
 	background-color: #BED2D9;
+	margin: 0;
 }
 
 h1, h2, h3, h4, h5 
@@ -28,7 +41,14 @@ p
 	margin-bottom: .5em;
 }
 
-li {font-size: 0.9em}
+li {font-size: 1em}
+
+input, textarea, select
+{
+	font-family: 'Courier', monospace;
+	font-size: 0.9em;
+	padding: 2px;
+}
 
 .bold {font-weight: 700}
 
@@ -36,12 +56,31 @@ li {font-size: 0.9em}
 
 .exceeded {background-color : red}
 
-.highlight {background-color: #ccccff}
+.highlight {background-color: #CBDBE0}
 
 .hidden {display: none}
 
-table {font-size: 0.9em}
+.title
+{
+	font-size: 1.5em;
+	margin: 0 0 .5em 0;
+	font-weight: 700;
+}
 
+table {font-size: 1em}
+
+/*
+Democranet palette
+http://www.colourlovers.com/palette/452030/you_will_be_free?widths=1
+
+Lightest to darkest:
+Persistence Pays: #F7F9FE
+Handsome Dividends: #ECF1F2
+In Good Time: #DCE8EB
+You Will Be Free: #CBDBE0
+Breathe Then: #BED2D9
+Orange: #C86C06
+*/
 .btn 
 {
 	border-style: solid;
@@ -49,13 +88,30 @@ table {font-size: 0.9em}
 	border-radius: 4px;
 	border-width: 1px;
 	padding: 3px 5px 2px;
-	background-image: linear-gradient(#fff, #ddd);
+	background-image: linear-gradient(#F7F9FE, #DCE8EB);
 	cursor: pointer;
 }
 
-.btn:hover {background-image: linear-gradient(#eee, #ccc)}
+.btn:hover {background-image: linear-gradient(#ECF1F2, #BED2D9)}
 
 /* links */
+a.btn:link 
+{
+	text-decoration: none;
+	color: #222;
+	-webkit-transition: all 0s linear;
+	   -moz-transition: all 0s linear;
+	    -ms-transition: all 0s linear;
+	     -o-transition: all 0s linear;
+	        transition: all 0s linear;
+}
+
+a.btn:visited {color: #222}
+
+a.btn:hover {color: #C86C06}
+
+a.btn:active {color: #C86C06}
+
 a:link 
 {
 	text-decoration: none;
@@ -85,8 +141,6 @@ a:active {color: #222}
 	width: 900px;
 	background-color: #ECF1F2;
 	min-height: 780px;
-	position: relative;
-	top: -8px;
 }
 
 #login 
@@ -107,37 +161,86 @@ a:active {color: #222}
 
 #content {padding: 10px 50px}
 
-#content h2 {margin: 0}
-
-#content h3 {margin: 0 0 10px 0}
-
-#content th
+#votes 
 {
-	text-align: left;
-	vertical-align: top;
+	padding: 0;
+	margin-top: 0;
+	margin-bottom: 20px;
+	text-align: center;
 }
 
-#vote_for {color: LimeGreen}
-
-#vote_against {color: red}
-
-ul#votes li 
+#votes li 
 {
+	font-size: 1.1em;
 	display: inline;
-	margin: 0 25px 0 0;
+	margin: 0 20px 0 0;
 }
 
-ul#votes li.label
+#votes li.label
 {
 	font-weight: bold;
 	margin-right: 1px;
 }
 
+.with_img img
+{
+	position: relative;
+	top: 18px;
+}
+
 #new_comment {display: none}
 
-#bu_follow 
+.with_btn .btn 
 {
 	position: relative;
 	top: -4px;
 	left: 10px;
+}
+
+.vote_tally th, .vote_tally td {border-bottom: solid 1px #BED2D9}
+
+.vote_tally #th_c1 {min-width: 300px}
+
+.vote_tally #th_c2 {vertical-align: bottom}
+
+td.ac
+{
+	text-align: center;
+}
+
+a.fs
+{
+	font-size: 0.8em;
+	line-height: 1;
+}
+
+table.form {width:100%}
+
+table.form th
+{
+	vertical-align: top;
+	text-align: right;
+	width: 90px;
+}
+
+/* Reference Builder */
+#di_RB {border: solid 1px gray}
+
+#di_input span {white-space: nowrap}
+
+#di_input label
+{
+	margin-left: 5px;
+	margin-right: 2px;
+}
+
+#di_buttons
+{
+	margin-top: 5px;
+	margin-left: 5px
+}
+
+#di_refs
+{
+	margin: 5px;
 }

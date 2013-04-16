@@ -6,11 +6,14 @@ require_once ("inc/class.citizen.php");
 $db = new database();
 $db->open_connection();
 
-$citizen = new citizen($db);
+$citizen = new citizen();
 $citizen->check_session();
-if ($citizen->in_session) {
-	$citizen->load(LOAD_DB);
-} else {
+if ($citizen->in_session)
+{
+	$citizen->load_db($db);
+} 
+else 
+{
 	header("Location:login.php");
 }
 
@@ -18,20 +21,13 @@ if ($citizen->in_session) {
 <html>
 <head>
 	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<title>Democranet: Start</title>
-	<meta name="description" content="">
-	<meta name="HandheldFriendly" content="True">
-	<meta name="viewport" content="initial-scale=1.0, width=device-width" />
 	<link href="http://fonts.googleapis.com/css?family=Dosis:400,600|Quattrocento+Sans:400,700,400italic,700italic" rel="stylesheet" type="text/css">
-	<link rel="stylesheet" type="text/css" href="style/bootstrap-responsive.css" />
 	<link rel="stylesheet" type="text/css" href="style/jquery-ui.css">
 	<link rel="stylesheet" type="text/css" href="style/start.css" />
 	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
-	<script src="js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
 	<script src="js/jquery.js"></script>
 	<script src="js/jquery-ui.js"></script>
-	<script src="js/vendor/bootstrap.js"></script>
 	<script src="js/start.js"></script>
 </head>
 
@@ -50,7 +46,7 @@ if ($citizen->in_session) {
 		</div>
 
 		<div id="di_search">
-			<a class="btn" id="bu_help" href="#">?</a>
+			<a class="btn" id="bu_help" href="#" title="Search help">?</a>
 			<input type="text" id="in_search"/>
 			<a class="btn" id="bu_search" href="#">Search</a>
 			<div id="search_help" title="Search Help">To search in Issues, Positions and Actions, 

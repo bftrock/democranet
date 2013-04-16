@@ -1,5 +1,4 @@
 <?php
-
 require_once ("inc/class.database.php");
 require_once ("inc/util.democranet.php");
 

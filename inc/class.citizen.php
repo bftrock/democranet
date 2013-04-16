@@ -1,14 +1,9 @@
 <?php
-
 require_once ("class.database.php");
 require_once ("util.democranet.php");
 
 class citizen 
 {	
-	const LOAD_DB = 1;
-	const LOAD_POST = 2;
-	const LOAD_NEW = 3;
-
 	private $db = null;
 
 	public $citizen_id = null;
@@ -21,11 +16,6 @@ class citizen
 	public $postal_code = null;
 	public $in_session = false;
 	
-	public function __construct($db)
-	{
-		$this->db = $db;
-	}
-
 	public function check_session()
 	{
 		session_start();
@@ -33,40 +23,34 @@ class citizen
 		{
 			$this->citizen_id = $_SESSION['citizen_id'];
 			$this->in_session = true;
-		} else {
-			die(ERR_NO_SESSION);
 		}
 	}
 
+	public function load_db($db)
+	{
+		$this->db = $db;
+		$sql = "SELECT * FROM citizens WHERE citizen_id = '{$this->citizen_id}'";
+		$this->db->execute_query($sql);
+		$line = $this->db->fetch_line();
+		$this->name = $line['name'];
+		$this->email = $line['email'];
+		$this->birth_year = $line['birth_year'];
+		$this->gender = $line['gender'];
+		$this->country = $line['country'];
+		$this->postal_code = $line['postal_code'];
+	}
+
 	// This function loads citizen properties if a user is logged in.
-	public function load($source)
+	public function load_post()
 	{	
-		switch ($source)
-		{
-			case self::LOAD_DB:
-				$sql = "SELECT * FROM citizens WHERE citizen_id = '{$this->citizen_id}'";
-				$this->db->execute_query($sql);
-				$line = $this->db->fetch_line();
-				$this->name = $line['name'];
-				$this->email = $line['email'];
-				$this->birth_year = $line['birth_year'];
-				$this->gender = $line['gender'];
-				$this->country = $line['country'];
-				$this->postal_code = $line['postal_code'];
-				break;
-			case self::LOAD_POST:
-				$this->citizen_id = $_POST['citizen_id'];
-				$this->name = $_POST['name'];
-				$this->email = $_POST['email'];
-				$this->password = $_POST['password'];
-				$this->birth_year = $_POST['birth_year'];
-				$this->gender = $_POST['gender'];
-				$this->country = $_POST['country'];
-				$this->postal_code = $_POST['postal_code'];
-				break;
-			case self::LOAD_NEW:
-			default:
-		}
+		$this->citizen_id = $_POST['citizen_id'];
+		$this->name = $_POST['name'];
+		$this->email = $_POST['email'];
+		$this->password = $_POST['password'];
+		$this->birth_year = $_POST['birth_year'];
+		$this->gender = $_POST['gender'];
+		$this->country = $_POST['country'];
+		$this->postal_code = $_POST['postal_code'];
 	}
 		
 	public function insert()

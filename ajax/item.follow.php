@@ -29,13 +29,13 @@ switch ($action) {
 	case "f":	// follow
 
 		$sql = "INSERT follow SET type = '{$type}', type_id = '{$type_id}', citizen_id = '{$citizen_id}'";
-		execute_query($sql);
+		$db->execute_query($sql);
 		break;
 
 	case "u":	// unfollow
 
 		$sql = "DELETE FROM follow WHERE type = '{$type}' AND type_id = '{$type_id}' AND citizen_id = '{$citizen_id}'";
-		execute_query($sql);
+		$db->execute_query($sql);
 		break;
 
 }
@@ -43,7 +43,7 @@ switch ($action) {
 $sql = "SELECT * FROM follow WHERE type = '{$type}' AND type_id = '{$type_id}' AND citizen_id = '{$citizen_id}'";
 $db->execute_query($sql);
 $html = "";
-if (get_num_rows($result) > 0) {
+if ($db->get_num_rows() > 0) {
 	$html = "Unfollow";
 } else {
 	$html = "Follow";

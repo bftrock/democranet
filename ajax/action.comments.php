@@ -25,7 +25,7 @@ if (check_field('aid', $_REQUEST)) {
 // If the comment parameter (co) is passed in the query string, we're posting a comment.
 $comment = null;
 if (check_field('co', $_REQUEST)) {
-	$comment = safe_sql($_REQUEST['co']);
+	$comment = $db->safe_sql($_REQUEST['co']);
 	// Check to make sure everything we need is set before inserting.
 	if ($action_id && $citizen_id) {
 		$sql = "INSERT comments (type, type_id, citizen_id, comment) VALUES ('a','{$action_id}','{$citizen_id}','{$comment}')";

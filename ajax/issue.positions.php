@@ -29,13 +29,16 @@ while ($line = $db->fetch_line())
 	$citizen_votes[$line['position_id']] = $line['vote'];
 }
 ?>
-<p class="title">Positions</p>
-<table>
+<p class="with_btn">
+	<span class="title">Positions</span>
+	<a id="bu_add_pos" class="btn" href="#">Add Position</a>
+</p>
+<table class="vote_tally">
 	<tr>
-		<th id="th_position"></th>
-		<th id="th_your_vote">Your Vote</th>
-		<th id="th_citizens_for"><img src="img/for.png" title="Citizens For"/></th>
-		<th id="th_citizens_against"><img src="img/against.png" title="Citizens Against"/></th>
+		<th id="th_c1"></th>
+		<th id="th_c2" class="ac">Your Vote</th>
+		<th id="th_c3" class="ac"><img src="img/for.png" title="Citizens For"/></th>
+		<th id="th_c4" class="ac"><img src="img/against.png" title="Citizens Against"/></th>
 	</tr>
 <?php
 // Execute a query that counts the votes on each position for this issue.
@@ -76,7 +79,7 @@ function get_vote_html($vote) {
 		default:
 			$src = "";
 	}
-	$ret = "<img src=\"{$src}\" />&nbsp;";
+	$ret = "<img src=\"{$src}\" />";
 	return $ret;
 
 }

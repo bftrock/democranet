@@ -30,18 +30,18 @@ if ($citizen->in_session()) {
 // If a citizen is logged in, check if vo parameter was passed. If yes, set/update vote. The
 // get_vote method gets the current citizen's vote as well as the for/against count of all votes on
 // the action.
-if ($citizen->id) {
+if ($citizen->citizen_id) {
 	if (check_field('vo', $_REQUEST)) {
-		$action->set_vote($citizen->id, $_REQUEST['vo']);
+		$action->set_vote($citizen->citizen_id, $_REQUEST['vo']);
 	}
-	$action->get_vote($citizen->id);
+	$action->get_vote($citizen->citizen_id);
 } else {
 	$action->get_vote(null);
 }
 
 // Start building the output.
 $json = "{";
-if ($citizen->id) {
+if ($citizen->citizen_id) {
 	$json .= "\"vote\":{$action->vote},";
 }
 $json .= "\"for\":{$action->for_count},\"against\":{$action->against_count}}";

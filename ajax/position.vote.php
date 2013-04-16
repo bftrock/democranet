@@ -11,37 +11,36 @@ require_once ("../inc/class.position.php");
 $db = new database();
 $db->open_connection();
 
-session_start();
-
 // The position id must be passed in the request.
-if (check_field('pid', $_REQUEST)) {
-	$position = new position();
+if (check_field('pid', $_REQUEST, true))
+{
+	$position = new position($db);
 	$position->load(LOAD_DB);
-} else {
-	die("Position ID must be passed to this page.");
 }
 
 // A citizen must be logged in to vote.
 $citizen = new citizen();
-if ($citizen->in_session()) {
-	$citizen->load(LOAD_DB);
+$citizen->check_session();
+if ($citizen->in_session)
+{
+	$citizen->load_db($db);
+}
+else
+{
+	die(ERR_NO_SESSION);
 }
 
-// If a citizen is logged in, check if vo parameter was passed. If yes, set/update vote. The
-// get_vote method gets the current citizen's vote as well as the for/against count of all votes on
-// the position.
-if ($citizen->id) {
-	if (check_field('vo', $_REQUEST)) {
-		$position->set_vote($citizen->id, $_REQUEST['vo']);
-	}
-	$position->get_vote($citizen->id);
-} else {
-	$position->get_vote(null);
+// Check if vo parameter was passed. If yes, set/update vote. The get_vote method gets the current citizen's vote as 
+// well as the for/against count of all votes on the position.
+if (check_field('vo', $_REQUEST))
+{
+	$position->set_vote($citizen->citizen_id, $_REQUEST['vo']);
 }
+$position->get_vote($citizen->citizen_id);
 
 // Start building the output.
 $json = "{";
-if ($citizen->id) {
+if ($citizen->citizen_id) {
 	$json .= "\"vote\":{$position->vote},";
 }
 $json .= "\"for\":{$position->for_count},\"against\":{$position->against_count}}";

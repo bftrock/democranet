@@ -11,52 +11,62 @@ require_once ("inc/class.position.php");
 $db = new database();
 $db->open_connection();
 
-session_start();
-
-// Create the citizen object, which represents a user. It is not necessary for a user to be logged
-// on to use the site, but if there is a citizen id in the $_SESSION array, the properties will be
-// loaded. Otherwise, properties will be left = null.
 $citizen = new citizen();
-if ($citizen->in_session()) {
-	$citizen->load(LOAD_DB);
+$citizen->check_session();
+if ($citizen->in_session) 
+{
+	$citizen->load_db($db);
+}
+else
+{
+	header("Location:login.php");
 }
 
-// Set the mode variable, which controls the mode of this page.
+// The mode variable controls the mode of this page.
+// r = read, e = edit, n = new, u = update, i = insert
 $mode = "";
-if (isset($_GET['m'])) {
-	// typical case
-	$mode = $_GET['m'];
-} else {
-	// default to new if no mode is passed
-	$mode = "n";
+if (check_field("m", $_REQUEST))
+{
+	$mode = $_REQUEST['m'];	// typical case
+} 
+else 
+{
+	$mode = "n";	// otherwise we're adding a new issue
 }
 
 // The position object is loaded from the db if we're reading or editing, and from the $_POST global
 // if we're inserting or updating.  If we're adding a new position, the object is mostly unloaded.
-$source = null;
-if ($mode == "r" || $mode == "e") {
-	$source = LOAD_DB;
-} elseif ($mode == "u" || $mode == "i") {
-	$source = LOAD_POST;
-} else {
-	$source = LOAD_NEW;
+$position = new position($db);
+if ($mode == "r" || $mode == "e")
+{
+	$position->load(LOAD_DB);
 }
-$position = new position();
-$position->load($source);
+elseif ($mode == "u" || $mode == "i")
+{
+	$position->load(LOAD_POST);
+}
+else
+{
+	$position->load(LOAD_NEW);
+}
 
 
-switch ($mode) {
-
+switch ($mode)
+{
 	case "i":	// insert newly created position and reload page
 
-		$position->insert();
-		header("Location:position.php?m=r&pid={$position->id}");
+		if ($position->insert())
+		{
+			header("Location:position.php?m=r&pid={$position->id}");
+		}
 		break;
 
 	case "u":	// update edited position and reload page
 
-		$position->update();
-		header("Location:position.php?m=r&pid={$position->id}");
+		if ($position->update())
+		{
+			header("Location:position.php?m=r&pid={$position->id}");
+		}
 		break;
 
 	case "e":	// edit existing position
@@ -72,187 +82,260 @@ switch ($mode) {
 	case "r":	// display position specified in query string in read-only mode
 	default:
 
-		if ($citizen->id) {
-			$position->get_vote($citizen->id);
-			$vote = $position->vote;
-			switch ($vote) {
-				case VOTE_FOR:
-					$citizen_vote_html = "<img src=\"img/for.png\" />";
-					break;
-				case VOTE_AGAINST:
-					$citizen_vote_html = "<img src=\"img/against.png\" />";
-					break;
-				default:
-					$citizen_vote_html = "(None)";
-			}
+		$position->get_vote($citizen->citizen_id);
+		$vote = $position->vote;
+		switch ($vote) {
+			case VOTE_FOR:
+				$citizen_vote_html = "<img src=\"img/for.png\" />";
+				break;
+			case VOTE_AGAINST:
+				$citizen_vote_html = "<img src=\"img/against.png\" />";
+				break;
+			default:
+				$citizen_vote_html = "(None)";
 		}
 
 }
 
+// This is used in the reference builder div
+$type_id = $position->id;
+
 echo DOC_TYPE;
 ?>
 <html>
-
 <head>
 	<title>Democranet: Position</title>
 	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<meta name="description" content="">
-	<meta name="HandheldFriendly" content="True">
-	<meta name="viewport" content="initial-scale=1.0, width=device-width" />
-	<link href='http://fonts.googleapis.com/css?family=Dosis:400,600|Quattrocento+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" type="text/css" href="style/bootstrap-responsive.css" />
 	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
-	<link rel="stylesheet" type="text/css" href="style/position.css" />
-	<script src="js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="style/jquery-ui.css">
+	<link href="http://fonts.googleapis.com/css?family=Dosis:400,600|Quattrocento+Sans:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+	<style type="text/css">
+
+#ta_justification
+{
+	width: 100%;
+	height: 300px;
+}
+
+p.ref 
+{
+	margin-top: 0;
+	margin-bottom: 10px;
+}
+
+#actions #th_comment {
+	text-align: left;
+}
+
+	</style>
+
 </head>
 
 <body>
 
 <div id="container">
-	<div id="login">
-<?php
-if ($citizen->id) {
-	echo "<p><a href=\"citizen.php\">{$citizen->name}</a>&nbsp;<a href=\"login.php?a=lo&r=index.php\">Log out</a></p>";
-} else {
-	echo "<p><a href=\"login.php\">Log in / Become a Citizen</a></p>";
-}
-?>
-	</div>
-	<div id="header">
-		<h1><a href="index.php">Democra.net</a></h1>
-	</div>
-	<div id="container-content">
 
-		<div id="navigation-left">
-			<ul>
-<?php if (isset($position->issue_id)) { ?>
-				<li><a href="issue.php?iid=<?php echo $position->issue_id; ?>"><< Return to Issue</a></li>
-<?php } ?>
-				<li><a href="issbrws.php">Browse Issues</a></li>
-				<li><a href="action.php?m=n&pid=<?php echo $position->id; ?>">Add New Action</a></li>
-			</ul>
-		</div>
+<?php include ("inc/header.login.php"); ?>
 
-		<div id="content">
+	<div id="content">
+
 <?php if ($mode == "e" || $mode == "n") { ?>
-			<h3>Position</h3>
-			<form method="post" action="<?php echo $submit_action; ?>"><table>
-				<tr><th>Position:
-						<input name="position_id" id="position_id" type="hidden" value="<?php echo $position->id; ?>" />
-					</th>
-					<td><input name="name" size="100" value="<?php echo $position->name; ?>" /></td></tr>
-				<tr><th>Justification:</th><td><textarea name="justification" rows="15" cols="90"><?php echo $position->justification; ?></textarea></td></tr>
-				<tr><td></td><td><input type="submit" value="Save" /><button id="bu_cancel_pos">Cancel</button></td></tr>
-				<tr>
-					<th>References:<br><img id="im_ref_help" alt="Reference Help" src="img/help.png"></th>
-					<td>
-						<div id="divRB">
-							<div id="divInput">
-								<span id="sp_ref_id"><input type="hidden" name="rb_ref_id" id="rb_ref_id"/></span>
-								<span id="sp_typ_id"><input type="hidden" name="rb_type_id" id="rb_type_id" value="<?php echo $position->id; ?>"/></span>
-								<span id="sp_type"><input type="hidden" name="rb_type" id="rb_type" value="i"/></span>
-								<span id="sp_ref_type">
-									<label for="rb_ref_type">Reference Type:</label>
-									<select name="rb_ref_type" id="rb_ref_type">
-										<option value="<?php echo REF_TYPE_WEB; ?>">Web</option>
-										<option value="<?php echo REF_TYPE_BOOK; ?>">Book</option>
-										<option value="<?php echo REF_TYPE_NEWS; ?>">News</option>
-										<option value="<?php echo REF_TYPE_JOURNAL; ?>">Journal</option>
-									</select>
-								</span>
-								<span id="sp_author"><label for="rb_author">Author:</label><input type="text" name="rb_author" id="rb_author" /></span>
-								<span id="sp_title"><label for="rb_title">Title:</label><input type="text" name="rb_title" id="rb_title" size="70" /></span><br>
-								<span id="sp_publisher"><label for="rb_publisher">Publisher:</label><input type="text" name="rb_publisher" id="rb_publisher" /></span>
-								<span id="sp_date"><label for="rb_date">Date:</label><input type="text" name="rb_date" id="rb_date" /></span>
-								<span id="sp_url"><label for="rb_url">URL:</label><input type="text" name="rb_url" id="rb_url" size="70" /></span><br>
-								<span id="sp_isbn"><label for="rb_isbn">ISBN:</label><input type="text" name="rb_isbn" id="rb_isbn" /></span>
-								<span id="sp_location"><label for="rb_location">Location:</label><input type="text" name="rb_location" id="rb_location" /></span>
-								<span id="sp_page"><label for="rb_page">Page:</label><input type="text" name="rb_page" id="rb_page" /></span>
-								<span id="sp_volume"><label for="rb_volume">Volume:</label><input type="text" name="rb_volume" id="rb_volume" /></span>
-								<span id="sp_number"><label for="rb_number">Number:</label><input type="text" name="rb_number" id="rb_number" /></span>
-							</div>
-							<button name="bu_save" id="bu_save">Save</button>
-							<button name="bu_add" id="bu_add">Add</button>
-							<button name="bu_delete" id="bu_delete">Delete</button>
-							<div id="divRefs"></div>
-							<div id="ref_help" title="Reference Help">To add a new reference, fill in the form 
-								and click Add. To modify a reference, select it by hovering over it with your
-								mouse and clicking. Make any edits with the form, and click Save. To delete a 
-								reference, select it and click Delete.
-							</div>
-						</div>
-					</td>
-				</tr>
-			</table></form>
+
+<table class="form">
+	<form id="fo_edit_pos" method="post" action="<?php echo $submit_action; ?>">
+	<tr>
+		<th>Position:<input name="position_id" id="type_id" type="hidden" value="<?php echo $position->id; ?>" /></th>
+		<td><input name="name" size="75" value="<?php echo $position->name; ?>" /></td>
+	</tr>
+	<tr>
+		<th>Justification:</th><td><textarea name="justification" id="ta_justification"><?php echo $position->justification; ?></textarea></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>
+			<a class="btn" id="bu_submit" href="#" >Save Position</a>
+			<a class="btn" id="bu_cancel" href="#">Cancel Edit</a>
+		</td>
+	</tr>
+	</form>
+</table>
+
+<table class="form" style="margin-top: 10px">
+	<tr>
+		<th>References:<br><a id="bu_ref_help" class="btn" href="JAVASCRIPT:$('#bu_ref_help').click()">?</a></th>
+		<td>
+<?php include ("inc/div.refbuilder.php"); ?>
+		</td>
+	</tr>
+</table>
+
 <?php
-} else {
-	$button_disabled = "";
-	$button_text = "Follow";
-	if ($citizen->id == null) {
-		$button_disabled = " disabled";
-	} else {
-		if (following_position()) {
-			$button_text = "Unfollow";
-		}
+}
+else
+{
+	if (following_position())
+	{
+		$button_text = "Unfollow";
+	}
+	else
+	{
+		$button_text = "Follow";
 	}
 ?>
-			<h3>
-				Position
-				<button type="button" id="bu_follow"<?php echo $button_disabled; ?>><?php echo $button_text; ?></button>
-			</h3>
-			<p id="title"><?php echo $position->name; ?></p>
-			<h3>Justification</h3>
-			<p><?php echo $position->display_justification(); ?></p>
-			<h3>References</h3>
-			<div id="divRefs"></div>
-			<button id="bu_edit_pos">Edit</button>
-			<ul id="votes">
-<?php if ($citizen->id) { ?>
-				<li class="label">Your vote:</li>
-				<li id="your_vote"></li>
-				<li class="label">Add/change vote:</li>
-				<li><a id="vote_for" href="JAVASCRIPT: setVote(1)">For</a>&nbsp;
-					<a id="vote_against" href="JAVASCRIPT: setVote(2)">Against</a>
-				</li>
+<p class="with_btn">
+	<a href="issbrws.php">All Issues</a> / 
+	<a href="issue.php?m=r&iid=<?php echo $position->issue_id; ?>"><?php echo $position->issue_name; ?></a> / <br>
+	<span class="title"><?php echo $position->name; ?></span>
+	<a class="btn" id="bu_follow" href="#"><?php echo $button_text; ?></a>
+</p>
+<input type="hidden" id="type_id" value="<?php echo $position->id; ?>" />
+<p><?php echo $position->display_justification(); ?></p>
+<p class="title">References</p>
+<div id="divRefs"></div>
+<a id="bu_edit_pos" class="btn" href="#">Edit</a>
+<ul id="votes">
+	<li class="label">Your vote:</li>
+	<li id="your_vote" class="with_img"></li>
+	<li class="label">Add/change vote:</li>
+	<li>
+		<a id="vote_for" class="btn" href="JAVASCRIPT: setVote(1)" title="Click to vote for">For</a>&nbsp;
+		<a id="vote_against" class="btn" href="JAVASCRIPT: setVote(2)" title="Click to vote against">Against</a>
+	</li>
+	<li class="label with_img"><img src="img/for.png" title="Number of citizens for"/>:</li>
+	<li id="citizens_for"></li>
+	<li class="label with_img"><img src="img/against.png" title="Number of citizens against"/>:</li>
+	<li id="citizens_against"></li>
+</ul>
+
+<hr>
+
+<div id="actions"></div>
+
+<hr>
+
+<h4>Comments</h4>
+<button id="bu_add_comment">Add Comment</button><br />
+<div id="new_comment">
+	<textarea id="comment" rows="10" cols="90"></textarea><br />
+	<button id="bu_save_comment">Save</button>
+	<button id="bu_cancel_comment">Cancel</button>
+</div>
+<div id="comments"></div>
 <?php } ?>
-				<li class="label">Citizens for:</li>
-				<li id="citizens_for"></li>
-				<li class="label">Citizens against:</li>
-				<li id="citizens_against"></li>
-			</ul>
-			<hr>
-
-			<h4>Actions</h4>
-			<div id="actions"></div>
-
-			<hr>
-
-			<h4>Comments</h4>
-			<button id="bu_add_comment">Add Comment</button><br />
-			<div id="new_comment">
-				<textarea id="comment" rows="10" cols="90"></textarea><br />
-				<button id="bu_save_comment">Save</button>
-				<button id="bu_cancel_comment">Cancel</button>
-			</div>
-			<div id="comments"></div>
-<?php } ?>
-		</div>
 	</div>
 </div>
 <script src="js/jquery.js"></script>
 <script src="js/jquery-ui.js"></script>
-<script src="js/vendor/bootstrap.js"></script>
-<script src="js/main.js"></script>
 <script type="text/javascript">
 
 <?php if ($mode == "e" || $mode == "n") { ?>
 
 $(document).ready(function () {
-	$('#bu_cancel_pos').click(function () {
+	$('#bu_submit').click(function () {
+		$('#fo_edit_pos').submit();
+	});
+	$('#bu_cancel').click(function () {
 		window.location.assign('position.php?m=r&pid=<?php echo $position->id; ?>');
 		return false;
 	});
+	$('#rb_ref_type').on('change', adjustRB);
+	$('#bu_add').click(function () {
+		postRef('i');
+	});
+	$('#bu_save').click(function () {
+		postRef('u');
+	});
+	$('#bu_delete').click(function () {
+		postRef('d');
+	})
+	$('#ref_help').dialog({ autoOpen: false });
+	$('#bu_ref_help').click(function () {
+		$('#ref_help').dialog({width: 500});
+		$('#ref_help').dialog({modal: true});
+	    $('#ref_help').dialog('open');
+	});
+	displayRefs();
+	adjustRB();
+});
+
+function displayRefs() {
+
+	var id = $('#type_id').val();
+	$.post('ajax/issue.reflist.php', {t: 'p', tid: id}, function(data) {
+		$('#di_refs').html(data);
+		$('#di_refs p.ref').on({
+			mouseenter: function () {
+				$(this).addClass('highlight');
+			},
+			mouseleave: function () {
+				$(this).removeClass('highlight');
+			},
+			click: function () {
+				var id = $(this).find('span.hidden').text();
+				$.getJSON('ajax/issue.ref.php', {m: 'r', ref_id: id}, loadRB);
+			}
+		});
+	}, 'html');
+
+}
+
+function adjustRB() {
+
+	var selectedType = $('#rb_ref_type option:selected').val();
+	switch (selectedType) {
+		case '<?php echo REF_TYPE_BOOK; ?>':
+			$('#sp_isbn').show();
+			$('#sp_location').show();
+			$('#sp_page').show();
+			$('#sp_volume').hide();
+			$('#sp_number').hide();
+			break;
+		case '<?php echo REF_TYPE_JOURNAL; ?>':
+			$('#sp_isbn').hide();
+			$('#sp_location').hide();
+			$('#sp_page').show();
+			$('#sp_volume').show();
+			$('#sp_number').show();
+			break;
+		case '<?php echo REF_TYPE_WEB; ?>':
+		case '<?php echo REF_TYPE_NEWS; ?>':
+		default:
+			$('#sp_isbn').hide();
+			$('#sp_location').hide();
+			$('#sp_page').hide();
+			$('#sp_volume').hide();
+			$('#sp_number').hide();
+			break;
+	}
+
+}
+
+function loadRB(data) {
+
+	$.each(data, function (ref_key, ref_val) {
+		$('#rb_' + ref_key).val(ref_val);
+	})
+	adjustRB();
+
+}
+
+function postRef(mode) {
+
+	var ref = '';
+	if (mode == 'd') {
+		ref = 'ref_id=' + $('#rb_ref_id').val();
+	} else {
+		$('#di_input :input').each(function (i) {
+			ref += $(this).attr('name').substr(3) + '=' + encodeURI($(this).val()) + '&';
+		})
+	}
+	var request = $.ajax('ajax/issue.ref.php?m=' + mode, {data: ref, type: 'post', success: loadRB, async: false, dataType: 'json'});
+	request.fail(function(jqXHR, textStatus) {
+		alert( "Request failed: " + textStatus );
+		return false;
+	});
+	displayRefs();
+
 }
 
 <?php } else { ?>
@@ -284,6 +367,7 @@ $(document).ready(function () {
 });
 
 function displayFollow() {
+	
 	var bt = $('#bu_follow').text();
 	var act = '';
 	if (bt == 'Follow') {
@@ -302,7 +386,6 @@ function setVote(vote) {
 
 function updateVoteFields(data) {
 	var j = data;
-<?php if ($citizen->id) { ?>
 	var v = j.vote;
 	if (v == 1) {
 		$('#your_vote').html('<img src="img/for.png"/>');
@@ -311,7 +394,6 @@ function updateVoteFields(data) {
 	} else {
 		$('#your_vote').html('(none)');
 	}
-<?php } ?>
 	$('#citizens_for').html(j.for);
 	$('#citizens_against').html(j.against);
 }
@@ -331,11 +413,12 @@ function updateVoteFields(data) {
 
 <?php
 
-function following_position() {
+function following_position()
+{
+	global $position, $citizen, $db;
 
-	global $position, $citizen;
 	$ret = false;
-	$sql = "SELECT COUNT(*) count FROM follow WHERE type = 'p' AND type_id = '{$position->id}' AND citizen_id = '{$citizen->id}'";
+	$sql = "SELECT COUNT(*) count FROM follow WHERE type = 'p' AND type_id = '{$position->id}' AND citizen_id = '{$citizen->citizen_id}'";
 	$db->execute_query($sql);
 	$line = $db->fetch_line();
 	$count = $line['count'];
@@ -343,7 +426,6 @@ function following_position() {
 		$ret = true;
 	}
 	return $ret;
-
 }
 
 ?>

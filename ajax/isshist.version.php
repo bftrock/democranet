@@ -33,7 +33,7 @@ $new_desc = preg_split($pattern, $new_iss->description);
 $diffs = diff($old_desc, $new_desc);
 //print_r($diffs);
 
-echo $new_iss->get_description();
+echo $new_iss->display_description();
 
 echo "<table id=\"diffs\">\n<tr><th>Line</th><th>Deleted</th><th>Inserted</th></tr>\n";
 foreach ($diffs as $key=>$val) {

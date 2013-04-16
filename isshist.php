@@ -47,7 +47,7 @@ echo DOC_TYPE;
 <div id="container">
 	<div id="login">
 <?php
-if ($citizen->id) {
+if ($citizen->citizen_id) {
 	echo "<p><a href=\"citizen.php\">{$citizen->name}</a>&nbsp;<a href=\"login.php?a=lo&r=index.php\">Log out</a></p>";
 } else {
 	echo "<p><a href=\"login.php\">Log in / Become a Citizen</a></p>";

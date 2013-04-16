@@ -7,47 +7,49 @@ require_once ("inc/class.database.php");
 require_once ("inc/util.democranet.php");
 require_once ("inc/class.citizen.php");
 require_once ("inc/class.action.php");
-//require_once ("inc/ChromePhp.php");
 
 $db = new database();
 $db->open_connection();
 
-session_start();
-
-// Create the citizen object, which represents a user. It is not necessary for a user to be logged
-// on to use the site, but if there is a citizen id in the $_SESSION array, the properties will be
-// loaded. Otherwise, properties will be left = null.
 $citizen = new citizen();
-if ($citizen->in_session()) {
-	$citizen->load(LOAD_DB);
+$citizen->check_session();
+if ($citizen->in_session)
+{
+	$citizen->load_db($db);
 }
 
 // Set the mode variable, which controls the mode of this page.
 // r = read, e = edit, n = new, u = update, i = insert
 $mode = "";
-if (isset($_GET['m'])) {
-	// typical case
-	$mode = $_GET['m'];
-} else {
-	// default to new if no mode is passed
-	$mode = "n";
+if (isset($_GET['m']))
+{
+	$mode = $_GET['m'];	// typical case
+}
+else
+{
+	$mode = "n";	// default to new if no mode is passed
 }
 
 // The action object is loaded from the db if we're reading or editing, and from the $_POST global
 // if we're inserting or updating.  If we're adding a new action, the object is mostly unloaded.
 $source = null;
-if ($mode == "r" || $mode == "e") {
+if ($mode == "r" || $mode == "e")
+{
 	$source = LOAD_DB;
-} elseif ($mode == "u" || $mode == "i") {
+}
+elseif ($mode == "u" || $mode == "i")
+{
 	$source = LOAD_POST;
-} else {
+}
+else
+{
 	$source = LOAD_NEW;
 }
-$action = new action();
+$action = new action($db);
 $action->load($source);
 
-switch ($mode) {
-
+switch ($mode)
+{
 	case "i":	// insert newly created action and reload page
 
 		$action->insert();
@@ -73,10 +75,12 @@ switch ($mode) {
 	case "r":	// display action specified in query string in read-only mode
 	default:
 
-		if ($citizen->id) {
-			$action->get_vote($citizen->id);
+		if ($citizen->citizen_id)
+		{
+			$action->get_vote($citizen->citizen_id);
 			$vote = $action->vote;
-			switch ($vote) {
+			switch ($vote)
+			{
 				case VOTE_FOR:
 					$citizen_vote_html = "<img src=\"img/for.png\" />";
 					break;
@@ -87,7 +91,6 @@ switch ($mode) {
 					$citizen_vote_html = "(None)";
 			}
 		}
-
 }
 
 echo DOC_TYPE;
@@ -97,46 +100,22 @@ echo DOC_TYPE;
 <head>
 	<title>Democranet: Action</title>
 	<meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Democranet</title>
-    <meta name="description" content="">
-    <meta name="HandheldFriendly" content="True">
-	<meta name="viewport" content="initial-scale=1.0, width=device-width" />
-	<link href='http://fonts.googleapis.com/css?family=Dosis:400,600|Quattrocento+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="style/bootstrap-responsive.css" />
+	<link href="http://fonts.googleapis.com/css?family=Dosis:400,600|Quattrocento+Sans:400,700,400italic,700italic" rel="stylesheet" type="text/css">
 	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
 	<link rel="stylesheet" type="text/css" href="style/action.css" />
-	<script src="js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
-
 </head>
 
 <body>
 
 <div id="container">
-	<div id="login">
-<?php
-if ($citizen->id) {
-	echo "<p><a href=\"citizen.php\">{$citizen->name}</a>&nbsp;<a href=\"login.php?a=lo&r=index.php\">Log out</a></p>";
-} else {
-	echo "<p><a href=\"login.php\">Log in / Become a Citizen</a></p>";
-}
-?>
-	</div>
-	<div id="header">
-		<h1><a href="index.php">Democra.net</a></h1>
-	</div>
+
+<?php include ("inc/header.login.php"); ?>
+	
 	<div id="container-content">
-		<div id="navigation-left">
-			<ul>
-<?php if (isset($action->position_id)) { ?>
-				<li><a href="position.php?m=r&pid=<?php echo $action->position_id; ?>"><< Return to Position</a></li>
-<?php } ?>
-				<li><a href="issbrws.php">Browse Issues</a></li>
-			</ul>
-		</div>
+
 		<div id="content">
 <?php if ($mode == "e" || $mode == "n") { ?>
-			<h3>Action</h3>
+			<p class="title">Action</p>
 			<form method="post" action="<?php echo $submit_action; ?>"><table>
 				<tr><th>Name:
 						<input name="action_id" type="hidden" value="<?php echo $action->id; ?>" />
@@ -150,51 +129,64 @@ if ($citizen->id) {
 				<tr><td></td><td><input type="submit" value="Save" /><button id="bu_cancel_act">Cancel</button></td></tr>
 			</table></form>
 <?php 
-} else {
-	$button_disabled = "";
-	$button_text = "Follow";
-	if ($citizen->id == null) {
-		$button_disabled = " disabled";
-	} else {
-		if (following_action()) {
-			$button_text = "Unfollow";
-		}
+}
+else
+{
+	if (following_action())
+	{
+		$button_text = "Unfollow";
+	}
+	else
+	{
+		$button_text = "Follow";
 	}
 ?>
-			<h3>
-				Action
-				<button type="button" id="bu_follow"<?php echo $button_disabled; ?>><?php echo $button_text; ?></button>
-			</h3>
-			<table>
-				<tr><th>Name:</th><td><?php echo $action->name; ?></td></tr>
-				<tr><th>When:</th><td><?php echo $action->date; ?></td></tr>
-				<tr><th>Where:</th><td><?php echo $action->location; ?></td></tr>
-				<tr><th>Description:</th><td><?php echo $action->display_description(); ?></td></tr>
-				<tr><td></td><td><button id="bu_edit_act">Edit</button></td></tr>
-				<tr><td></td><td><ul id="votes">
-<?php if ($citizen->id) { ?>
-					<li class="label">Your vote:</li>
-					<li id="your_vote"></li>
-					<li class="label">Add/change vote:</li>
-					<li><a id="vote_for" href="JAVASCRIPT: setVote(1)">For</a>&nbsp;
-						<a id="vote_against" href="JAVASCRIPT: setVote(2)">Against</a>
-					</li>
-<?php } ?>
-					<li class="label">Citizens for:</li>
-					<li id="citizens_for"></li>
-					<li class="label">Citizens against:</li>
-					<li id="citizens_against"></li>
-				</ul></td></tr>
-			</table>
-			<hr>
-			<h4>Comments</h4>
-			<button id="bu_add_comment">Add Comment</button><br />
-			<div id="new_comment">
-				<textarea id="comment" rows="10" cols="90"></textarea><br />
-				<button id="bu_save_comment">Save</button>
-				<button id="bu_cancel_comment">Cancel</button>
-			</div>
-			<div id="comments"></div>
+<p class="with_btn">
+	<a href="issbrws.php">All Issues</a> / 
+	<a href="issue.php?m=r&iid=<?php echo $action->issue_id; ?>" title="<?php echo $action->issue_name; ?>"><?php echo shorten($action->issue_name, 40); ?></a> / 
+	<a href="position.php?m=r&pid=<?php echo $action->position_id; ?>" title="<?php echo $action->position_name; ?>"><?php echo shorten($action->position_name, 40); ?></a> / <br>
+	<span class="title"><?php echo $action->name; ?></span>
+	<a class="btn" id="bu_follow" href="#"><?php echo $button_text; ?></a>
+</p>
+<table class="form">
+	<tr>
+		<th>Description:</th><td><?php echo $action->display_description(); ?></td>
+	</tr>
+	<tr>
+		<th>When:</th><td><?php echo $action->date; ?></td>
+	</tr>
+	<tr>
+		<th>Where:</th><td><?php echo $action->location; ?></td>
+	</tr>
+	<tr>
+		<td></td><td><a id="bu_edit_act" class="btn" href="#">Edit</a></td>
+	</tr>
+	<tr>
+</table>
+<ul id="votes">
+	<li class="label">Your vote:</li>
+	<li id="your_vote" class="with_img"></li>
+	<li class="label">Add/change vote:</li>
+	<li>
+		<a id="vote_for" class="btn" href="JAVASCRIPT: setVote(1)" title="Click to vote for">For</a>&nbsp;
+		<a id="vote_against" class="btn" href="JAVASCRIPT: setVote(2)" title="Click to vote against">Against</a>
+	</li>
+	<li class="label with_img"><img src="img/for.png" title="Number of citizens for"/>:</li>
+	<li id="citizens_for"></li>
+	<li class="label with_img"><img src="img/against.png" title="Number of citizens against"/>:</li>
+	<li id="citizens_against"></li>
+</ul>
+
+<hr>
+
+<h4>Comments</h4>
+<button id="bu_add_comment">Add Comment</button><br />
+<div id="new_comment">
+	<textarea id="comment" rows="10" cols="90"></textarea><br />
+	<button id="bu_save_comment">Save</button>
+	<button id="bu_cancel_comment">Cancel</button>
+</div>
+<div id="comments"></div>
 <?php } ?>
 		</div>
 	</div>
@@ -269,7 +261,7 @@ function setVote(vote) {
 
 function updateVoteFields(data) {
 	var j = data;
-<?php if ($citizen->id) { ?>
+<?php if ($citizen->citizen_id) { ?>
 	var v = j.vote;
 	if (v == 1) {
 		$('#your_vote').html('<img src="img/for.png"/>');
@@ -299,9 +291,10 @@ function updateVoteFields(data) {
 
 function following_action() {
 
-	global $action, $citizen;
+	global $action, $citizen, $db;
+
 	$ret = false;
-	$sql = "SELECT COUNT(*) count FROM follow WHERE type = 'a' AND type_id = '{$action->id}' AND citizen_id = '{$citizen->id}'";
+	$sql = "SELECT COUNT(*) count FROM follow WHERE type = 'a' AND type_id = '{$action->id}' AND citizen_id = '{$citizen->citizen_id}'";
 	$db->execute_query($sql);
 	$line = $db->fetch_line();
 	$count = $line['count'];

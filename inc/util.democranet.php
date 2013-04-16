@@ -29,6 +29,18 @@ function check_field($field_name, $arr, $is_required = false) {
 
 }
 
+function shorten($str, $num_chars)
+{
+	if (strlen($str) > $num_chars)
+	{
+		return substr($str, 0, $num_chars - 3) . "...";
+	}
+	else
+	{
+		return $str;
+	}
+}
+
 /*
 	Paul's Simple Diff Algorithm v 0.1
 	(C) Paul Butler 2007 <http://www.paulbutler.org/>
