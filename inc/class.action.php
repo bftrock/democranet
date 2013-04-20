@@ -55,7 +55,7 @@ class action
 				break;
 			case LOAD_NEW:
 			default:
-				$this->position_id = $_GET['pid'];
+				$this->position_id = $_REQUEST['pid'];
 		}
 		
 	}
@@ -63,25 +63,27 @@ class action
 	public function insert() {
 		
 		$sql = "INSERT actions SET 
-			name = '" . safe_sql($this->name) . "',
-			description = '" . safe_sql($this->description) . "', 
-			date = '" . safe_sql($this->date) . "',
-			location = '" . safe_sql($this->location) . "',
+			name = '" . $this->db->safe_sql($this->name) . "',
+			description = '" . $this->db->safe_sql($this->description) . "', 
+			date = '" . $this->db->safe_sql($this->date) . "',
+			location = '" . $this->db->safe_sql($this->location) . "',
 			position_id = '{$this->position_id}'";
 		$this->db->execute_query($sql);
-		$this->id = get_insert_id();
+		$this->id = $this->db->get_insert_id();
+		return true;
 		
 	}
 	
 	public function update() {
 		
 		$sql = "UPDATE actions SET 
-			name = '" . safe_sql($this->name) . "',
-			description = '" . safe_sql($this->description) . "',
-			date = '" . safe_sql($this->date) . "',
-			location = '" . safe_sql($this->location) . "'
+			name = '" . $this->db->safe_sql($this->name) . "',
+			description = '" . $this->db->safe_sql($this->description) . "',
+			date = '" . $this->db->safe_sql($this->date) . "',
+			location = '" . $this->db->safe_sql($this->location) . "'
 			WHERE action_id = '{$this->id}'";
 		$this->db->execute_query($sql);
+		return true;
 		
 	}
 	

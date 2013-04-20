@@ -29,20 +29,20 @@ if (check_field('co', $_REQUEST)) {
 	// Check to make sure everything we need is set before inserting.
 	if ($position_id && $citizen_id) {
 		$sql = "INSERT comments (type, type_id, citizen_id, comment) VALUES ('p','{$position_id}','{$citizen_id}','{$comment}')";
-		execute_query($sql);
+	$db->execute_query($sql);
 	}
 }
 
 // Now get all comments for this position. Join comments with their respective citizen.
 $sql = " ";
-$sql .= "SELECT co.comment, CONCAT(ci.first_name, ' ', ci.last_name) name, co.ts
+$sql .= "SELECT co.comment, ci.name, co.ts
 	FROM comments co LEFT JOIN citizens ci ON co.citizen_id = ci.citizen_id
 	WHERE co.type_id = '{$position_id}'
 	AND co.type = 'p'
 	ORDER BY ts DESC";
 $db->execute_query($sql);
 $ret = "";
-if (get_num_rows($result)) {
+if ($db->get_num_rows()) {
 	$ret .= "<table>";
 	while ($line = $db->fetch_line()) {
 		$ret .= "<tr><td>{$line['name']}<br />{$line['ts']}</td><td>{$line['comment']}</td></tr>";

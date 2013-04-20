@@ -10,6 +10,7 @@ if (check_field("m", $_REQUEST)) {
 
 $err_msg = null;
 $email = "";
+$display = "none";
 switch ($mode)
 {	
 	case "li":	// log in
@@ -52,11 +53,16 @@ switch ($mode)
 			$_SESSION['citizen_id'] = $citizen_id;
 			header("Location:start.php");
 		}
+		else
+		{
+			$err_msg = "The email/password combination could not be authenticated. Please try again.";
+			$display = "block";
+		}
 		break;
 
 	case "nr":	// new registration
 
-		$emal = $_GET['email'];
+		$email = $_GET['email'];
 		break;
 
 	default:
@@ -70,16 +76,8 @@ switch ($mode)
 
 	<title>Democranet: Log in</title>
 	<meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="description" content="">
-    <meta name="HandheldFriendly" content="True">
-	<meta name="viewport" content="initial-scale=1.0, width=device-width" />
 	<link href="http://fonts.googleapis.com/css?family=Dosis:400,600|Quattrocento+Sans:400,700,400italic,700italic" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" type="text/css" href="style/bootstrap-responsive.css" />
     <link rel="stylesheet" type="text/css" href="style/democranet.css" />
-	<script src="js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
-
-
 	<style type="text/css">
 
 #header {
@@ -93,7 +91,7 @@ switch ($mode)
 	border-color: #BED2D9;
 	border-radius: 10px;
 	padding: 10px;
-	width: 325px;
+	width: 350px;
 	margin: 0 auto;
 }
 
@@ -105,18 +103,10 @@ switch ($mode)
 	margin-bottom: 20px;
 }
 
-#err_msg {
-	background: #fff2f2;
-	border-style: solid;
-	border-width: 2px;
-	border-color: #ff0000;
-	padding: 10px;
-	width: 325px;
-	margin: 50px auto;
-}
-
-#err_msg .bold {
-	margin-top: 0;
+#di_error
+{
+	width: 350px;
+	display: <?php echo $display; ?>;
 }
 
 	</style>
@@ -131,20 +121,74 @@ switch ($mode)
 		<h1>Democra.net</h1>
 	</div>
 	
+	<div id="di_error">
+		<p id="p_errmsg"><?php echo $err_msg; ?></p>
+	</div>
+
 	<div id="login_box">
 		<h3>Log in</h3>
-		<form method="post" action="login.php?m=au">
+		<form id="login_form" method="post" action="login.php?m=au">
 			<table>
-			<tr><td>Email Address:</td><td><input type="text" size="25" name="email" value="<?php echo $email; ?>"/></td></tr>
-			<tr><td>Password:</td><td><input type="password" size="25" name="password" /></td></tr>
-			<tr><td></td><td><input type="submit" value="Log in" /></td></tr>
+				<tr>
+					<td><label id="email_lbl" for="email">Email Address:*</label></td>
+					<td><input type="text" size="25" name="email" id="email" value="<?php echo $email; ?>"/></td>
+				</tr>
+				<tr>
+					<td><label id="password_lbl" for="password">Password:*</label></td>
+					<td><input type="password" size="25" name="password" id="password"/></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><a id="bu_login" class="btn" href="JAVASCRIPT: submitForm()">Log in</a></td>
+				</tr>
 			</table>
 		</form>
 		<a href="register.php">Register</a><a style="float:right" href="#">Reset password</a>
 	</div>
 
-<?php if ($err_msg) echo "<div id=\"err_msg\"><p class=\"bold\">Log in error</p><p>{$err_msg}</p></div><p></p>"; ?>
 </div>
+<script src="js/jquery.js"></script>
+<script>
+
+$(document).ready(function() {
+	$('#email').keyup(function (event) {
+		if(event.keyCode == 13){
+			submitForm();
+		}
+	});
+	$('#password').keyup(function (event) {
+		if(event.keyCode == 13){
+			submitForm();
+		}
+	});
+});
+
+function submitForm() {	
+	try {
+		var rf = new Array('email', 'password');
+		var i;
+		for (i in rf) {
+			var f = rf[i];
+			var x = $('#login_form #' + f).val();
+			if (x == null || x == '') {
+				$('#' + f + '_lbl').css('color', 'red');
+				throw 1;
+			}
+		}
+		$('#login_form').submit();
+	} catch (err) {
+		var errMsg;
+		switch (err) {
+			case 1:
+				errMsg = 'You must fill out all required fields.';
+				break;
+		}
+		$('#di_error').css('display', 'block');
+		$('#p_errmsg').html(errMsg);
+	}
+}
+
+</script>
 
 </body>
 

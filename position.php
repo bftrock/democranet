@@ -37,7 +37,7 @@ else
 // The position object is loaded from the db if we're reading or editing, and from the $_POST global
 // if we're inserting or updating.  If we're adding a new position, the object is mostly unloaded.
 $position = new position($db);
-if ($mode == "r" || $mode == "e")
+if ($mode == "r" || $mode == "e" || $mode == "d")
 {
 	$position->load(LOAD_DB);
 }
@@ -53,6 +53,15 @@ else
 
 switch ($mode)
 {
+	case "d":	// delete this position and all associated data
+
+		if ($position->delete())
+		{
+			//die("Delete completed successfully.");
+			header("Location:issue.php?m=r&iid={$position->issue_id}");
+		}
+		break;
+
 	case "i":	// insert newly created position and reload page
 
 		if ($position->insert())
@@ -92,13 +101,14 @@ switch ($mode)
 				$citizen_vote_html = "<img src=\"img/against.png\" />";
 				break;
 			default:
-				$citizen_vote_html = "(None)";
+				$citizen_vote_html = "<span>(None)</span>";
 		}
 
 }
 
 // This is used in the reference builder div
 $type_id = $position->id;
+$type = "p";
 
 echo DOC_TYPE;
 ?>
@@ -123,7 +133,7 @@ p.ref
 	margin-bottom: 10px;
 }
 
-#actions #th_comment {
+#di_actions #th_comment {
 	text-align: left;
 }
 
@@ -137,14 +147,17 @@ p.ref
 
 <?php include ("inc/header.login.php"); ?>
 
-	<div id="content">
+	<div class="content">
 
 <?php if ($mode == "e" || $mode == "n") { ?>
 
 <table class="form">
 	<form id="fo_edit_pos" method="post" action="<?php echo $submit_action; ?>">
 	<tr>
-		<th>Position:<input name="position_id" id="type_id" type="hidden" value="<?php echo $position->id; ?>" /></th>
+		<th>Position:
+			<input name="position_id" id="type_id" type="hidden" value="<?php echo $position->id; ?>" />
+			<input name="issue_id" id="issue_id" type="hidden" value="<?php echo $position->issue_id; ?>" />
+		</th>
 		<td><input name="name" size="75" value="<?php echo $position->name; ?>" /></td>
 	</tr>
 	<tr>
@@ -160,6 +173,7 @@ p.ref
 	</form>
 </table>
 
+<?php if ($mode != "n") { ?>
 <table class="form" style="margin-top: 10px">
 	<tr>
 		<th>References:<br><a id="bu_ref_help" class="btn" href="JAVASCRIPT:$('#bu_ref_help').click()">?</a></th>
@@ -168,12 +182,13 @@ p.ref
 		</td>
 	</tr>
 </table>
+<?php } ?>
 
 <?php
 }
 else
 {
-	if (following_position())
+	if (is_following("p", $position->id))
 	{
 		$button_text = "Unfollow";
 	}
@@ -182,6 +197,7 @@ else
 		$button_text = "Follow";
 	}
 ?>
+
 <p class="with_btn">
 	<a href="issbrws.php">All Issues</a> / 
 	<a href="issue.php?m=r&iid=<?php echo $position->issue_id; ?>"><?php echo $position->issue_name; ?></a> / <br>
@@ -191,8 +207,8 @@ else
 <input type="hidden" id="type_id" value="<?php echo $position->id; ?>" />
 <p><?php echo $position->display_justification(); ?></p>
 <p class="title">References</p>
-<div id="divRefs"></div>
-<a id="bu_edit_pos" class="btn" href="#">Edit</a>
+<div id="di_refs"></div>
+<a class="btn" href="position.php?m=e&pid=<?php echo $position->id; ?>">Edit Position</a>
 <ul id="votes">
 	<li class="label">Your vote:</li>
 	<li id="your_vote" class="with_img"></li>
@@ -207,22 +223,27 @@ else
 	<li id="citizens_against"></li>
 </ul>
 
-<hr>
-
-<div id="actions"></div>
-
-<hr>
-
-<h4>Comments</h4>
-<button id="bu_add_comment">Add Comment</button><br />
-<div id="new_comment">
-	<textarea id="comment" rows="10" cols="90"></textarea><br />
-	<button id="bu_save_comment">Save</button>
-	<button id="bu_cancel_comment">Cancel</button>
-</div>
-<div id="comments"></div>
-<?php } ?>
 	</div>
+
+	<div class="content">
+
+<div id="di_actions"></div>
+
+	</div>
+
+	<div class="content">
+
+<p class="with_btn"><span class="title">Comments</span><a class="btn" id="bu_add_comment">Add Comment</a></p>
+<div id="di_new_comment">
+	<textarea id="ta_comment" rows="10" cols="90"></textarea><br />
+	<a id="bu_save_comment" class="btn" href="#">Save</a>
+	<a id="bu_cancel_comment" class="btn" href="#">Cancel</a>
+</div>
+<div id="di_comments"></div>
+<?php } ?>
+
+	</div>
+
 </div>
 <script src="js/jquery.js"></script>
 <script src="js/jquery-ui.js"></script>
@@ -234,10 +255,7 @@ $(document).ready(function () {
 	$('#bu_submit').click(function () {
 		$('#fo_edit_pos').submit();
 	});
-	$('#bu_cancel').click(function () {
-		window.location.assign('position.php?m=r&pid=<?php echo $position->id; ?>');
-		return false;
-	});
+	$('#bu_cancel').click(cancelEdit);
 	$('#rb_ref_type').on('change', adjustRB);
 	$('#bu_add').click(function () {
 		postRef('i');
@@ -258,116 +276,55 @@ $(document).ready(function () {
 	adjustRB();
 });
 
-function displayRefs() {
+function cancelEdit() {
 
-	var id = $('#type_id').val();
-	$.post('ajax/issue.reflist.php', {t: 'p', tid: id}, function(data) {
-		$('#di_refs').html(data);
-		$('#di_refs p.ref').on({
-			mouseenter: function () {
-				$(this).addClass('highlight');
-			},
-			mouseleave: function () {
-				$(this).removeClass('highlight');
-			},
-			click: function () {
-				var id = $(this).find('span.hidden').text();
-				$.getJSON('ajax/issue.ref.php', {m: 'r', ref_id: id}, loadRB);
-			}
-		});
-	}, 'html');
+<?php if ($position->id) { ?>
+	var url = 'position.php?m=r&pid=<?php echo $position->id; ?>';
+<?php } else { ?>
+	var url = 'issue.php?m=r&iid=<?php echo $position->issue_id; ?>';
+<?php } ?>
+	window.location.assign(url);
+	return false;
 
 }
 
-function adjustRB() {
-
-	var selectedType = $('#rb_ref_type option:selected').val();
-	switch (selectedType) {
-		case '<?php echo REF_TYPE_BOOK; ?>':
-			$('#sp_isbn').show();
-			$('#sp_location').show();
-			$('#sp_page').show();
-			$('#sp_volume').hide();
-			$('#sp_number').hide();
-			break;
-		case '<?php echo REF_TYPE_JOURNAL; ?>':
-			$('#sp_isbn').hide();
-			$('#sp_location').hide();
-			$('#sp_page').show();
-			$('#sp_volume').show();
-			$('#sp_number').show();
-			break;
-		case '<?php echo REF_TYPE_WEB; ?>':
-		case '<?php echo REF_TYPE_NEWS; ?>':
-		default:
-			$('#sp_isbn').hide();
-			$('#sp_location').hide();
-			$('#sp_page').hide();
-			$('#sp_volume').hide();
-			$('#sp_number').hide();
-			break;
-	}
-
-}
-
-function loadRB(data) {
-
-	$.each(data, function (ref_key, ref_val) {
-		$('#rb_' + ref_key).val(ref_val);
-	})
-	adjustRB();
-
-}
-
-function postRef(mode) {
-
-	var ref = '';
-	if (mode == 'd') {
-		ref = 'ref_id=' + $('#rb_ref_id').val();
-	} else {
-		$('#di_input :input').each(function (i) {
-			ref += $(this).attr('name').substr(3) + '=' + encodeURI($(this).val()) + '&';
-		})
-	}
-	var request = $.ajax('ajax/issue.ref.php?m=' + mode, {data: ref, type: 'post', success: loadRB, async: false, dataType: 'json'});
-	request.fail(function(jqXHR, textStatus) {
-		alert( "Request failed: " + textStatus );
-		return false;
-	});
-	displayRefs();
-
-}
+<?php include ("inc/edit.refbuilder.php"); ?>
 
 <?php } else { ?>
 
 $(document).ready(function () {
 	$.post('ajax/position.vote.php', {pid: <?php echo $position->id; ?>}, updateVoteFields, 'json');
-	$('#actions').load('ajax/position.actions.php', {pid: <?php echo $position->id; ?>});
-	$('#comments').load('ajax/position.comments.php', {pid: <?php echo $position->id; ?>});
-	$('#bu_edit_pos').click(function () {
-		window.location.assign('position.php?m=e&pid=<?php echo $position->id; ?>');
-	});
+	$('#di_actions').load('ajax/position.actions.php', {pid: <?php echo $position->id; ?>});
+	$('#di_comments').load('ajax/position.comments.php', {pid: <?php echo $position->id; ?>});
 	$('#bu_add_comment').click(function () {
-		$('#new_comment').show();
+		$('#di_new_comment').show();
 	});
 	$('#bu_save_comment').click(function () {
-		$('#comments').load(
+		$('#di_comments').load(
 			'ajax/position.comments.php',
-			{co: $('#comment').val(), pid: <?php echo $position->id; ?>}
+			{co: $('#ta_comment').val(), pid: <?php echo $position->id; ?>}
 		);
-		$('#comment').val('');
-		$('#new_comment').hide();
+		$('#ta_comment').val('');
+		$('#di_new_comment').hide();
 	});
 	$('#bu_cancel_comment').click(function () {
-		$('#comment').val('');
-		$('#new_comment').hide();
+		$('#ta_comment').val('');
+		$('#di_new_comment').hide();
 	});
 	$("#bu_follow").on("click", displayFollow);
-
+	displayRefs();
 });
 
+function displayRefs() {
+
+	$.post('ajax/issue.reflist.php', {t: 'p', tid: <?php echo $position->id; ?>}, function(data) {
+		$('#di_refs').html(data);
+	}, 'html');
+
+}
+
 function displayFollow() {
-	
+
 	var bt = $('#bu_follow').text();
 	var act = '';
 	if (bt == 'Follow') {
@@ -401,31 +358,6 @@ function updateVoteFields(data) {
 <?php } ?>
 
 </script>
-<script>
-	var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
-	(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-	g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
-	s.parentNode.insertBefore(g,s)}(document,'script'));
-</script>
 
 </body>
 </html>
-
-<?php
-
-function following_position()
-{
-	global $position, $citizen, $db;
-
-	$ret = false;
-	$sql = "SELECT COUNT(*) count FROM follow WHERE type = 'p' AND type_id = '{$position->id}' AND citizen_id = '{$citizen->citizen_id}'";
-	$db->execute_query($sql);
-	$line = $db->fetch_line();
-	$count = $line['count'];
-	if ($count > 0) {
-		$ret = true;
-	}
-	return $ret;
-}
-
-?>

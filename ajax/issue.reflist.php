@@ -6,15 +6,11 @@ require_once ("../inc/util.democranet.php");
 $db = new database();
 $db->open_connection();
 
-if (check_field('tid', $_REQUEST)) {
+if (check_field('tid', $_REQUEST, true)) {
 	$type_id = $_REQUEST['tid'];
-} else {
-	die("Error: Type ID parameter (tid) must be passed.");
 }
-if (check_field('t', $_REQUEST)) {
+if (check_field('t', $_REQUEST, true)) {
 	$type = $_REQUEST['t'];
-} else {
-	die("Error: Type parameter (t) must be passed.");
 }
 
 $sql = "SELECT * FROM refs WHERE type = '{$type}' AND type_id = '{$type_id}'";

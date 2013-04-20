@@ -41,7 +41,7 @@ while ($line = $db->fetch_line()) {
 
 <p class="with_btn">
 	<span class="title">Actions</span>
-	<a id="bu_add_act" class="btn" href="#">Add Action</a>
+	<a id="bu_add_act" class="btn" href="action.php?m=n&pid=<?php echo $position_id; ?>">Add Action</a>
 </p>
 
 <?php if ($no_actions) { ?>
@@ -70,7 +70,7 @@ $db->execute_query($sql);
 
 // Iterate over result to build each row of the table.
 while ($line = $db->fetch_line()) {
-	echo "<tr><td><a class=\"fs\" href=\"action.php?m=r&aid={$line['action_id']}&pid={$position_id}\">{$line['name']}</a></td>";
+	echo "<tr><td><a href=\"action.php?m=r&aid={$line['action_id']}&pid={$position_id}\">{$line['name']}</a></td>";
 	if (isset($citizen_votes[$line['action_id']])) {
 		echo "<td class=\"ac\">" . get_vote_html($citizen_votes[$line['action_id']]) . "</td>";
 	} else {

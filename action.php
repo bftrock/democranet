@@ -17,13 +17,17 @@ if ($citizen->in_session)
 {
 	$citizen->load_db($db);
 }
+else
+{
+	header("Location:login.php");
+}
 
 // Set the mode variable, which controls the mode of this page.
 // r = read, e = edit, n = new, u = update, i = insert
 $mode = "";
-if (isset($_GET['m']))
+if (check_field("m", $_REQUEST))
 {
-	$mode = $_GET['m'];	// typical case
+	$mode = $_REQUEST['m'];	// typical case
 }
 else
 {
@@ -32,34 +36,36 @@ else
 
 // The action object is loaded from the db if we're reading or editing, and from the $_POST global
 // if we're inserting or updating.  If we're adding a new action, the object is mostly unloaded.
-$source = null;
-if ($mode == "r" || $mode == "e")
+$action = new action($db);
+if ($mode == "r" || $mode == "e" || $mode == "d")
 {
-	$source = LOAD_DB;
+	$action->load(LOAD_DB);
 }
 elseif ($mode == "u" || $mode == "i")
 {
-	$source = LOAD_POST;
+	$action->load(LOAD_POST);
 }
 else
 {
-	$source = LOAD_NEW;
+	$action->load(LOAD_NEW);
 }
-$action = new action($db);
-$action->load($source);
 
 switch ($mode)
 {
 	case "i":	// insert newly created action and reload page
 
-		$action->insert();
-		header("Location:action.php?m=r&aid={$action->id}");
+		if ($action->insert())
+		{
+			header("Location:action.php?m=r&aid={$action->id}");
+		}
 		break;
 
 	case "u":	// update edited action and reload page
 
-		$action->update();
-		header("Location:action.php?m=r&aid={$action->id}");
+		if ($action->update())
+		{
+			header("Location:action.php?m=r&aid={$action->id}");
+		}
 		break;
 
 	case "e":	// edit existing action
@@ -75,21 +81,18 @@ switch ($mode)
 	case "r":	// display action specified in query string in read-only mode
 	default:
 
-		if ($citizen->citizen_id)
+		$action->get_vote($citizen->citizen_id);
+		$vote = $action->vote;
+		switch ($vote)
 		{
-			$action->get_vote($citizen->citizen_id);
-			$vote = $action->vote;
-			switch ($vote)
-			{
-				case VOTE_FOR:
-					$citizen_vote_html = "<img src=\"img/for.png\" />";
-					break;
-				case VOTE_AGAINST:
-					$citizen_vote_html = "<img src=\"img/against.png\" />";
-					break;
-				default:
-					$citizen_vote_html = "(None)";
-			}
+			case VOTE_FOR:
+				$citizen_vote_html = "<img src=\"img/for.png\" />";
+				break;
+			case VOTE_AGAINST:
+				$citizen_vote_html = "<img src=\"img/against.png\" />";
+				break;
+			default:
+				$citizen_vote_html = "<span>(None)</span>";
 		}
 }
 
@@ -100,9 +103,9 @@ echo DOC_TYPE;
 <head>
 	<title>Democranet: Action</title>
 	<meta charset="utf-8">
-	<link href="http://fonts.googleapis.com/css?family=Dosis:400,600|Quattrocento+Sans:400,700,400italic,700italic" rel="stylesheet" type="text/css">
 	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
 	<link rel="stylesheet" type="text/css" href="style/action.css" />
+	<link href="http://fonts.googleapis.com/css?family=Dosis:400,600|Quattrocento+Sans:400,700,400italic,700italic" rel="stylesheet" type="text/css">
 </head>
 
 <body>
@@ -111,23 +114,37 @@ echo DOC_TYPE;
 
 <?php include ("inc/header.login.php"); ?>
 	
-	<div id="container-content">
+	<div class="content">
 
-		<div id="content">
 <?php if ($mode == "e" || $mode == "n") { ?>
-			<p class="title">Action</p>
-			<form method="post" action="<?php echo $submit_action; ?>"><table>
-				<tr><th>Name:
+
+		<table class="form">
+			<form id="fo_edit_action" method="post" action="<?php echo $submit_action; ?>">
+				<tr>
+					<th>Action:
 						<input name="action_id" type="hidden" value="<?php echo $action->id; ?>" />
 						<input name="position_id" type="hidden" value="<?php echo $action->position_id; ?>" />
 					</th>
 					<td><input name="name" size="50" value="<?php echo $action->name; ?>" /></td>
 				</tr>
-				<tr><th>When:</th><td><input name="date" size="50" value="<?php echo $action->date; ?>" /></td></tr>
-				<tr><th>Where:</th><td><input name="location" size="50" value="<?php echo $action->location; ?>" /></td></tr>
-				<tr><th>Description:</th><td><textarea name="description" rows="15" cols="90"><?php echo $action->description; ?></textarea></td></tr>
-				<tr><td></td><td><input type="submit" value="Save" /><button id="bu_cancel_act">Cancel</button></td></tr>
-			</table></form>
+				<tr>
+					<th>Description:</th><td><textarea name="description" rows="15" cols="90"><?php echo $action->description; ?></textarea></td>
+				</tr>
+				<tr>
+					<th>When:</th><td><input name="date" size="50" value="<?php echo $action->date; ?>" /></td>
+				</tr>
+				<tr>
+					<th>Where:</th><td><input name="location" size="50" value="<?php echo $action->location; ?>" /></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td>
+						<a class="btn" id="bu_submit" href="#">Save Action</a>
+						<a class="btn" id="bu_cancel" href="#">Cancel Edit</a>
+					</td>
+				</tr>
+			</form>
+		</table>
 <?php 
 }
 else
@@ -159,7 +176,7 @@ else
 		<th>Where:</th><td><?php echo $action->location; ?></td>
 	</tr>
 	<tr>
-		<td></td><td><a id="bu_edit_act" class="btn" href="#">Edit</a></td>
+		<td></td><td><a class="btn" href="action.php?m=e&aid=<?php echo $action->id; ?>">Edit Action</a></td>
 	</tr>
 	<tr>
 </table>
@@ -177,19 +194,21 @@ else
 	<li id="citizens_against"></li>
 </ul>
 
-<hr>
-
-<h4>Comments</h4>
-<button id="bu_add_comment">Add Comment</button><br />
-<div id="new_comment">
-	<textarea id="comment" rows="10" cols="90"></textarea><br />
-	<button id="bu_save_comment">Save</button>
-	<button id="bu_cancel_comment">Cancel</button>
-</div>
-<div id="comments"></div>
-<?php } ?>
-		</div>
 	</div>
+
+	<div class="content">
+
+<p class="with_btn"><span class="title">Comments</span><a class="btn" id="bu_add_comment">Add Comment</a></p>
+<div id="di_new_comment">
+	<textarea id="ta_comment" rows="10" cols="90"></textarea><br />
+	<a id="bu_save_comment" class="btn" href="#">Save</a>
+	<a id="bu_cancel_comment" class="btn" href="#">Cancel</a>
+</div>
+<div id="di_comments"></div>
+<?php } ?>
+
+	</div>
+
 </div>
 
 <script src="js/jquery.js"></script>')
@@ -201,7 +220,10 @@ else
 <?php if ($mode == "e") { ?>
 
 $(document).ready(function () {
-	$('#bu_cancel_act').click(function () {
+	$('#bu_submit').click(function () {
+		$('#fo_edit_action').submit();
+	});
+	$('#bu_cancel').click(function () {
 		window.location = 'action.php?m=r&aid=<?php echo $action->id; ?>';
 		return false;
 	});
@@ -210,6 +232,9 @@ $(document).ready(function () {
 <?php } else if ($mode == "n") { ?>
 
 $(document).ready(function () {
+	$('#bu_submit').click(function () {
+		$('#fo_edit_action').submit();
+	});
 	$('#bu_cancel_act').click(function () {
 		window.location = 'position.php?m=r&pid=<?php echo $action->position_id; ?>';
 		return false;
@@ -220,24 +245,21 @@ $(document).ready(function () {
 
 $(document).ready(function () {
 	$.post('ajax/action.vote.php', {aid: <?php echo $action->id; ?>}, updateVoteFields, 'json');
-	$('#comments').load('ajax/action.comments.php', {aid: <?php echo $action->id; ?>});
-	$('#bu_edit_act').click(function () {
-		window.location = 'action.php?m=e&aid=<?php echo $action->id; ?>';
-	});
+	$('#di_comments').load('ajax/action.comments.php', {aid: <?php echo $action->id; ?>});
 	$('#bu_add_comment').click(function () {
-		$('#new_comment').show();
+		$('#di_new_comment').show();
 	});
 	$('#bu_save_comment').click(function () {
-		$('#comments').load(
+		$('#di_comments').load(
 			'ajax/action.comments.php',
-			{co: $('#comment').val(), aid: <?php echo $action->id; ?>}
+			{co: $('#ta_comment').val(), aid: <?php echo $action->id; ?>}
 		);
-		$('#comment').val('');
-		$('#new_comment').hide();
+		$('#ta_comment').val('');
+		$('#di_new_comment').hide();
 	});
 	$('#bu_cancel_comment').click(function () {
-		$('#comment').val('');
-		$('#new_comment').hide();
+		$('#ta_comment').val('');
+		$('#di_new_comment').hide();
 	});
 	$("#bu_follow").on("click", displayFollow);
 });
@@ -303,6 +325,18 @@ function following_action() {
 	}
 	return $ret;
 
+}
+
+function shorten($str, $num_chars)
+{
+	if (strlen($str) > $num_chars)
+	{
+		return substr($str, 0, $num_chars - 3) . "...";
+	}
+	else
+	{
+		return $str;
+	}
 }
 
 ?>

@@ -45,29 +45,56 @@ class position
 				break;
 			case LOAD_NEW:
 			default:
-				$this->issue_id = $_GET['iid'];
+				$this->issue_id = $_REQUEST['iid'];
 		}
 	}
 	
 	public function insert()
 	{	
 		$sql = "INSERT positions SET 
-			name = '" . safe_sql($this->name) . "',
-			justification = '" . safe_sql($this->justification) . "', 
+			name = '" . $this->db->safe_sql($this->name) . "',
+			justification = '" . $this->db->safe_sql($this->justification) . "', 
 			issue_id = '{$this->issue_id}'";
 		$this->db->execute_query($sql);
-		$this->id = get_insert_id();
+		$this->id = $this->db->get_insert_id();
 		return true;
 	}
 	
 	public function update()
 	{
 		$sql = "UPDATE positions SET 
-			name = '" . safe_sql($this->name) . "',
-			justification = '" . safe_sql($this->justification) . "'
+			name = '" . $this->db->safe_sql($this->name) . "',
+			justification = '" . $this->db->safe_sql($this->justification) . "'
 			WHERE position_id = '{$this->id}'";
 		$this->db->execute_query($sql);
 		return true;	
+	}
+
+	public function delete()
+	{
+		$sql = "SELECT * FROM actions WHERE position_id = '{$this->id}'";
+		$this->db->execute_query($sql);
+		while ($line = $this->db->fetch_line())
+		{
+			$action_id = $line['action_id'];
+			$sql = "DELETE FROM follow WHERE type = 'a' AND type_id = '{$action_id}'";
+			$this->db->execute_query($sql);
+			$sql = "DELETE FROM comments WHERE type = 'a' AND type_id = '{$action_id}'";
+			$this->db->execute_query($sql);
+			$sql = "DELETE FROM action_citizen WHERE action_id = '{$action_id}'";
+			$this->db->execute_query($sql);
+		}
+		$sql = "DELETE FROM actions WHERE position_id = '{$this->id}'";
+		$this->db->execute_query($sql);
+		$sql = "DELETE FROM follow WHERE type = 'p' AND type_id = '{$this->id}'";
+		$this->db->execute_query($sql);
+		$sql = "DELETE FROM comments WHERE type = 'p' AND type_id = '{$this->id}'";
+		$this->db->execute_query($sql);
+		$sql = "DELETE FROM position_citizen WHERE position_id = '{$this->id}'";
+		$this->db->execute_query($sql);
+		$sql = "DELETE FROM positions WHERE position_id = '{$this->id}'";
+		$this->db->execute_query($sql);
+		return true;
 	}
 	
 	public function get_vote($citizen_id)

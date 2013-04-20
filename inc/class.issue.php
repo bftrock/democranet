@@ -81,6 +81,45 @@ class issue
 		return true;
 	}
 
+	public function delete()
+	{
+		$sql = "SELECT * FROM positions WHERE issue_id = '{$this->id}'";
+		$this->db->execute_query($sql);
+		$result = $this->db->get_result();
+		while ($line = $this->db->fetch_line($result))
+		{
+			$position_id = $line['position_id'];
+			$sql = "SELECT * FROM actions WHERE position_id = '{$position_id}'";
+			$this->db->execute_query($sql);
+			$result2 = $this->db->get_result();
+			while ($line2 = $this->db->fetch_line($result2))
+			{
+				$action_id = $line2['action_id'];
+				$sql = "DELETE FROM action_citizen WHERE action_id = '{$action_id}'";
+				$this->db->execute_query($sql);
+				$sql = "DELETE FROM comments WHERE type = 'a' AND type_id = '{$action_id}'";
+				$this->db->execute_query($sql);
+				$sql = "DELETE FROM follow WHERE type = 'a' AND type_id = '{$action_id}'";
+				$this->db->execute_query($sql);
+			}
+			$sql = "DELETE FROM actions WHERE position_id = '{$position_id}'";
+			$this->db->execute_query($sql);
+			$sql = "DELETE FROM follow WHERE type = 'p' AND type_id = '{$position_id}'";
+			$this->db->execute_query($sql);
+			$sql = "DELETE FROM comments WHERE type = 'p' AND type_id = '{$position_id}'";
+			$this->db->execute_query($sql);
+			$sql = "DELETE FROM position_citizen WHERE position_id = '{$position_id}'";
+			$this->db->execute_query($sql);
+		}
+		$sql = "DELETE FROM positions WHERE issue_id = '{$this->id}'";
+		$this->db->execute_query($sql);
+		$sql = "DELETE FROM follow WHERE type = 'i' AND type_id = '{$this->id}'";
+		$this->db->execute_query($sql);
+		$sql = "DELETE FROM issues WHERE issue_id = '{$this->id}'";
+		$this->db->execute_query($sql);
+		return true;
+	}
+
 	// This function is used to display the description field in read mode
 	public function display_description()
 	{	
@@ -121,7 +160,7 @@ class issue
 	public function get_history()
 	{
 		$arr = array();	// returned result
-		$sql = "SELECT i.issue_id, i.version, i.ts, i.citizen_id, i.name issue_name, c.first_name, c.last_name
+		$sql = "SELECT i.issue_id, i.version, i.ts, i.citizen_id, i.name issue_name, c.name
 			FROM issues i LEFT JOIN citizens c ON i.citizen_id = c.citizen_id
 			WHERE i.issue_id = '{$this->id}'
 			ORDER BY i.version DESC";

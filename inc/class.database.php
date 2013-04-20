@@ -26,10 +26,23 @@ class database {
 			or die("Could not execute the query: {$this->conn->error}<br />sql = {$sql}");
 	}
 
-	// Fetches a sigle row from a result set, and returns an array with field names as keys
-	public function fetch_line()
+	// Returns the result set to the client, if needed.
+	public function get_result()
 	{
-		$line = $this->result->fetch_assoc();
+		return $this->result;
+	}
+
+	// Fetches a sigle row from a result set, and returns an array with field names as keys
+	public function fetch_line($result = null)
+	{
+		if ($result)
+		{
+			$line = $result->fetch_assoc();
+		}
+		else
+		{
+			$line = $this->result->fetch_assoc();
+		}
 		return $line;
 	}
 
@@ -45,6 +58,20 @@ class database {
 			$new_str = $str;
 		}
 		return $this->conn->real_escape_string($new_str);
+	}
+
+	public function number_null($number_str)
+	{
+		$ret = "";
+		if (strlen($number) > 0)
+		{
+			$ret = "'{$number_str}'";
+		}
+		else
+		{
+			$ret = "NULL";
+		}
+		return $ret;
 	}
 
 	// Gets the last insert id for an auto-increment field

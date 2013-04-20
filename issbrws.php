@@ -32,7 +32,22 @@ else
     <title>Democranet: Issues</title>
 	<link href="http://fonts.googleapis.com/css?family=Dosis:400,600|Quattrocento+Sans:400,700,400italic,700italic" rel="stylesheet" type="text/css">
 	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
-	<link rel="stylesheet" type="text/css" href="style/issbrws.css" />
+	<style type="text/css">
+
+p.is_ca {
+	margin: 20px 0 2px 0;
+	font-size: 120%;
+}
+
+p.is_ti {
+	margin: 10px 0 2px 20px;
+}
+
+div.is_de p {
+	margin: 0 0 0 40px;
+}
+
+	</style>
 </head>
 
 <body>
@@ -41,15 +56,12 @@ else
 
 <?php include("inc/header.login.php"); ?>
 	
-	<div id="container-content">
 
-		<div id="content">
-			<a class="btn" href="#" style="float:right">Add Issue</a>
-			<h2>Issues</h2>
+	<div class="content">
+		<p class="with_btn"><span class="title">Issues</span><a class="btn" href="issue.php?m=n">Add Issue</a></p>
 <?php echo get_issue_list(); ?>
-		</div>
-
 	</div>
+
 </div>
 <script src="js/jquery.js"></script>
 <script src="js/jquery-ui.js"></script>

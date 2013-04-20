@@ -10,10 +10,8 @@ define ("PAGE_SIZE", 10);
 $db = new database();
 $db->open_connection();
 
-if (check_field('iid', $_REQUEST)) {
+if (check_field('iid', $_REQUEST, true)) {
 	$issue_id = $_REQUEST['iid'];
-} else {
-	die("Error: Issue ID (iid) must be passed.");
 }
 
 $current_page = 1;
@@ -25,7 +23,7 @@ if (check_field('rp', $_REQUEST)) {
 	$requested_page = $_REQUEST['rp'];
 }
 
-$issue = new issue();
+$issue = new issue($db);
 $issue->load(LOAD_DB);
 $issue_history = $issue->get_history();
 $total_count = count($issue_history);
@@ -52,13 +50,19 @@ $last_index = $start_index + PAGE_SIZE - 1;
 $this_page = array_slice($issue_history, $start_index - 1, PAGE_SIZE);
 ?>
 <table id="tb_history">
-	<tr><td class="nb"></td><th>Timestamp</th><th>Citizen</th><th>Title</th></tr>
+	<tr>
+		<td class="nb"></td>
+		<th>Timestamp</th>
+		<th>Citizen</th>
+		<th>Title</th>
+	</tr>
 <?php
-foreach ($this_page as $line) {
+foreach ($this_page as $line)
+{
 	echo "	<tr>
 		<td class=\"nb\" id=\"td{$line['version']}\"></td>
 		<td><a href=\"JAVASCRIPT:getVersion({$line['version']})\">{$line['ts']}</a></td>
-		<td>{$line['first_name']} {$line['last_name']}</td><td>{$line['issue_name']}</td>
+		<td>{$line['name']}</td><td>{$line['issue_name']}</td>
 	</tr>\n";
 }
 ?>

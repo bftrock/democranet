@@ -41,7 +41,7 @@ else
 // The issue object is loaded from the db if we're reading or editing, and from the $_POST global if
 // we're inserting or updating.  If we're adding a new issue, the object is mostly unloaded.
 $issue = new issue($db);
-if ($mode == "r" || $mode == "e") 
+if ($mode == "r" || $mode == "e" || $mode == "d") 
 {
 	$issue->load(LOAD_DB);
 } 
@@ -56,6 +56,13 @@ else
 
 switch ($mode) 
 {
+	case "d":
+		if ($issue->delete())
+		{
+			header("Location:issbrws.php");
+		}
+		break;
+
 	case "i":	// inserting newly created issue and reloading page
 	
 		if ($issue->insert())
@@ -88,6 +95,7 @@ switch ($mode)
 
 // This is used in the reference builder div
 $type_id = $issue->id;
+$type = "i";
 
 echo DOC_TYPE;
 ?>
@@ -113,7 +121,12 @@ p.ref
 	margin-bottom: 10px;
 }
 
-span.counter {float: right}
+span.counter
+{
+	float: right;
+	font-size: 0.8em;
+	padding-top: 0;
+}
 
 	</style>
 
@@ -125,7 +138,7 @@ span.counter {float: right}
 
 <?php include ("inc/header.login.php"); ?>
 
-	<div id="content">
+	<div class="content">
 
 <?php if ($mode == "e" || $mode == "n") { ?>
 
@@ -142,6 +155,7 @@ span.counter {float: right}
 		</th>
 		<td>
 			<textarea name="description" id="ta_description" data-maxChars="<?php echo ISS_DESC_MAXLEN; ?>"><?php echo $issue->description; ?></textarea>
+			<span class="counter">Character count: <span id="sp_char_num"></span> / <?php echo ISS_DESC_MAXLEN; ?> maximum</span>
 			<div id="desc_help" title="Description Help">
 				<p>The length of the Description field is deliberately limited to 3000 characters in
 				 	order to keep the issue description brief. References are used to provide 
@@ -156,7 +170,6 @@ span.counter {float: right}
 			<select name="categories[]" id="categories" multiple="multiple" size="6">
 				<?php echo get_category_options($issue->get_categories()); ?>
 			</select>
-			<span class="counter">Character count: <span id="sp_char_num"></span> / <?php echo ISS_DESC_MAXLEN; ?> maximum</span>
 		</td>
 	</tr>
 	<tr>
@@ -169,20 +182,22 @@ span.counter {float: right}
 	</form>
 </table>
 
+<?php if ($mode != "n") { ?>
 <table class="form" style="margin-top: 10px">
 	<tr>
-		<th>References:<br><a id="bu_ref_help" class="btn" href="JAVASCRIPT:$('#bu_ref_help').click()">?</a></th>
+		<th>References:<br><a id="bu_ref_help" class="btn" href="#">?</a></th>
 		<td>
 <?php include ("inc/div.refbuilder.php"); ?>
 		</td>
 	</tr>
 </table>
+<?php } ?>
 
 <?php 
 }
 else
 {
-	if (following_issue())
+	if (is_following("i", $issue->id))
 	{
 		$button_text = "Unfollow";
 	} 
@@ -200,17 +215,20 @@ else
 			<p><strong>Categories</strong>: <?php echo display_categories($issue->get_categories(), 1); ?></p>
 			<p class="title">References</p>
 			<div id="di_refs"></div>
-			<a class="btn" href="issue.php?m=e&iid=<?php echo $issue->id; ?>">Edit</a>
+			<a class="btn" href="issue.php?m=e&iid=<?php echo $issue->id; ?>">Edit Issue</a>
 			<a class="btn" href="isshist.php?iid=<?php echo $issue->id; ?>">Show History</a>
-			<hr>
-			<div id="positions"></div>
+		
+		</div>
+
+		<div class="content">
+			<div id="di_positions"></div>
 <?php } ?>
 		</div>
+
 	</div>
 
 <script src="js/jquery.js"></script>
 <script src="js/jquery-ui.js"></script>
-<script src="js/refbuilder.js"></script>
 <script type="text/javascript">
 	
 <?php if ($mode == "e" || $mode == "n") { ?>
@@ -263,22 +281,31 @@ function cancelEdit() {
 <?php if ($issue->id) { ?>
 	var url = 'issue.php?m=r&iid=<?php echo $issue->id; ?>';
 <?php } else { ?>
-	var url = 'index.php';
+	var url = 'issbrws.php';
 <?php } ?>
 	window.location.assign(url);
 	return false;
 }
 
+<?php include ("inc/edit.refbuilder.php"); ?>
+
 <?php } else { ?>
 
 $(document).ready(function() {
-	$('#edit').on('click', edit);
-	$('#bu_follow').on('click', displayFollow);
-	$('#positions').load('ajax/issue.positions.php',
+	$('#bu_follow').click(displayFollow);
+	$('#di_positions').load('ajax/issue.positions.php',
 		{iid: <?php echo $issue->id; ?>}
 	);
 	displayRefs();
 });
+
+function displayRefs() {
+
+	$.post('ajax/issue.reflist.php', {t: 'i', tid: <?php echo $issue->id; ?>}, function(data) {
+		$('#di_refs').html(data);
+	}, 'html');
+
+}
 
 function displayFollow() {
 
@@ -295,45 +322,13 @@ function displayFollow() {
 
 }
 
-function displayRefs() {
-
-	$.post('ajax/issue.reflist.php', {t: 'i', tid: <?php echo $issue->id; ?>}, function(data) {
-		$('#di_refs').html(data);
-	}, 'html');
-
-}
-
-function edit() {
-
-	var url = 'issue.php?m=e&iid=<?php echo $issue->id; ?>';
-	window.location.assign(url);
-
-}
-
 <?php } ?>
 	</script>
 
 </body>
-
 </html>
 
 <?php
-
-function following_issue() {
-
-	global $issue, $citizen, $db;
-
-	$ret = false;
-	$sql = "SELECT COUNT(*) count FROM follow WHERE type = 'i' AND type_id = '{$issue->id}' AND citizen_id = '{$citizen->citizen_id}'";
-	$db->execute_query($sql);
-	$line = $db->fetch_line();
-	$count = $line['count'];
-	if ($count > 0) {
-		$ret = true;
-	}
-	return $ret;
-
-}
 
 // Returns selected categories to be displayed with issue.
 function display_categories($selected_categories) {

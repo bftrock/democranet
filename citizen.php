@@ -2,60 +2,78 @@
 
 require_once ("inc/class.database.php");
 require_once ("inc/util.democranet.php");
+require_once ("inc/util.citizen.php");
 require_once ("inc/class.citizen.php");
 
 $db = new database();
 $db->open_connection();
-session_start();
+
 $citizen = new citizen();
+$citizen->check_session();
+if ($citizen->in_session)
+{
+	$citizen->load_db($db);
+}
+else
+{
+	header("Location:login.php");
+}
 
-$citizen_in_session = $citizen->in_session();
-if (isset($_GET['m'])) {
+if (check_field("m", $_REQUEST))
+{
 	$mode = $_GET['m'];
-} else {
-	if ($citizen_in_session) {
-		$mode = "r";
-	} else {
-		$mode = "n";
-	}
+}
+else
+{
+	$mode = "e";
 }
 
-if ($mode == "r") {
-	$citizen->load(LOAD_DB);
-} elseif ($mode == "i" || $mode == "u" || $mode == "e") {
-	$citizen->load(LOAD_POST);
-}
-//var_dump($citizen);
-
-$div_err = "";
-$err_display = "none";
-if (isset($_GET['em'])) {
-	$div_err = "<h3>Error</h3><p>{$_GET['em']}</p>";
-	$err_display = "block";	
-}
-
-switch ($mode) {
-	case "r":
-		$mode_code = "u";
+$err_msg = null;
+switch ($mode)
+{
+	case "e":	// edit
+	case "p":	// edit with password change
+		
+		$submit_action = "citizen.php?m=u";
 		break;
-	case "n":
-		$mode_code = "i";
-		break;
-	case "i":
-		if ($citizen->check_email()) {
-			$citizen->insert();
-			$_SESSION['citizen_id'] = $citizen->citizen_id;
-			header("Location:citizen.php");
-		} else {
-			$err_msg = "The email address you submitted is already in use. Please use another email address.";
-			header("Location:citizen.php?a=e&em=" . urlencode($err_msg));			
+
+	case "u":
+		
+		$citizen->name = $_POST['name'];
+		$citizen->email = $_POST['email'];
+		$citizen->birth_year = $_POST['birth_year'];
+		$citizen->gender = $_POST['gender'];
+		$citizen->country = $_POST['country'];
+		$citizen->postal_code = $_POST['postal_code'];
+		if (isset($_POST['old_password']))
+		{
+			if ($citizen->verify_password($_POST['old_password']))
+			{
+				$citizen->password = $_POST['new_password'];
+				$with_password = true;
+				$citizen->update($with_password);
+				header("Location:citizen.php?m=e");
+				exit;
+			}
+			else
+			{
+				$err_msg = "The old password you supplied does not match the stored password.";
+			}
+		}
+		else
+		{
+			$citizen->update(false);
+			header("Location:citizen.php?m=e");
+			exit;
 		}
 		break;
-	case "u":
-		$citizen->update();
-		header("Location:citizen.php");
-		break;
 	default:
+}
+
+$display = "none";
+if ($err_msg)
+{
+	$display = "block";
 }
 
 echo DOC_TYPE;
@@ -64,56 +82,168 @@ echo DOC_TYPE;
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+	<link href='http://fonts.googleapis.com/css?family=Dosis:400,600|Quattrocento+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
 	<title>Democranet: Citizen</title>
 	<style type="text/css">
 
-#err_msg {
-	background: #fff2f2;
-	border-style: solid;
-	border-width: 2px;
-	border-color: #ff0000;
-	padding: 10px;
-	width: 325px;
-	display: <?php echo $err_display; ?>;
+#di_error
+{
+	width: 550px;
+	display: <?php echo $display; ?>;
+}
+
+.content
+{
+	width: 700px;
+	margin: 0 auto;
+}
+
+table.form
+{
+	width: auto;
+}
+
+table.form th
+{
+	width: 200px;
+}
+
+table.form input[type="radio"]
+{
+	margin-left: 20px;
 }
 
 	</style>
-	<script type="text/javascript">
+</head>
+
+<body>
+
+<div id="container">
+
+<?php include ("inc/header.login.php"); ?>
+
+	<div id="di_error">
+		<p id="p_errmsg"><?php echo $err_msg; ?></p>
+	</div>
+
+	<div class="content">
+
+		<p><span class="title">Citizen Information</span></p>
+
+		<form method="post" action="<?php echo $submit_action; ?>" id="citizen_form">
+			<table class="form">
+				<tr>
+					<th id="name_lbl">Name:*<input type="hidden" name="citizen_id"/></td>
+					<td><input type="text" size="25" name="name" id="name" value="<?php echo $citizen->name; ?>" /></td>
+				</tr>
+				<tr>
+					<th id="birth_year_lbl">Birth year:</td>
+					<td><input type="text" size="25" name="birth_year" id="birth_year" value="<?php echo $citizen->birth_year; ?>" /></td>
+				</tr>
+				<tr>
+					<th id="gender_lbl">Gender:</td>
+					<td><?php echo get_gender_input($citizen->gender); ?></td>
+				</tr>
+				<tr>
+					<th id="country_lbl">Country:</td>
+					<td><?php echo get_country_select($citizen->country); ?></td>
+				</tr>
+				<tr>
+					<th id="postal_code_lbl">Postal code:</td>
+					<td><input type="text" size="25" name="postal_code" id="postal_code" value="<?php echo $citizen->postal_code; ?>" /></td>
+				</tr>
+				<tr>
+					<th id="email1_lbl">Email address:*</td>
+					<td><input type="text" size="25" name="email" id="email1" value="<?php echo $citizen->email; ?>"/></td>
+				</tr>
+				<tr>
+					<th id="email2_lbl">Re-enter email address:*</td>
+					<td><input type="text" size="25" id="email2" value="<?php echo $citizen->email; ?>"/></td>
+				</tr>
+<?php if ($mode == "e") { ?>
+				<tr>
+					<th id="password1_lbl">Password:</td>
+					<td><a href="citizen.php?m=p">Change password</a></td>
+				</tr>
+<?php } elseif ($mode == "p") { ?>
+				<tr>
+					<th id="password1_lbl">Old Password:*</td>
+					<td><input type="password" size="25" name="old_password" id="password1" /></td>
+				</tr>
+				<tr>
+					<th id="password2_lbl">New Password:*</td>
+					<td><input type="password" size="25" name="new_password" id="password2" /></td>
+				</tr>
+				<tr>
+					<th id="password3_lbl">Re-enter new Password:*</td>
+					<td><input type="password" size="25" id="password3" /></td>
+				</tr>
+<?php } ?>
+				<tr>
+					<td></td>
+					<td><a class="btn" href="JAVASCRIPT: submitForm()">Save</a></td>
+				</tr>
+			</table>
+		</form>
+		<p><strong>Note</strong>: supplying the optional fields will enable your demographics to show up in the system. 
+			We will not sell or give your personal data to anyone.</p>
+
+	</div>
+
+</div>
+
+<script src="js/jquery.js"></script>
+<script type="text/javascript">
 
 function submitForm() {
 	
-	var formId = 'citizen_form';
+	$('th[id$="lbl"]').css('color', 'black');
 	try {
-		var reqFields = new Array('email', 'password1', 'password2', 'first_name', 'last_name');
-		var i;
-		for (i in reqFields) {
-			var fieldId = reqFields[i];
-			var x = document.forms[formId][fieldId].value;
-			if (x == null || x == '') {
-				highlightField(fieldId + '_label');
+		var rf = new Array('name', 'email1', 'email2');
+		var i, f, x1, x2, atpos, dotpos, errMsg = '';
+		for (i in rf) {
+			var f = rf[i];
+			var x1 = $('#citizen_form #' + f).val();
+			if (x1 == null || x1 == '') {
+				$('#' + f + '_lbl').css('color', 'red');
 				throw 1;
 			}
 		}
-		fieldId = 'email';
-		var x = document.forms[formId][fieldId].value;
-		var atpos = x.indexOf('@');
-		var dotpos = x.lastIndexOf('.');
-		if (atpos < 1 || dotpos < atpos + 2 || dotpos + 2 >= x.length) {
+		x1 = $('#citizen_form #email1').val();		
+		var atpos = x1.indexOf('@');
+		var dotpos = x1.lastIndexOf('.');
+		if (atpos < 1 || dotpos < atpos + 2 || dotpos + 2 >= x1.length) {
+			$('#citizen_form #email_lbl').css('color', 'red');
 			throw 2;
 		}
-		var x = document.forms[formId]['password1'].value;
-		if (x.search("[a-zA-Z]") == -1 || x.search("[0-9]+") == -1 || x.length < 7) {
+		x1 = $('#citizen_form #email1').val();
+		x2 = $('#citizen_form #email2').val();
+		if (x1 != x2) {
+			$('#citizen_form #email1_lbl').css('color', 'red');
+			$('#citizen_form #email2_lbl').css('color', 'red');
 			throw 3;
 		}
-		var x = document.forms[formId]['password1'].value;
-		var x2 = document.forms[formId]['password2'].value;
-		if (x != x2) {
+		x1 = $('#citizen_form #birth_year').val();
+		if (x1.length > 0 && x1.search("[^0-9]+") >= 0) {
+			$('#birth_year_lbl').css('color', 'red');
 			throw 4;
 		}
-		document.forms[formId].submit();
+<?php if ($mode == "p") { ?>
+		x1 = $('#citizen_form #password2').val();
+		if (x1.search("[a-zA-Z]") == -1 || x1.search("[0-9]+") == -1 || x1.length < 7) {
+			$('#citizen_form #password2_lbl').css('color', 'red');
+			throw 5;
+		}
+		x2 = $('#citizen_form #password3').val();
+		if (x1 != x2) {
+			$('#citizen_form #password3_lbl').css('color', 'red');
+			throw 6;
+		}		
+<?php } ?>
+		$('#citizen_form').submit();
 	} catch (err) {
-		var errMsg;
+		var errMsg = '';
 		switch (err) {
 			case 1:
 				errMsg = 'You must fill out all required fields.';
@@ -122,138 +252,29 @@ function submitForm() {
 				errMsg = 'You must enter a valid email address.';
 				break;
 			case 3:
-				errMsg = 'Passwords must contain at least 7 characters, at least 1 letter, and at least 1 number.'
+				errMsg = 'The emails must match.'
 				break;
 			case 4:
+				errMsg = 'Birth year must be a number.';
+				break;
+<?php if ($mode == "p") { ?>
+			case 5:
+				errMsg = 'Passwords must contain at least 7 characters, at least 1 letter, and at least 1 number.'
+				break;
+			case 6:
 				errMsg = 'The passwords must match.';
 				break;
+<?php } ?>
 		}
-		displayErrMsg(errMsg);
+		$('#di_error').css('display', 'block');
+		$('#p_errmsg').html(errMsg);
+		return false;
 	}
 	
 }
 
-function highlightField(fieldId) {
-	var x = document.getElementById(fieldId);
-	x.style.color = 'red';
-}
 
-function displayErrMsg(errMsg) {
-	var x = document.getElementById('err_msg');
-	x.innerHTML = '<h3>Error</h3><p>' + errMsg + '</p>';
-	x.style.display = 'block';
-}
-
-	</script>
-</head>
-
-<body>
-
-<div id="container">
-
-	<div id="login">
-<?php
-if ($citizen->citizen_id) {
-echo "<p><a href=\"citizen.php\">{$citizen->name}</a>&nbsp;<a href=\"login.php?a=lo&r=index.php\">Log out</a></p>";
-} else {
-echo "<p><a href=\"login.php\">Log in / Become a Citizen</a></p>";
-}
-?>
-	</div>
-
-	<div id="header">
-		<a href="index.php"><img src="img/democranet.png"></a>
-	</div>
-
-	<div id="container-content">
-
-		<div id="navigation-left">
-			<ul>
-				<li><a href="issbrws.php">Browse Issues</a></li>
-				<li><a href="issue.php">Add New Issue</a></li>
-			</ul>
-		</div>
-
-		<div id="content">
-
-			<div id="err_msg">
-<?php echo $div_err; ?>
-			</div>
-
-			<form method="post" action="citizen.php?a=<?php echo $mode_code; ?>" id="citizen_form">
-				<table>
-					<tr><td id="email_label">Email address*:</td>
-						<td><input type="text" size="25" name="email" value="<?php echo $citizen->email; ?>" /></td></tr>
-					<tr><td id="password1_label">Enter password*:</td>
-						<td><input type="password" size="25" name="password" id="password1" />At least 7 characters, at least 1 letter, and at least 1 number.</td></tr>
-					<tr><td id="password2_label">Re-enter password*:</td>
-						<td><input type="password" size="25" id="password2" /></td></tr>
-					<tr><td id="first_name_label">First name*:</td>
-						<td><input type="text" size="25" name="first_name" value="<?php echo $citizen->first_name; ?>" /></td></tr>
-					<tr><td id="last_name_label">Last name*:</td>
-						<td><input type="text" size="25" name="last_name" value="<?php echo $citizen->last_name; ?>" /></td></tr>
-					<tr><td>City:</td>
-						<td><input type="text" size="25" name="city" value="<?php echo $citizen->city; ?>" /></td></tr>
-					<tr><td>State:</td>
-						<td><input type="text" size="25" name="state" value="<?php echo $citizen->state; ?>" /></td></tr>
-					<tr><td>Country:</td>
-						<td><?php echo get_country_select($citizen->country); ?></td></tr>
-					<tr><td>Postal Code:</td>
-						<td><input type="text" size="25" name="postal_code" value="<?php echo $citizen->postal_code; ?>" /></td></tr>
-					<tr><td>Birth year:</td>
-						<td><input type="text" size="25" name="birth_year" value="<?php echo $citizen->birth_year; ?>" /></td></tr>					
-					<tr><td>Gender:</td>
-						<td><?php echo get_gender_input($citizen->gender); ?></td></tr>
-					<tr><td>Phone:</td>
-						<td><input type="text" size="25" name="telephone" value="<?php echo $citizen->telephone; ?>" /></td></tr>
-					<tr><td><input type="hidden" name="citizen_id" value="<?php echo $citizen->citizen_id; ?>"></td>
-						<td><input type="button" value="Save" onclick="submitForm()" /></td></tr>
-				</table>
-			</form>
-
-			</div>
-
-			<div id="footer">
-
-				<p>Copyright &copy; Democranet, 2012</p>
-
-			</div>
-
-		</div>
-
-</div>
+</script>
 
 </body>
 </html>
-
-<?php
-
-function get_gender_input($gender_id) {
-	
-	$ret = "<input type=\"radio\" name=\"gender\" value=\"1\"";
-	if ($gender_id == 1) $ret .= " checked=\"true\"";
-	$ret .= " />Male<input type=\"radio\" name=\"gender\" value=\"2\"";
-	if ($gender_id == 2) $ret .= " checked=\"true\"";
-	$ret .= " />Female";
-	return $ret;
-	
-}
-
-function get_country_select($country_id) {
-	
-	$sql = "SELECT * FROM countries ORDER BY name";
-	$db->execute_query($sql);
-	$ret = "<select name=\"country\">";
-	while ($line = $db->fetch_line()) {
-		$ret .= "<option value=\"{$line['country_id']}\"";
-		if ($line['country_id'] == $country_id) {
-			$ret .= " selected=true";
-		}
-		$ret .= ">{$line['name']}</option>";
-	}
-	$ret .= "</select>";
-	return $ret;
-	
-}
-
-?>

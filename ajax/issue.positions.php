@@ -14,8 +14,12 @@ if (check_field('iid', $_REQUEST, true))
 	$issue_id = $_REQUEST['iid'];
 }
 
-$citizen = new citizen($db);
+$citizen = new citizen();
 $citizen->check_session();
+if ($citizen->is_session == false)
+{
+	die(ERR_NO_SESSION);
+}
 
 // Execute a separate query to get the citizen's vote on each issue, and store results in an array.
 $sql = "SELECT pc.position_id, pc.vote 
@@ -31,7 +35,7 @@ while ($line = $db->fetch_line())
 ?>
 <p class="with_btn">
 	<span class="title">Positions</span>
-	<a id="bu_add_pos" class="btn" href="#">Add Position</a>
+	<a id="bu_add_pos" class="btn" href="position.php?m=n&iid=<?php echo $issue_id; ?>">Add Position</a>
 </p>
 <table class="vote_tally">
 	<tr>

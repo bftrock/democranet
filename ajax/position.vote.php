@@ -21,11 +21,7 @@ if (check_field('pid', $_REQUEST, true))
 // A citizen must be logged in to vote.
 $citizen = new citizen();
 $citizen->check_session();
-if ($citizen->in_session)
-{
-	$citizen->load_db($db);
-}
-else
+if ($citizen->in_session == false)
 {
 	die(ERR_NO_SESSION);
 }
@@ -39,9 +35,5 @@ if (check_field('vo', $_REQUEST))
 $position->get_vote($citizen->citizen_id);
 
 // Start building the output.
-$json = "{";
-if ($citizen->citizen_id) {
-	$json .= "\"vote\":{$position->vote},";
-}
-$json .= "\"for\":{$position->for_count},\"against\":{$position->against_count}}";
+$json = "{\"vote\":{$position->vote},\"for\":{$position->for_count},\"against\":{$position->against_count}}";
 echo $json;

@@ -2,7 +2,7 @@
 	<div id="di_input">
 		<span id="sp_ref_id"><input type="hidden" name="rb_ref_id" id="rb_ref_id"/></span>
 		<span id="sp_typ_id"><input type="hidden" name="rb_type_id" id="rb_type_id" value="<?php echo $type_id; ?>"/></span>
-		<span id="sp_type"><input type="hidden" name="rb_type" id="rb_type" value="i"/></span>
+		<span id="sp_type"><input type="hidden" name="rb_type" id="rb_type" value="<?php echo $type; ?>"/></span>
 		<span id="sp_ref_type">
 			<label for="rb_ref_type">Reference Type:</label>
 			<select name="rb_ref_type" id="rb_ref_type">
