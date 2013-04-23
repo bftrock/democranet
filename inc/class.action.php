@@ -90,7 +90,7 @@ class action
 	public function get_vote($citizen_id) {
 		
 		if (isset($citizen_id)) {
-			$sql = "SELECT vote FROM action_citizen WHERE action_id = '{$this->id}' AND citizen_id = '{$citizen_id}'";
+			$sql = "SELECT vote FROM votes WHERE type = 'a' AND type_id = '{$this->id}' AND citizen_id = '{$citizen_id}'";
 			$this->db->execute_query($sql);
 			if ($this->db->get_num_rows()) {
 				$line = $this->db->fetch_line();
@@ -99,11 +99,11 @@ class action
 				$this->vote = 0;
 			}
 		}
-		$sql = "SELECT COUNT(*) cnt FROM action_citizen WHERE action_id = '{$this->id}' AND vote = '" . VOTE_FOR . "'";
+		$sql = "SELECT COUNT(*) cnt FROM votes WHERE type = 'a' AND type_id = '{$this->id}' AND vote = '" . VOTE_FOR . "'";
 		$this->db->execute_query($sql);
 		$line = $this->db->fetch_line();
 		$this->for_count = $line['cnt'];
-		$sql = "SELECT COUNT(*) cnt FROM action_citizen WHERE action_id = '{$this->id}' AND vote = '" . VOTE_AGAINST . "'";
+		$sql = "SELECT COUNT(*) cnt FROM votes WHERE type = 'a' AND type_id = '{$this->id}' AND vote = '" . VOTE_AGAINST . "'";
 		$this->db->execute_query($sql);
 		$line = $this->db->fetch_line();
 		$this->against_count = $line['cnt'];
@@ -112,11 +112,43 @@ class action
 
 	public function set_vote($citizen_id, $vote) {
 
-		$sql = "REPLACE action_citizen SET vote = '{$vote}', action_id = '{$this->id}', citizen_id = '{$citizen_id}'";
+		$sql = "REPLACE votes SET type = 'a', type_id = '{$this->id}', citizen_id = '{$citizen_id}', vote = '{$vote}'";
 		$this->db->execute_query($sql);
 
 	}
 	
+	public function follow($citizen_id, $follow)
+	{
+		if ($follow)
+		{
+			$sql = "REPLACE follows SET type = 'a', type_id = '{$this->id}', citizen_id = '{$citizen_id}'";
+		}
+		else
+		{
+			$sql = "DELETE FROM follows WHERE type = 'a' AND type_id = '{$this->id}' AND citizen_id = '{$citizen_id}'";
+		}
+		$this->db->execute_query($sql);
+	}
+	
+	public function follow_parents($citizen_id, $follow)
+	{
+		if ($follow)
+		{
+			$sql = "REPLACE follows SET type = 'p', type_id = '{$this->position_id}', citizen_id = '{$citizen_id}'";
+			$this->db->execute_query($sql);
+			$sql = "REPLACE follows SET type = 'i', type_id = '{$this->issue_id}', citizen_id = '{$citizen_id}'";
+			$this->db->execute_query($sql);
+		}
+		else
+		{
+			$sql = "DELETE FROM follows WHERE type = 'p' AND type_id = '{$this->position_id}' AND citizen_id = '{$citizen_id}'";
+			$this->db->execute_query($sql);
+			$sql = "DELETE FROM follows WHERE type = 'a' AND type_id = '{$this->issue_id}' AND citizen_id = '{$citizen_id}'";
+			$this->db->execute_query($sql);
+		}
+		$this->db->execute_query($sql);
+	}
+
 	// This function is used to display the description field in read mode. Right now this just means replacing
 	// carriage returns with <br />, but later there will be more sophisticated markup to convert.
 	public function display_description() {

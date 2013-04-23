@@ -29,12 +29,12 @@ else
 	die(ERR_NO_SESSION);
 }
 
-// If a citizen is logged in, check if vo parameter was passed. If yes, set/update vote. The
-// get_vote method gets the current citizen's vote as well as the for/against count of all votes on
-// the action.
+// If the vote parameter (vo) was passed set/update vote. When you vote on an action, you automatically follow it.
 if (check_field('vo', $_REQUEST))
 {
 	$action->set_vote($citizen->citizen_id, $_REQUEST['vo']);
+	$action->follow($citizen->citizen_id, true);
+	$action->follow_parents($citizen->citizen_id, true);
 }
 $action->get_vote($citizen->citizen_id);
 

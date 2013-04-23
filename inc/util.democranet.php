@@ -34,7 +34,7 @@ function is_following($type, $type_id)
 	global $citizen, $db;
 
 	$ret = false;
-	$sql = "SELECT COUNT(*) count FROM follow WHERE type = '{$type}' AND type_id = '{$type_id}' AND citizen_id = '{$citizen->citizen_id}'";
+	$sql = "SELECT COUNT(*) count FROM follows WHERE type = '{$type}' AND type_id = '{$type_id}' AND citizen_id = '{$citizen->citizen_id}'";
 	$db->execute_query($sql);
 	$line = $db->fetch_line();
 	$count = $line['count'];

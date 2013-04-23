@@ -51,3 +51,37 @@ img.im_label {
 	display: block;
 	margin: 10px auto 6px auto;
 }
+
+/* shift up */
+a.su
+{
+	position: relative;
+	top: -7px;
+}
+
+/* expand/collapse icon */
+img.ec
+{
+	height: 1.5em;
+}
+
+.i1, .i2, .i3
+{
+	margin:top: 0;
+	margin-bottom: 0;
+}
+
+.i2
+{
+	margin-left: 2em;
+}
+
+.i3
+{
+	margin-left: 4em;
+}
+
+.di_ec
+{
+	display: none;
+}

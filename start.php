@@ -26,9 +26,6 @@ else
 	<link rel="stylesheet" type="text/css" href="style/jquery-ui.css">
 	<link rel="stylesheet" type="text/css" href="style/start.css" />
 	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
-	<script src="js/jquery.js"></script>
-	<script src="js/jquery-ui.js"></script>
-	<script src="js/start.js"></script>
 </head>
 
 <body>
@@ -49,49 +46,57 @@ else
 				entity you've entered.
 			</div>
 		</div>
+		<div id="di_results"></div>
 
-		<div id="di_results">
+	</div>
 
-			<div id="di_quick">
-				<a class="btn" id="bu_issues" href="#">Issues</a>
-				<a class="btn" id="bu_candidates" href="#">Candidates</a>
-				<a class="btn" id="bu_groups" href="#">Groups</a>
-			</div>
-			<table id="frames">
-				<tr>
-					<td>
-						<p>Issues I'm Following</p>
-						<div class="round_border" id="di_issfol"><?php get_issues(); ?></div>
-					</td>
-					<td>
-						<p>Candidates I'm Following</p>
-						<div class="round_border"></div>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<p>Positions I'm Following</p>
-						<div class="round_border" id="di_posfol"><?php get_postions(); ?></div>
-					</td>
-					<td>
-						<p>Groups I Belong To</p>
-						<div class="round_border"></div>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<p>Actions I'm Following</p>
-						<div class="round_border"><?php get_actions(); ?></div>
-					</td>
-					<td>
-						<p>Compatriots</p>
-						<div class="round_border"></div>
-					</td>
-				</tr>
-			</table>
+	<div class="content">
+		<p class="with_btn"><span class="title">My Issues</span><a class="btn" href="issbrws.php">Browse</a></p>
+		<div id="di_issfol">
+			<?php echo get_issues(); ?>
 		</div>
 	</div>
+
 </div>
+
+<script src="js/jquery.js"></script>
+<script src="js/jquery-ui.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function() {
+	$('#bu_search').on('click', function() {
+		$.post('ajax/start.search.php', {s: $('#in_search').val()}, function (data) {
+			$('#di_results').html(data);
+		})
+	})
+	$('#bu_issues').on('click', function () {
+		window.location.assign('issbrws.php');
+	})
+	$('#in_search').keyup(function (event) {
+		if(event.keyCode == 13){
+			$("#bu_search").click();
+		}
+	});
+	$('#search_help').dialog({autoOpen: false});
+	$('#bu_help').click(function () {
+		$('#search_help').dialog({width: 500});
+		$('#search_help').dialog({modal: true});
+	    $('#search_help').dialog('open');
+	});
+	$('img.ec').click(function () {
+		var id;
+		id = $(this).attr('id');
+		if ($(this).attr('src') == 'img/collapse.png') {
+			$(this).attr('src', 'img/expand.png');
+			$('#di_' + id).slideUp();
+		} else {
+			$(this).attr('src', 'img/collapse.png');
+			$('#di_' + id).slideDown();
+		}
+	});
+});
+
+</script>
 
 </body>
 </html>
@@ -102,53 +107,72 @@ function get_issues() {
 	global $citizen, $db;
 
 	$sql = "SELECT i.issue_id, i.name 
-		FROM follow f INNER JOIN issues i ON f.type_id = i.issue_id 
+		FROM follows f INNER JOIN issues i ON f.type_id = i.issue_id 
 		WHERE f.type = 'i' 
 		AND f.citizen_id = {$citizen->citizen_id} 
 		AND i.version = (SELECT MAX(version) FROM issues WHERE issue_id = i.issue_id)
 		ORDER BY i.issue_id";
 	$db->execute_query($sql);
+	$result = $db->get_result();
 	$html = "";
-	while ($line = $db->fetch_line()) {
-		$html .= "<a href=\"/issue.php?iid={$line['issue_id']}&m=r\">{$line['name']}</a><br>\n";
+	while ($line = $db->fetch_line($result)) {
+		$html .= "
+			<p class=\"i1\">
+				<img id=\"i{$line['issue_id']}\" class=\"ec\" src=\"img/expand.png\">
+				<a class=\"su\" href=\"issue.php?m=r&iid={$line['issue_id']}\">{$line['name']}</a>
+			</p>
+			<div class=\"di_ec\" id=\"di_i{$line['issue_id']}\">" . get_positions($line['issue_id']) . "
+			</div>\n";
 	}
-	echo $html;
+	return $html;
 
 }
 
-function get_postions() {
+function get_positions($issue_id) {
 
 	global $citizen, $db;
 
-	$sql = "SELECT p.position_id, p.name, p.issue_id 
-		FROM follow f INNER JOIN positions p ON f.type_id = p.position_id 
+	$sql = "SELECT f.type_id position_id, p.name 
+		FROM follows f LEFT JOIN positions p ON f.type_id = p.position_id 
 		WHERE f.type = 'p' 
-		AND f.citizen_id = {$citizen->citizen_id}
-		ORDER BY p.position_id";
+		AND f.citizen_id = '{$citizen->citizen_id}'
+		AND p.issue_id = '{$issue_id}'";
 	$db->execute_query($sql);
+	$result = $db->get_result();
 	$html = "";
-	while ($line = $db->fetch_line()) {
-		$html .= "<a href=\"/position.php?m=r&pid={$line['position_id']}&iid={$line['issue_id']}\">{$line['name']}</a><br>\n";
+	while ($line = $db->fetch_line($result)) {
+		$html .= "
+				<p class=\"i2\">
+					<img id=\"p{$line['position_id']}\" class=\"ec\" src=\"img/expand.png\">
+					<a class=\"su\" href=\"position.php?m=r&pid={$line['position_id']}\">{$line['name']}</a>
+				</p>
+				<div class=\"di_ec\" id=\"di_p{$line['position_id']}\">" . get_actions($line['position_id']) . "
+				</div>\n";
 	}
-	echo $html;
+	return $html;
 
 }
 
-function get_actions() {
+function get_actions($position_id) {
 
 	global $citizen, $db;
 
-	$sql = "SELECT a.action_id, a.name, a.position_id 
-		FROM follow f INNER JOIN actions a ON f.type_id = a.action_id 
+	$sql = "SELECT f.type_id action_id, a.name 
+		FROM follows f LEFT JOIN actions a ON f.type_id = a.action_id 
 		WHERE f.type = 'a' 
-		AND f.citizen_id = {$citizen->citizen_id}
-		ORDER BY a.action_id";
+		AND f.citizen_id = '{$citizen->citizen_id}'
+		AND a.position_id = '{$position_id}'";
 	$db->execute_query($sql);
+	$result = $db->get_result();
 	$html = "";
-	while ($line = $db->fetch_line()) {
-		$html .= "<a href=\"/action.php?m=r&aid={$line['action_id']}&pid={$line['position_id']}\">{$line['name']}</a><br>\n";
+	while ($line = $db->fetch_line($result)) {
+		$html .= "
+					<p class=\"i3\">
+						<img id=\"a{$line['action_id']}\" class=\"ec\" src=\"img/expand.png\">
+						<a class=\"su\" href=\"action.php?m=r&aid={$line['action_id']}\">{$line['name']}</a>
+					</p>\n";
 	}
-	echo $html;
+	return $html;
 
 }
 ?>

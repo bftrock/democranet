@@ -95,25 +95,25 @@ class issue
 			while ($line2 = $this->db->fetch_line($result2))
 			{
 				$action_id = $line2['action_id'];
-				$sql = "DELETE FROM action_citizen WHERE action_id = '{$action_id}'";
+				$sql = "DELETE FROM votes WHERE type = 'a' AND type_id = '{$action_id}'";
 				$this->db->execute_query($sql);
 				$sql = "DELETE FROM comments WHERE type = 'a' AND type_id = '{$action_id}'";
 				$this->db->execute_query($sql);
-				$sql = "DELETE FROM follow WHERE type = 'a' AND type_id = '{$action_id}'";
+				$sql = "DELETE FROM follows WHERE type = 'a' AND type_id = '{$action_id}'";
 				$this->db->execute_query($sql);
 			}
 			$sql = "DELETE FROM actions WHERE position_id = '{$position_id}'";
 			$this->db->execute_query($sql);
-			$sql = "DELETE FROM follow WHERE type = 'p' AND type_id = '{$position_id}'";
+			$sql = "DELETE FROM follows WHERE type = 'p' AND type_id = '{$position_id}'";
 			$this->db->execute_query($sql);
 			$sql = "DELETE FROM comments WHERE type = 'p' AND type_id = '{$position_id}'";
 			$this->db->execute_query($sql);
-			$sql = "DELETE FROM position_citizen WHERE position_id = '{$position_id}'";
+			$sql = "DELETE FROM votes WHERE type = 'p' AND type_id = '{$position_id}'";
 			$this->db->execute_query($sql);
 		}
 		$sql = "DELETE FROM positions WHERE issue_id = '{$this->id}'";
 		$this->db->execute_query($sql);
-		$sql = "DELETE FROM follow WHERE type = 'i' AND type_id = '{$this->id}'";
+		$sql = "DELETE FROM follows WHERE type = 'i' AND type_id = '{$this->id}'";
 		$this->db->execute_query($sql);
 		$sql = "DELETE FROM issues WHERE issue_id = '{$this->id}'";
 		$this->db->execute_query($sql);

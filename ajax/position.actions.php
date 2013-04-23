@@ -5,8 +5,12 @@ require_once ("../inc/class.database.php");
 require_once ("../inc/util.democranet.php");
 require_once ("../inc/class.citizen.php");
 
-$db = new database();
-$db->open_connection();
+$citizen = new citizen();
+$citizen->check_session();
+if ($citizen->in_session == false)
+{
+	die(ERR_NO_SESSION);
+}
 
 // The position id must be passed in the query string.
 $position_id = null;
@@ -15,24 +19,17 @@ if (check_field('pid', $_REQUEST, true))
 	$position_id = $_REQUEST['pid'];
 }
 
-$citizen = new citizen();
-$citizen->check_session();
-if ($citizen->in_session == false)
-{
-	die(ERR_NO_SESSION);
-}
+$db = new database();
+$db->open_connection();
 
 // If a citizen is in session, execute a separate query to get their vote on each action, and store
 // results in an array.
-$sql = "SELECT ac.action_id, ac.vote 
-	FROM action_citizen ac LEFT JOIN actions a ON ac.action_id = a.action_id
-	WHERE a.position_id = '{$position_id}'
-	AND ac.citizen_id = '{$citizen->citizen_id}'";
+$sql = "SELECT v.type_id action_id, v.vote 
+	FROM votes v LEFT JOIN actions a ON v.type_id = a.action_id
+	WHERE v.type = 'a' 
+	AND v.citizen_id = '{$citizen->citizen_id}'
+	AND a.position_id = '{$position_id}'";
 $db->execute_query($sql);
-$no_actions = false;
-if ($db->get_num_rows() == 0) {
-	$no_actions = true;
-}
 $citizen_votes = array();
 while ($line = $db->fetch_line()) {
 	$citizen_votes[$line['action_id']] = $line['vote'];
@@ -43,13 +40,6 @@ while ($line = $db->fetch_line()) {
 	<span class="title">Actions</span>
 	<a id="bu_add_act" class="btn" href="action.php?m=n&pid=<?php echo $position_id; ?>">Add Action</a>
 </p>
-
-<?php if ($no_actions) { ?>
-
-<p>No Actions defined for this Position</p>
-
-<?php } else { ?>
-
 <table class="vote_tally">
 	<tr>
 		<th id="th_c1"></th>
@@ -59,11 +49,11 @@ while ($line = $db->fetch_line()) {
 	</tr>
 
 <?php
-}
+
 // Execute a query that counts the votes on each action for this postion.
 $sql = "SELECT a.action_id, a.name,
-	(SELECT COUNT(*) FROM action_citizen ac WHERE ac.action_id = a.action_id AND ac.vote = '".VOTE_FOR."') vote_for,
-	(SELECT COUNT(*) FROM action_citizen ac WHERE ac.action_id = a.action_id AND ac.vote = '".VOTE_AGAINST."') vote_against
+	(SELECT COUNT(*) FROM votes v WHERE v.type = 'a' AND v.type_id = a.action_id AND v.vote = '".VOTE_FOR."') vote_for,
+	(SELECT COUNT(*) FROM votes v WHERE v.type = 'a' AND v.type_id = a.action_id AND v.vote = '".VOTE_AGAINST."') vote_against
 	FROM actions a
 	WHERE a.position_id = '{$position_id}'";
 $db->execute_query($sql);

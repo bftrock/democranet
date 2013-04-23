@@ -4,9 +4,14 @@
 
 require_once ("../inc/class.database.php");
 require_once ("../inc/util.democranet.php");
+require_once ("../inc/class.citizen.php");
 
-$db = new database();
-$db->open_connection();
+$citizen = new citizen();
+$citizen->check_session();
+if ($citizen->in_session == false)
+{
+	die(ERR_NO_SESSION);
+}
 
 if (check_field('m', $_REQUEST, true))
 {
@@ -16,6 +21,9 @@ if (check_field('ref_id', $_REQUEST))
 {
 	$reference_id = $_REQUEST['ref_id'];
 }
+
+$db = new database();
+$db->open_connection();
 
 $fields = array('ref_type','title','author','publisher','url','date','isbn','location','page','volume','number','type','type_id');
 

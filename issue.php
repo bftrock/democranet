@@ -310,13 +310,13 @@ function displayRefs() {
 function displayFollow() {
 
 	var bt = $('#bu_follow').text();
-	var act = '';
+	var mode = '';
 	if (bt == 'Follow') {
-			act = 'f';
+			mode = 'f';
 	} else if (bt == 'Unfollow') {
-			act = 'u';
+			mode = 'u';
 	}
-	$.post('/ajax/item.follow.php', {t: 'i', tid: <?php echo $issue->id; ?>, a: act}, function (data) {
+	$.post('/ajax/item.follow.php', {t: 'i', tid: <?php echo $issue->id; ?>, m: mode}, function (data) {
 		$('#bu_follow').text(data);
 	});
 

@@ -32,6 +32,7 @@ p
 	font-family: 'Quattrocento Sans', helvetica, arial, sans-serif;
 	font-size: 1em;
 	font-weight: 400;
+	margin-top: .2em;
 	margin-bottom: .5em;
 }
 
@@ -241,11 +242,6 @@ a:active
 {
 	display: none;
 	margin-bottom: 5px;
-}
-
-.with_btn
-{
-	margin-top: 5px;
 }
 
 .with_btn .btn 

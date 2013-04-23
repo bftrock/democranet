@@ -174,6 +174,7 @@ p.ref
 </table>
 
 <?php if ($mode != "n") { ?>
+
 <table class="form" style="margin-top: 10px">
 	<tr>
 		<th>References:<br><a id="bu_ref_help" class="btn" href="JAVASCRIPT:$('#bu_ref_help').click()">?</a></th>
@@ -182,6 +183,7 @@ p.ref
 		</td>
 	</tr>
 </table>
+
 <?php } ?>
 
 <?php
@@ -204,11 +206,20 @@ else
 	<span class="title"><?php echo $position->name; ?></span>
 	<a class="btn" id="bu_follow" href="#"><?php echo $button_text; ?></a>
 </p>
+
+<?php if ($citizen->citizen_id != $position->citizen_id)  { ?>
+<p>By <?php echo $position->citizen_name; ?></p>
+<?php } ?>
+
 <input type="hidden" id="type_id" value="<?php echo $position->id; ?>" />
 <p><?php echo $position->display_justification(); ?></p>
 <p class="title">References</p>
 <div id="di_refs"></div>
+
+<?php if ($citizen->citizen_id == $position->citizen_id)  { ?>
 <a class="btn" href="position.php?m=e&pid=<?php echo $position->id; ?>">Edit Position</a>
+<?php } ?>
+
 <ul id="votes">
 	<li class="label">Your vote:</li>
 	<li id="your_vote" class="with_img"></li>
@@ -326,13 +337,13 @@ function displayRefs() {
 function displayFollow() {
 
 	var bt = $('#bu_follow').text();
-	var act = '';
+	var mode = '';
 	if (bt == 'Follow') {
-		act = 'f';
+		mode = 'f';
 	} else if (bt == 'Unfollow') {
-		act = 'u';
+		mode = 'u';
 	}
-	$.post('/ajax/item.follow.php', {t: 'p', tid: <?php echo $position->id; ?>, a: act}, function (data) {
+	$.post('ajax/item.follow.php', {t: 'p', tid: <?php echo $position->id; ?>, m: mode}, function (data) {
 		$('#bu_follow').text(data);
 	})
 }

@@ -5,8 +5,12 @@ require_once ("../inc/class.database.php");
 require_once ("../inc/class.citizen.php");
 require_once ("../inc/util.democranet.php");
 
-$db = new database();
-$db->open_connection();
+$citizen = new citizen();
+$citizen->check_session();
+if ($citizen->in_session == false)
+{
+	die(ERR_NO_SESSION);
+}
 
 // The issue id must be passed in the query string.
 if (check_field('iid', $_REQUEST, true)) 
@@ -14,18 +18,15 @@ if (check_field('iid', $_REQUEST, true))
 	$issue_id = $_REQUEST['iid'];
 }
 
-$citizen = new citizen();
-$citizen->check_session();
-if ($citizen->is_session == false)
-{
-	die(ERR_NO_SESSION);
-}
+$db = new database();
+$db->open_connection();
 
 // Execute a separate query to get the citizen's vote on each issue, and store results in an array.
-$sql = "SELECT pc.position_id, pc.vote 
-	FROM position_citizen pc LEFT JOIN positions p ON pc.position_id = p.position_id
+$sql = "SELECT v.type_id position_id, v.vote 
+	FROM votes v LEFT JOIN positions p ON v.type_id = p.position_id
 	WHERE p.issue_id = '{$issue_id}'
-	AND pc.citizen_id = '{$citizen->citizen_id}'";
+	AND v.citizen_id = '{$citizen->citizen_id}'
+	AND v.type = 'p'";
 $db->execute_query($sql);
 $citizen_votes = array();
 while ($line = $db->fetch_line())
@@ -47,8 +48,8 @@ while ($line = $db->fetch_line())
 <?php
 // Execute a query that counts the votes on each position for this issue.
 $sql = "SELECT p.position_id, p.name,
-	(SELECT COUNT(*) FROM position_citizen pc WHERE pc.position_id = p.position_id AND pc.vote = '".VOTE_FOR."') vote_for,
-	(SELECT COUNT(*) FROM position_citizen pc WHERE pc.position_id = p.position_id AND pc.vote = '".VOTE_AGAINST."') vote_against
+	(SELECT COUNT(*) FROM votes v WHERE v.type = 'p' AND v.type_id = p.position_id AND v.vote = '".VOTE_FOR."') vote_for,
+	(SELECT COUNT(*) FROM votes v WHERE v.type = 'p' AND v.type_id = p.position_id AND v.vote = '".VOTE_AGAINST."') vote_against
 	FROM positions p
 	WHERE issue_id = '{$issue_id}'";
 $db->execute_query($sql);

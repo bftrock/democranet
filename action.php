@@ -266,13 +266,13 @@ $(document).ready(function () {
 
 function displayFollow() {
 	var bt = $('#bu_follow').text();
-	var act = '';
+	var mode = '';
 	if (bt == 'Follow') {
-		act = 'f';
+		mode = 'f';
 	} else if (bt == 'Unfollow') {
-		act = 'u';
+		mode = 'u';
 	}
-	$.post('/ajax/item.follow.php', {t: 'a', tid: <?php echo $action->id; ?>, a: act}, function (data) {
+	$.post('/ajax/item.follow.php', {t: 'a', tid: <?php echo $action->id; ?>, m: mode}, function (data) {
 		$('#bu_follow').text(data);
 	})
 }
@@ -316,7 +316,7 @@ function following_action() {
 	global $action, $citizen, $db;
 
 	$ret = false;
-	$sql = "SELECT COUNT(*) count FROM follow WHERE type = 'a' AND type_id = '{$action->id}' AND citizen_id = '{$citizen->citizen_id}'";
+	$sql = "SELECT COUNT(*) count FROM follows WHERE type = 'a' AND type_id = '{$action->id}' AND citizen_id = '{$citizen->citizen_id}'";
 	$db->execute_query($sql);
 	$line = $db->fetch_line();
 	$count = $line['count'];
