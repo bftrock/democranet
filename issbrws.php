@@ -24,6 +24,7 @@ else
 	header("Location:login.php");
 }
 
+echo DOC_TYPE;
 ?>
 <html>
 
@@ -43,7 +44,7 @@ p.is_ti {
 	margin: 10px 0 2px 20px;
 }
 
-div.is_de p {
+div.is_de {
 	margin: 0 0 0 40px;
 }
 
@@ -64,8 +65,6 @@ div.is_de p {
 
 </div>
 <script src="js/jquery.js"></script>
-<script src="js/jquery-ui.js"></script>
-<script src="js/vendor/bootstrap.js"></script>
 
 </body>
 </html>
