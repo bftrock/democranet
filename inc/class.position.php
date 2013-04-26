@@ -159,8 +159,8 @@ class position
 	// carriage returns with <br />, but later there will be more sophisticated markup to convert.
 	public function display_justification()
 	{	
-		$str = htmlentities($this->justification, ENT_COMPAT, 'UTF-8', false);
-		$str = str_replace("\r\n", "<br>", $str);
+		//$str = htmlentities($this->justification, ENT_COMPAT, 'UTF-8', false);
+		$str = str_replace("\r\n", "<br>", $this->justification);
 		return $str;
 	}
 }
