@@ -80,10 +80,6 @@ switch ($mode)
     <link rel="stylesheet" type="text/css" href="style/democranet.css" />
 	<style type="text/css">
 
-#header {
-	margin-bottom: 100px;
-}
-
 #login_box {
 	background: #DCE8EB;
 	border-style: solid;
@@ -92,7 +88,7 @@ switch ($mode)
 	border-radius: 10px;
 	padding: 10px;
 	width: 350px;
-	margin: 0 auto;
+	margin: 50px auto;
 }
 
 #login_box h3 {
@@ -119,6 +115,7 @@ switch ($mode)
 
 	<div id="header">
 		<h1>Democra.net</h1>
+		<p>A political networking web site.</p>
 	</div>
 	
 	<div id="di_error">
@@ -146,16 +143,34 @@ switch ($mode)
 		<a href="register.php">Register</a><a style="float:right" href="#">Reset password</a>
 	</div>
 
+	<div class="content">
+		<p>
+			<span class="title">Citizen:</span> Register to become a citizen and participate in this site.
+		</p>
+		<p>
+			<span class="title">Issues:</span> Get an impartial summary of a political issue created by the users of 
+			this site. If you don't see one you care about, create it. Others may contribute to help improve it.
+		</p>
+		<p>
+			<span class="title">Positions:</span> This is where you express your opinion by voting on issue positions. 
+			You can also create your own position for others to vote on.
+		</p>
+		<p>
+			<span class="title">Actions:</span> Actions are created in support of a position and result in real-world outcomes. 
+			Initiate an action like a rally, a piece of legislation, or a law suit, or join others' actions.
+		</p>
+		<p>
+			<span class="title">Candidates:</span> Any citizen can register as a candidate for a political office. 
+			Others can see which issues the candidate cares about, and which positions on those issues he/she is for or 
+			against. See how your views compare to the candidate's.
+		</p>
+	</div>
+
 </div>
 <script src="js/jquery.js"></script>
 <script>
 
 $(document).ready(function() {
-	$('#email').keyup(function (event) {
-		if(event.keyCode == 13){
-			submitForm();
-		}
-	});
 	$('#password').keyup(function (event) {
 		if(event.keyCode == 13){
 			submitForm();
