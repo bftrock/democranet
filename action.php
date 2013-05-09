@@ -272,13 +272,16 @@ function displayFollow() {
 	} else if (bt == 'Unfollow') {
 		mode = 'u';
 	}
-	$.post('/ajax/item.follow.php', {t: 'a', tid: <?php echo $action->id; ?>, m: mode}, function (data) {
+	$.post('ajax/item.follow.php', {t: 'a', tid: <?php echo $action->id; ?>, m: mode}, function (data) {
 		$('#bu_follow').text(data);
 	})
 }
 
 function setVote(vote) {
 	$.post('ajax/action.vote.php', {aid: <?php echo $action->id; ?>, vo: vote}, updateVoteFields, 'json');
+	$.post('ajax/item.follow.php', {t: 'a', tid: <?php echo $action->id; ?>, m: 'f'}, function (data) {
+		$('#bu_follow').text(data);
+	})
 }
 
 function updateVoteFields(data) {

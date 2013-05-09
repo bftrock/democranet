@@ -104,12 +104,12 @@ function get_elections() {
 			$ret .= "<p class=\"lev2\"><a href=\"office.php?m=r&id={$line['office_id']}\">{$line['office_name']}</a></p>\n";
 		}
 		$ret .= "<p class=\"lev3\"><a href=\"election.php?m=r&id={$line['election_id']}\">{$line['election_date']}</a></p>\n";
-		$sql = "SELECT ci.citizen_id, ci.name FROM candidates c LEFT JOIN citizens ci ON c.citizen_id = ci.citizen_id 
+		$sql = "SELECT c.candidate_id, ci.name FROM candidates c LEFT JOIN citizens ci ON c.citizen_id = ci.citizen_id 
 			WHERE c.election_id = '{$line['election_id']}'";
 		$db->execute_query($sql);
 		while ($line2 = $db->fetch_line())
 		{
-			$ret .= "<p class=\"lev4\"><a href=\"citizen.php?m=r&cid={$line2['citizen_id']}\">{$line2['name']}</a></p>\n";
+			$ret .= "<p class=\"lev4\"><a href=\"candidate.php?m=r&id={$line2['candidate_id']}\">{$line2['name']}</a></p>\n";
 		}
 		$last_country = $this_country;
 		$last_office = $this_office;

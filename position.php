@@ -345,11 +345,14 @@ function displayFollow() {
 	}
 	$.post('ajax/item.follow.php', {t: 'p', tid: <?php echo $position->id; ?>, m: mode}, function (data) {
 		$('#bu_follow').text(data);
-	})
+	});
 }
 
 function setVote(vote) {
 	$.post('ajax/position.vote.php', {pid: <?php echo $position->id; ?>, vo: vote}, updateVoteFields, 'json');
+	$.post('ajax/item.follow.php', {t: 'p', tid: <?php echo $position->id; ?>, m: 'f'}, function (data) {
+		$('#bu_follow').text(data);
+	});
 }
 
 function updateVoteFields(data) {

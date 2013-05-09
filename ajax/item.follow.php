@@ -16,14 +16,14 @@ if ($citizen->in_session == false)
 	die(ERR_NO_SESSION);
 }
 
-$is_required = true;
-if (check_field('m', $_REQUEST, $is_required)) {
+$mode = null;
+if (check_field('m', $_REQUEST, false)) {
 	$mode = $_REQUEST['m'];
 }
-if (check_field('t', $_REQUEST, $is_required)) {
+if (check_field('t', $_REQUEST, true)) {
 	$type = $_REQUEST['t'];
 }
-if (check_field('tid', $_REQUEST, $is_required)) {
+if (check_field('tid', $_REQUEST, true)) {
 	$type_id = $_REQUEST['tid'];
 }
 
@@ -31,7 +31,7 @@ switch ($mode) {
 
 	case "f":	// follow
 
-		$sql = "INSERT follows SET type = '{$type}', type_id = '{$type_id}', citizen_id = '{$citizen->citizen_id}'";
+		$sql = "REPLACE follows SET type = '{$type}', type_id = '{$type_id}', citizen_id = '{$citizen->citizen_id}'";
 		$db->execute_query($sql);
 		break;
 

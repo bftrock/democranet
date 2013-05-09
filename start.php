@@ -51,7 +51,7 @@ else
 	</div>
 
 	<div class="content">
-		<p class="with_btn"><span class="title">My Issues</span><a class="btn" href="issbrws.php">Browse</a></p>
+		<p class="with_btn"><span class="title">Issues I'm Following</span><a class="btn" href="issbrws.php">Browse All Issues</a></p>
 		<div id="di_issfol">
 			<?php echo get_issues(); ?>
 		</div>
@@ -118,7 +118,7 @@ function get_issues() {
 	while ($line = $db->fetch_line($result)) {
 		$html .= "
 			<p class=\"i1\">
-				<img id=\"i{$line['issue_id']}\" class=\"ec\" src=\"img/expand.png\">
+				<img id=\"i{$line['issue_id']}\" class=\"ec\" src=\"img/collapse.png\">
 				<a class=\"su\" href=\"issue.php?m=r&iid={$line['issue_id']}\">{$line['name']}</a>
 			</p>
 			<div class=\"di_ec\" id=\"di_i{$line['issue_id']}\">" . get_positions($line['issue_id']) . "
@@ -143,7 +143,7 @@ function get_positions($issue_id) {
 	while ($line = $db->fetch_line($result)) {
 		$html .= "
 				<p class=\"i2\">
-					<img id=\"p{$line['position_id']}\" class=\"ec\" src=\"img/expand.png\">
+					<img id=\"p{$line['position_id']}\" class=\"ec\" src=\"img/collapse.png\">
 					<a class=\"su\" href=\"position.php?m=r&pid={$line['position_id']}\">{$line['name']}</a>
 				</p>
 				<div class=\"di_ec\" id=\"di_p{$line['position_id']}\">" . get_actions($line['position_id']) . "
@@ -168,7 +168,6 @@ function get_actions($position_id) {
 	while ($line = $db->fetch_line($result)) {
 		$html .= "
 					<p class=\"i3\">
-						<img id=\"a{$line['action_id']}\" class=\"ec\" src=\"img/expand.png\">
 						<a class=\"su\" href=\"action.php?m=r&aid={$line['action_id']}\">{$line['name']}</a>
 					</p>\n";
 	}

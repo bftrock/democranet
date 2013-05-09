@@ -183,7 +183,8 @@ a:active
 #container 
 {
 	margin: 0 auto;
-	width: 900px;
+	min-width: 200px;
+	max-width: 900px;
 	background-color: #ECF1F2;
 	min-height: 780px;
 	padding-bottom: 5px;
@@ -276,9 +277,19 @@ a:active
 }
 
 
-td.ac
+.al
+{
+	text-align: left;
+}
+
+.ac
 {
 	text-align: center;
+}
+
+.ar
+{
+	text-align: right;
 }
 
 table.form
