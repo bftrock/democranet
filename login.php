@@ -88,7 +88,7 @@ switch ($mode)
 	border-radius: 10px;
 	padding: 10px;
 	width: 350px;
-	margin: 50px auto;
+	margin: 30px auto;
 }
 
 #login_box h3 {
@@ -115,7 +115,7 @@ switch ($mode)
 
 	<div id="header">
 		<h1>Democra.net</h1>
-		<p>A political networking web site.</p>
+		<p><span class="italics">noun</span> (di-ˈmä-krə-net): A web site for increasing democratic participation and political networking.</p>
 	</div>
 	
 	<div id="di_error">
@@ -148,21 +148,27 @@ switch ($mode)
 			<span class="title">Citizen:</span> Register to become a citizen and participate in this site.
 		</p>
 		<p>
-			<span class="title">Issues:</span> Get an impartial summary of a political issue created by the users of 
-			this site. If you don't see one you care about, create it. Others may contribute to help improve it.
+			<span class="title">Issues:</span> Read impartial summaries of political issues created by the users of 
+			this site. If you don't see an issue you care about, create it. Others may contribute to help improve it.
 		</p>
 		<p>
-			<span class="title">Positions:</span> This is where you express your opinion by voting on issue positions. 
-			You can also create your own position for others to vote on.
+			<span class="title">Positions:</span> Express your opinion by voting on (issue) positions. If your position 
+			is not well expressed already, you can create your own position, which others to vote on too.
 		</p>
 		<p>
-			<span class="title">Actions:</span> Actions are created in support of a position and result in real-world outcomes. 
-			Initiate an action like a rally, a piece of legislation, or a law suit, or join others' actions.
+			<span class="title">Actions:</span> Actions are created in support of a position and should result in 
+			real-world outcomes. Initiate an action like a rally, a piece of legislation, or a law suit, or join others' actions.
 		</p>
 		<p>
-			<span class="title">Candidates:</span> Any citizen can register as a candidate for a political office. 
-			Others can see which issues the candidate cares about, and which positions on those issues he/she is for or 
-			against. See how your views compare to the candidate's.
+			<span class="title">Office:</span> A political office, such as President of the United States, or City Mayor.
+		</p>
+		<p>
+			<span class="title">Election:</span> An election for a political office, which takes place on a specific date.
+		</p>
+		<p>
+			<span class="title">Candidates:</span> Any citizen can register as a candidate for an election. Others can 
+			see which issues the candidate cares about, and which positions and actions he/she is for or against. See 
+			how your views compare to the candidate's.
 		</p>
 	</div>
 
