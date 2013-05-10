@@ -199,6 +199,7 @@ img.ec
 			<a href="office.php?m=r&id=<?php echo $candidate->office_id; ?>"><?php echo $candidate->office_name; ?></a> /
 			<a href="election.php?m=r&id=<?php echo $candidate->election_id; ?>"><?php echo $candidate->election_date; ?></a> / <br>
 			<span class="title"><?php echo $candidate->citizen_name; ?></span>
+			<a class="btn" id="bu_follow" href="JAVASCRIPT: displayFollow()"><?php echo get_button_text($candidate->is_following($citizen->citizen_id)); ?></a>
 		</p>
 		<p><span class="bold">Party:</span> <?php echo $candidate->party; ?></p>
 <?php if ($candidate->website) echo "<p><span class=\"bold\">Website:</span> <a href=\"{$candidate->website}\" target=\"_blank\">{$candidate->website}</a></p>"; ?>
@@ -206,6 +207,20 @@ img.ec
 		<input type="hidden" id="candidate_id" value="<?php echo $candidate->id; ?>" />
 <?php if ($citizen->citizen_id == $candidate->citizen_id) echo "<a class=\"btn\" href=\"candidate.php?m=e&id={$candidate->id}\">Edit Candidate</a>"; ?>
 		
+		<ul id="votes">
+			<li class="label">Your vote:</li>
+			<li id="your_vote" class="with_img"></li>
+			<li class="label">Add/change vote:</li>
+			<li>
+				<a id="vote_for" class="btn" href="JAVASCRIPT: setVote(1)" title="Click to vote for">For</a>&nbsp;
+				<a id="vote_against" class="btn" href="JAVASCRIPT: setVote(2)" title="Click to vote against">Against</a>
+			</li>
+			<li class="label with_img"><img src="img/for.png" title="Number of citizens for"/>:</li>
+			<li id="citizens_for"></li>
+			<li class="label with_img"><img src="img/against.png" title="Number of citizens against"/>:</li>
+			<li id="citizens_against"></li>
+		</ul>
+
 	</div>
 
 	<div class="content" id="di_issues">
@@ -245,9 +260,6 @@ function cancelEdit() {
 <?php } else { ?>
 
 $(document).ready(function() {
-	$('#di_issues').load('ajax/candidate.issues.php',
-		{id: <?php echo $candidate->id; ?>}
-	);
 	$('img.ec').click(function () {
 		var id;
 		id = $(this).attr('id');
@@ -260,6 +272,42 @@ $(document).ready(function() {
 		}
 	});
 });
+
+function displayFollow() {
+
+	var bt = $('#bu_follow').text();
+	var mode = '';
+	if (bt == 'Follow') {
+			mode = 'f';
+	} else if (bt == 'Unfollow') {
+			mode = 'u';
+	}
+	$.post('ajax/item.follow.php', {t: 'c', tid: <?php echo $candidate->id; ?>, m: mode}, function (data) {
+		$('#bu_follow').text(data);
+	});
+
+}
+
+function setVote(vote) {
+	$.post('ajax/candidate.vote.php', {id: <?php echo $candidate->id; ?>, vo: vote}, updateVoteFields, 'json');
+	$.post('ajax/item.follow.php', {t: 'c', tid: <?php echo $candidate->id; ?>, m: 'f'}, function (data) {
+		$('#bu_follow').text(data);
+	});
+}
+
+function updateVoteFields(data) {
+	var j = data;
+	var v = j.vote;
+	if (v == 1) {
+		$('#your_vote').html('<img src="img/for.png"/>');
+	} else if (v == 2) {
+		$('#your_vote').html('<img src="img/against.png"/>');
+	} else {
+		$('#your_vote').html('(none)');
+	}
+	$('#citizens_for').html(j.for);
+	$('#citizens_against').html(j.against);
+}
 
 <?php } ?>
 

@@ -26,7 +26,7 @@ if (check_field("m", $_REQUEST))
 } 
 else 
 {
-	$mode = "n";
+	$mode = "n";		
 }
 
 $election = new election($db);
@@ -109,6 +109,12 @@ echo DOC_TYPE;
 
 		<table class="form">
 			<form id="fo_edit_election" method="post" action="<?php echo $submit_action; ?>">
+<?php if($election->office_id) { ?>
+			<tr>
+				<th>Office:</th>
+				<td><?php echo $election->office_name; ?></td>
+			</tr>
+<?php } ?>
 			<tr>
 				<th>
 					Date:
@@ -136,6 +142,7 @@ echo DOC_TYPE;
 		<p class="with_btn">
 			<a href="elecbrws.php">All Elections</a> / <a href="office.php?m=r&id=<?php echo $election->office_id; ?>"><?php echo $election->office_name; ?></a> / <br>
 			<span class="title"><?php echo $election->display_date(); ?></span>
+			<a class="btn" id="bu_follow" href="JAVASCRIPT: displayFollow()"><?php echo get_button_text($election->is_following($citizen->citizen_id)); ?></a>
 		</p>
 		<input type="hidden" id="election_id" value="<?php echo $election->id; ?>" />
 		<a class="btn" href="election.php?m=e&id=<?php echo $election->id; ?>">Edit Election</a>
@@ -165,7 +172,7 @@ function cancelEdit() {
 <?php if ($election->id) { ?>
 	var url = 'election.php?m=r&id=<?php echo $election->id; ?>';
 <?php } else { ?>
-	var url = 'elecbrws.php';
+	var url = 'office.php?m=r&id=<?php echo $election->office_id; ?>';
 <?php } ?>
 	window.location.assign(url);
 	return false;
@@ -177,6 +184,21 @@ $(document).ready(function() {
 		{id: <?php echo $election->id; ?>}
 	);
 });
+
+function displayFollow() {
+
+	var bt = $('#bu_follow').text();
+	var mode = '';
+	if (bt == 'Follow') {
+			mode = 'f';
+	} else if (bt == 'Unfollow') {
+			mode = 'u';
+	}
+	$.post('ajax/item.follow.php', {t: 'e', tid: <?php echo $election->id; ?>, m: mode}, function (data) {
+		$('#bu_follow').text(data);
+	});
+
+}
 
 <?php } ?>
 

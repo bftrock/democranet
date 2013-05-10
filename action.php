@@ -145,25 +145,15 @@ echo DOC_TYPE;
 				</tr>
 			</form>
 		</table>
-<?php 
-}
-else
-{
-	if (following_action())
-	{
-		$button_text = "Unfollow";
-	}
-	else
-	{
-		$button_text = "Follow";
-	}
-?>
+
+<?php  } else { ?>
+
 <p class="with_btn">
 	<a href="issbrws.php">All Issues</a> / 
 	<a href="issue.php?m=r&iid=<?php echo $action->issue_id; ?>" title="<?php echo $action->issue_name; ?>"><?php echo shorten($action->issue_name, 40); ?></a> / 
 	<a href="position.php?m=r&pid=<?php echo $action->position_id; ?>" title="<?php echo $action->position_name; ?>"><?php echo shorten($action->position_name, 40); ?></a> / <br>
 	<span class="title"><?php echo $action->name; ?></span>
-	<a class="btn" id="bu_follow" href="#"><?php echo $button_text; ?></a>
+	<a class="btn" id="bu_follow" href="JAVASCRIPT: displayFollow()"><?php echo get_button_text($action->is_following($citizen->citizen_id)); ?></a>
 </p>
 <table class="form">
 	<tr>
@@ -261,7 +251,6 @@ $(document).ready(function () {
 		$('#ta_comment').val('');
 		$('#di_new_comment').hide();
 	});
-	$("#bu_follow").on("click", displayFollow);
 });
 
 function displayFollow() {
@@ -303,43 +292,6 @@ function updateVoteFields(data) {
 <?php } ?>
 
 </script>
-<script>
-	var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
-	(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-	g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
-	s.parentNode.insertBefore(g,s)}(document,'script'));
-</script>
 
 </body>
 </html>
-<?php
-
-function following_action() {
-
-	global $action, $citizen, $db;
-
-	$ret = false;
-	$sql = "SELECT COUNT(*) count FROM follows WHERE type = 'a' AND type_id = '{$action->id}' AND citizen_id = '{$citizen->citizen_id}'";
-	$db->execute_query($sql);
-	$line = $db->fetch_line();
-	$count = $line['count'];
-	if ($count > 0) {
-		$ret = true;
-	}
-	return $ret;
-
-}
-
-function shorten($str, $num_chars)
-{
-	if (strlen($str) > $num_chars)
-	{
-		return substr($str, 0, $num_chars - 3) . "...";
-	}
-	else
-	{
-		return $str;
-	}
-}
-
-?>

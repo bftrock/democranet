@@ -186,25 +186,13 @@ p.ref
 
 <?php } ?>
 
-<?php
-}
-else
-{
-	if (is_following("p", $position->id))
-	{
-		$button_text = "Unfollow";
-	}
-	else
-	{
-		$button_text = "Follow";
-	}
-?>
+<?php } else { ?>
 
 <p class="with_btn">
 	<a href="issbrws.php">All Issues</a> / 
 	<a href="issue.php?m=r&iid=<?php echo $position->issue_id; ?>"><?php echo $position->issue_name; ?></a> / <br>
 	<span class="title"><?php echo $position->name; ?></span>
-	<a class="btn" id="bu_follow" href="#"><?php echo $button_text; ?></a>
+	<a class="btn" id="bu_follow" href="JAVASCRIPT: displayFollow()"><?php echo get_button_text($position->is_following($citizen->citizen_id)); ?></a>
 </p>
 
 <?php if ($citizen->citizen_id != $position->citizen_id)  { ?>
@@ -322,7 +310,6 @@ $(document).ready(function () {
 		$('#ta_comment').val('');
 		$('#di_new_comment').hide();
 	});
-	$("#bu_follow").on("click", displayFollow);
 	displayRefs();
 });
 

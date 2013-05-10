@@ -2,7 +2,6 @@
 
 require_once ("class.database.php");
 require_once ("util.democranet.php");
-require_once ("util.markdown.php");
 
 define ("ISS_DESC_MAXLEN", 3000);
 
@@ -169,6 +168,18 @@ class issue
 			$arr[] = $line;
 		}
 		return $arr;
+	}
+
+	public function is_following($citizen_id)
+	{
+		$following = false;
+		$sql = "SELECT COUNT(*) c FROM follows WHERE type = 'i' AND type_id = '{$this->id}' AND citizen_id = '{$citizen_id}'";
+		$this->db->execute_query($sql);
+		$line = $this->db->fetch_line();
+		if ($line['c'] > 0) {
+			$following = true;
+		}
+		return $following;		
 	}
 
 	private function get_next_id()

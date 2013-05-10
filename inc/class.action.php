@@ -157,6 +157,18 @@ class action
 	
 	}
 
+	public function is_following($citizen_id)
+	{
+		$following = false;
+		$sql = "SELECT COUNT(*) c FROM follows WHERE type = 'a' AND type_id = '{$this->id}' AND citizen_id = '{$citizen_id}'";
+		$this->db->execute_query($sql);
+		$line = $this->db->fetch_line();
+		if ($line['c'] > 0) {
+			$following = true;
+		}
+		return $following;		
+	}
+
 }
 
 ?>

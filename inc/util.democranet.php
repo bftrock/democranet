@@ -29,20 +29,29 @@ function check_field($field_name, $arr, $is_required = false) {
 
 }
 
-function is_following($type, $type_id)
+function shorten($str, $num_chars)
 {
-	global $citizen, $db;
-
-	$ret = false;
-	$sql = "SELECT COUNT(*) count FROM follows WHERE type = '{$type}' AND type_id = '{$type_id}' AND citizen_id = '{$citizen->citizen_id}'";
-	$db->execute_query($sql);
-	$line = $db->fetch_line();
-	$count = $line['count'];
-	if ($count > 0) {
-		$ret = true;
+	if (strlen($str) > $num_chars)
+	{
+		return substr($str, 0, $num_chars - 3) . "...";
 	}
-	return $ret;
+	else
+	{
+		return $str;
+	}
+}
 
+function get_button_text($is_following)
+{
+	if ($is_following)
+	{
+		$button_text = "Unfollow";
+	}
+	else
+	{
+		$button_text = "Follow";
+	}
+	return $button_text;
 }
 
 ?>

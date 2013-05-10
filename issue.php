@@ -193,22 +193,12 @@ span.counter
 </table>
 <?php } ?>
 
-<?php 
-}
-else
-{
-	if (is_following("i", $issue->id))
-	{
-		$button_text = "Unfollow";
-	} 
-	else
-	{
-		$button_text = "Follow";
-	}
-?>
+<?php } else { ?>
+
 			<p class="with_btn">
 				<a href="issbrws.php">All Issues</a> / <br>
-				<span class="title"><?php echo $issue->name; ?></span><a class="btn" href="#" id="bu_follow"><?php echo $button_text; ?></a>
+				<span class="title"><?php echo $issue->name; ?></span>
+				<a class="btn" href="JAVASCRIPT: displayFollow()" id="bu_follow"><?php echo get_button_text($issue->is_following($citizen->citizen_id)); ?></a>
 			</p>
 			<input type="hidden" id="type_id" value="<?php echo $issue->id; ?>" />
 			<div id="description"><?php echo $issue->display_description(); ?></div>
@@ -292,7 +282,6 @@ function cancelEdit() {
 <?php } else { ?>
 
 $(document).ready(function() {
-	$('#bu_follow').click(displayFollow);
 	$('#di_positions').load('ajax/issue.positions.php',
 		{iid: <?php echo $issue->id; ?>}
 	);
@@ -316,7 +305,7 @@ function displayFollow() {
 	} else if (bt == 'Unfollow') {
 			mode = 'u';
 	}
-	$.post('/ajax/item.follow.php', {t: 'i', tid: <?php echo $issue->id; ?>, m: mode}, function (data) {
+	$.post('ajax/item.follow.php', {t: 'i', tid: <?php echo $issue->id; ?>, m: mode}, function (data) {
 		$('#bu_follow').text(data);
 	});
 

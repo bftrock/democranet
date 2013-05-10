@@ -38,6 +38,11 @@ class election
 				$this->office_id = $_POST['office_id'];
 				break;
 			case LOAD_NEW:
+				$this->office_id = $_REQUEST['oid'];
+				$sql = "SELECT name FROM offices WHERE office_id = '{$this->office_id}'";
+				$this->db->execute_query($sql);
+				$line = $this->db->fetch_line();
+				$this->office_name = $line['name'];
 			default:
 		}
 	}
@@ -72,6 +77,18 @@ class election
 		$d = new DateTime($this->date);
 		$df = $d->format('F j, Y');
 		return $df;
+	}
+
+	public function is_following($citizen_id)
+	{
+		$following = false;
+		$sql = "SELECT COUNT(*) c FROM follows WHERE type = 'e' AND type_id = '{$this->id}' AND citizen_id = '{$citizen_id}'";
+		$this->db->execute_query($sql);
+		$line = $this->db->fetch_line();
+		if ($line['c'] > 0) {
+			$following = true;
+		}
+		return $following;		
 	}
 
 }

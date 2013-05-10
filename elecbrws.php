@@ -88,7 +88,7 @@ function get_elections() {
 	$last_country = "";
 	$last_office = "";
 	$sql = "SELECT c.country_id, c.name country_name, o.office_id, o.name office_name, e.election_id, DATE_FORMAT(e.date, '%M %e, %Y') election_date 
-		FROM elections e LEFT JOIN offices o ON e.office_id = o.office_id 
+		FROM offices o LEFT JOIN elections e ON o.office_id = e.office_id
 		LEFT JOIN countries c ON o.country_id = c.country_id";
 	$db->execute_query($sql);
 	$result = $db->get_result();

@@ -17,6 +17,9 @@ class candidate
 	public $party = null;
 	public $website = null;
 	public $summary = null;
+	public $vote = null;
+	public $for_count = null;
+	public $against_count = null;
 	
 	public function __construct($db)
 	{
@@ -94,6 +97,81 @@ class candidate
 	{
 		return str_replace("\r\n", "<br>", $this->summary);		
 	}
+
+	public function is_following($citizen_id)
+	{
+		$following = false;
+		$sql = "SELECT COUNT(*) c FROM follows WHERE type = 'c' AND type_id = '{$this->id}' AND citizen_id = '{$citizen_id}'";
+		$this->db->execute_query($sql);
+		$line = $this->db->fetch_line();
+		if ($line['c'] > 0) {
+			$following = true;
+		}
+		return $following;		
+	}
+
+	public function get_vote($citizen_id) {
+		
+		if (isset($citizen_id)) {
+			$sql = "SELECT vote FROM votes WHERE type = 'c' AND type_id = '{$this->id}' AND citizen_id = '{$citizen_id}'";
+			$this->db->execute_query($sql);
+			if ($this->db->get_num_rows()) {
+				$line = $this->db->fetch_line();
+				$this->vote = $line['vote'];
+			} else {
+				$this->vote = 0;
+			}
+		}
+		$sql = "SELECT COUNT(*) cnt FROM votes WHERE type = 'c' AND type_id = '{$this->id}' AND vote = '" . VOTE_FOR . "'";
+		$this->db->execute_query($sql);
+		$line = $this->db->fetch_line();
+		$this->for_count = $line['cnt'];
+		$sql = "SELECT COUNT(*) cnt FROM votes WHERE type = 'c' AND type_id = '{$this->id}' AND vote = '" . VOTE_AGAINST . "'";
+		$this->db->execute_query($sql);
+		$line = $this->db->fetch_line();
+		$this->against_count = $line['cnt'];
+		
+	}
+
+	public function set_vote($citizen_id, $vote) {
+
+		$sql = "REPLACE votes SET type = 'c', type_id = '{$this->id}', citizen_id = '{$citizen_id}', vote = '{$vote}'";
+		$this->db->execute_query($sql);
+
+	}
+	
+	public function follow($citizen_id, $follow)
+	{
+		if ($follow)
+		{
+			$sql = "REPLACE follows SET type = 'c', type_id = '{$this->id}', citizen_id = '{$citizen_id}'";
+		}
+		else
+		{
+			$sql = "DELETE FROM follows WHERE type = 'c' AND type_id = '{$this->id}' AND citizen_id = '{$citizen_id}'";
+		}
+		$this->db->execute_query($sql);
+	}
+
+	public function follow_parents($citizen_id, $follow)
+	{
+		if ($follow)
+		{
+			$sql = "REPLACE follows SET type = 'e', type_id = '{$this->election_id}', citizen_id = '{$citizen_id}'";
+			$this->db->execute_query($sql);
+			$sql = "REPLACE follows SET type = 'o', type_id = '{$this->office_id}', citizen_id = '{$citizen_id}'";
+			$this->db->execute_query($sql);
+		}
+		else
+		{
+			$sql = "DELETE FROM follows WHERE type = 'e' AND type_id = '{$this->election_id}' AND citizen_id = '{$citizen_id}'";
+			$this->db->execute_query($sql);
+			$sql = "DELETE FROM follows WHERE type = 'o' AND type_id = '{$this->office_id}' AND citizen_id = '{$citizen_id}'";
+			$this->db->execute_query($sql);
+		}
+		$this->db->execute_query($sql);
+	}
+
 }
 
 ?>

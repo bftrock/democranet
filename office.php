@@ -103,6 +103,11 @@ echo DOC_TYPE;
 	height: 300px;
 }
 
+#di_error
+{
+	display: none;
+}
+
 	</style>
 
 </head>
@@ -117,11 +122,12 @@ echo DOC_TYPE;
 
 	<div class="content">
 
+		<div id="di_error"><p id="p_errmsg"></p></div>
 		<table class="form">
 			<form id="fo_edit_office" method="post" action="<?php echo $submit_action; ?>">
 			<tr>
-				<th>Title:<input name="office_id" id="office_id" type="hidden" value="<?php echo $office->id; ?>" /></th>
-				<td><input name="name" size="50" value="<?php echo $office->name; ?>" /></td>
+				<th id="in_name_lbl">Title:*<input name="office_id" id="office_id" type="hidden" value="<?php echo $office->id; ?>" /></th>
+				<td><input name="name" id="in_name" size="50" value="<?php echo $office->name; ?>" /></td>
 			</tr>
 			<tr>
 				<th>Description:</th>
@@ -130,9 +136,9 @@ echo DOC_TYPE;
 				</td>
 			</tr>
 			<tr>
-				<th>Country:</th>
+				<th id="se_country_id_lbl">Country:*</th>
 				<td>
-					<select name="country_id" id="country_id">
+					<select name="country_id" id="se_country_id">
 						<?php echo get_country_options($office->country_id); ?>
 					</select>
 				</td>
@@ -140,8 +146,8 @@ echo DOC_TYPE;
 			<tr>
 				<td></td>
 				<td>
-					<a id="bu_submit" class="btn" href="#">Save Office</a>&nbsp;
-					<a id="bu_cancel" class="btn" href="#">Cancel Edit</a>
+					<a id="bu_submit" class="btn" href="JAVASCRIPT: submitForm()">Save Office</a>&nbsp;
+					<a id="bu_cancel" class="btn" href="JAVASCRIPT: cancelEdit()">Cancel Edit</a>
 				</td>
 			</tr>
 			</form>
@@ -156,6 +162,7 @@ echo DOC_TYPE;
 		<p class="with_btn">
 			<a href="elecbrws.php">All Elections</a> / <br>
 			<span class="title"><?php echo $office->name; ?></span>
+			<a class="btn" id="bu_follow" href="JAVASCRIPT: displayFollow()"><?php echo get_button_text($office->is_following($citizen->citizen_id)); ?></a>
 		</p>
 		<input type="hidden" id="office_id" value="<?php echo $office->id; ?>" />
 		<p id="description"><?php echo $office->display_description(); ?></p>
@@ -175,23 +182,51 @@ echo DOC_TYPE;
 	
 <?php if ($mode == "e" || $mode == "n") { ?>
 
-$(document).ready(function() {
-	$('#bu_submit').click(function () {
+function submitForm()
+{	
+	$('th[id$="lbl"]').css('color', 'black');
+	try
+	{
+		var x = $('#in_name').val();
+		if (x == null || x == '')
+		{
+			$('#in_name_lbl').css('color', 'red');
+			throw 1;
+		}
+		x = $('#se_country_id').val();
+		if (x == 1)
+		{
+			$('#se_country_id_lbl').css('color', 'red');
+			throw 1;
+		}
 		$('#fo_edit_office').submit();
-	});
-	$('#bu_cancel').click(cancelEdit);
-});
+	}
+	catch (err)
+	{
+		var errMsg = '';
+		switch (err)
+		{
+			case 1:
+				errMsg = 'You must fill out all required fields.';
+				break;
+		}
+		$('#di_error').css('display', 'block');
+		$('#p_errmsg').html(errMsg);
+		return false;
+	}
+}
 
-function cancelEdit() {
-
+function cancelEdit()
+{
 <?php if ($office->id) { ?>
 	var url = 'office.php?m=r&id=<?php echo $office->id; ?>';
 <?php } else { ?>
-	var url = 'offbrws.php';
+	var url = 'elecbrws.php';
 <?php } ?>
 	window.location.assign(url);
 	return false;
 }
+
 <?php } else { ?>
 
 $(document).ready(function() {
@@ -199,6 +234,21 @@ $(document).ready(function() {
 		{id: <?php echo $office->id; ?>}
 	);
 });
+
+function displayFollow() {
+
+	var bt = $('#bu_follow').text();
+	var mode = '';
+	if (bt == 'Follow') {
+			mode = 'f';
+	} else if (bt == 'Unfollow') {
+			mode = 'u';
+	}
+	$.post('ajax/item.follow.php', {t: 'o', tid: <?php echo $office->id; ?>, m: mode}, function (data) {
+		$('#bu_follow').text(data);
+	});
+
+}
 
 <?php } ?>
 
