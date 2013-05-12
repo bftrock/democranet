@@ -128,6 +128,11 @@ span.counter
 	padding-top: 0;
 }
 
+#di_error
+{
+	display: none;
+}
+
 	</style>
 
 </head>
@@ -141,20 +146,20 @@ span.counter
 	<div class="content">
 
 <?php if ($mode == "e" || $mode == "n") { ?>
-
+<div id="di_error"><p id="p_errmsg"></p></div>
 <table class="form">
 	<form id="fo_edit_issue" method="post" action="<?php echo $submit_action; ?>">
 	<tr>
-		<th>Title:<input name="issue_id" id="type_id" type="hidden" value="<?php echo $issue->id; ?>" /></th>
-		<td><input name="name" size="50" value="<?php echo $issue->name; ?>" /></td>
+		<th id="in_name_lbl">Title:*<input name="issue_id" id="type_id" type="hidden" value="<?php echo $issue->id; ?>" /></th>
+		<td><input id="in_name" name="name" size="50" value="<?php echo $issue->name; ?>" /></td>
 	</tr>
 	<tr>
-		<th>
-			Description:<br>
+		<th id="ta_description_lbl">
+			Description:*<br>
 			<a class="btn" id="bu_desc_help" href="JAVASCRIPT:$('#bu_desc_help').click()">?</a>
 		</th>
 		<td>
-			<textarea name="description" id="ta_description" data-maxChars="<?php echo ISS_DESC_MAXLEN; ?>"><?php echo $issue->description; ?></textarea>
+			<textarea id="ta_description" name="description" data-maxChars="<?php echo ISS_DESC_MAXLEN; ?>"><?php echo $issue->description; ?></textarea>
 			<span class="counter">Character count: <span id="sp_char_num"></span> / <?php echo ISS_DESC_MAXLEN; ?> maximum</span>
 			<div id="desc_help" title="Description Help">
 				<p>The length of the Description field is deliberately limited to 3000 characters in
@@ -175,8 +180,8 @@ span.counter
 	<tr>
 		<td></td>
 		<td>
-			<a id="bu_submit" class="btn" href="#">Save Issue</a>&nbsp;
-			<a id="bu_cancel" class="btn" href="#">Cancel Edit</a>
+			<a id="bu_submit" class="btn" href="JAVASCRIPT: submitForm()">Save Issue</a>&nbsp;
+			<a id="bu_cancel" class="btn" href="JAVASCRIPT: cancelEdit()">Cancel Edit</a>
 		</td>
 	</tr>
 	</form>
@@ -225,10 +230,6 @@ span.counter
 
 $(document).ready(function() {
 	$('#ta_description').on('keyup blur', updateCount);
-	$('#bu_submit').click(function () {
-		$('#fo_edit_issue').submit();
-	});
-	$('#bu_cancel').click(cancelEdit);
 	$('#rb_ref_type').on('change', adjustRB);
 	$('#bu_add').click(function () {
 		postRef('i');
@@ -255,6 +256,36 @@ $(document).ready(function() {
 	displayRefs();
 	adjustRB();
 });
+
+function submitForm() {
+	
+	$('th[id$="lbl"]').css('color', 'black');
+	try
+	{
+		var rf = new Array('in_name', 'ta_description');
+		var i, f, x1, errMsg = '';
+		for (i in rf) {
+			var f = rf[i];
+			var x1 = $('#' + f).val();
+			if (x1 == null || x1 == '') {
+				$('#' + f + '_lbl').css('color', 'red');
+				throw 1;
+			}
+		}
+		$('#fo_edit_issue').submit();
+	} catch (err) {
+		var errMsg = '';
+		switch (err) {
+			case 1:
+				errMsg = 'You must fill out all required fields.';
+				break;
+		}
+		$('#di_error').css('display', 'block');
+		$('#p_errmsg').html(errMsg);
+		return false;
+	}
+	
+}
 
 function updateCount() {
 

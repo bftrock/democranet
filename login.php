@@ -105,6 +105,12 @@ switch ($mode)
 	display: <?php echo $display; ?>;
 }
 
+#di_diagram img
+{
+	display: block;
+	margin: 0 auto;
+}
+
 	</style>
 
 </head>
@@ -143,33 +149,8 @@ switch ($mode)
 		<a href="register.php">Register</a><a style="float:right" href="#">Reset password</a>
 	</div>
 
-	<div class="content">
-		<p>
-			<span class="title">Citizen:</span> Register to become a citizen and participate in this site.
-		</p>
-		<p>
-			<span class="title">Issues:</span> Read impartial summaries of political issues created by the users of 
-			this site. If you don't see an issue you care about, create it. Others may contribute to help improve it.
-		</p>
-		<p>
-			<span class="title">Positions:</span> Express your opinion by voting on (issue) positions. If your position 
-			is not well expressed already, you can create your own position, which others to vote on too.
-		</p>
-		<p>
-			<span class="title">Actions:</span> Actions are created in support of a position and should result in 
-			real-world outcomes. Initiate an action like a rally, a piece of legislation, or a law suit, or join others' actions.
-		</p>
-		<p>
-			<span class="title">Office:</span> A political office, such as President of the United States, or City Mayor.
-		</p>
-		<p>
-			<span class="title">Election:</span> An election for a political office, which takes place on a specific date.
-		</p>
-		<p>
-			<span class="title">Candidates:</span> Any citizen can register as a candidate for an election. Others can 
-			see which issues the candidate cares about, and which positions and actions he/she is for or against. See 
-			how your views compare to the candidate's.
-		</p>
+	<div id="di_diagram" class="content">
+		<img src="img/login_diagram.png">
 	</div>
 
 </div>

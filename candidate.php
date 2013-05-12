@@ -144,6 +144,11 @@ img.ec
 	height: 300px;
 }
 
+#di_error
+{
+	display: none;
+}
+
 	</style>
 
 </head>
@@ -159,11 +164,12 @@ img.ec
 
 	<div class="content">
 
+		<div id="di_error"><p id="p_errmsg"></p></div>
 		<table class="form">
 			<form id="fo_edit_candidate" method="post" action="<?php echo $submit_action; ?>">
 			<tr>
-				<th>
-					Party:
+				<th id="in_party_lbl">
+					Party:*
 					<input name="candidate_id" id="candidate_id" type="hidden" value="<?php echo $candidate->id; ?>" />
 					<input name="citizen_id" id="citizen_id" type="hidden" value="<?php echo $candidate->citizen_id; ?>" />
 					<input name="election_id" id="election_id" type="hidden" value="<?php echo $candidate->election_id; ?>" />
@@ -172,7 +178,7 @@ img.ec
 			</tr>
 			<tr>
 				<th>Website:</th>
-				<td><input type="text" id="in_website" name="website" value="<?php echo $candidate->website; ?>" /></td>
+				<td><input type="text" id="in_website" name="website" size="50" value="<?php echo $candidate->website; ?>" /></td>
 			</tr>
 			<tr>
 				<th>Summary:</th>
@@ -181,8 +187,8 @@ img.ec
 			<tr>
 				<td></td>
 				<td>
-					<a id="bu_submit" class="btn" href="#">Save Candidate</a>&nbsp;
-					<a id="bu_cancel" class="btn" href="#">Cancel Edit</a>
+					<a id="bu_submit" class="btn" href="JAVASCRIPT: submitForm()">Save Candidate</a>&nbsp;
+					<a id="bu_cancel" class="btn" href="JAVASCRIPT: cancelEdit()">Cancel Edit</a>
 				</td>
 			</tr>
 			</form>
@@ -239,12 +245,35 @@ img.ec
 	
 <?php if ($mode == "e" || $mode == "n") { ?>
 
-$(document).ready(function() {
-	$('#bu_submit').click(function () {
+function submitForm()
+{	
+	$('th[id$="lbl"]').css('color', 'black');
+	try
+	{
+		var rf = new Array('in_party');
+		var i, f, x1, errMsg = '';
+		for (i in rf) {
+			var f = rf[i];
+			var x1 = $('#' + f).val();
+			if (x1 == null || x1 == '') {
+				$('#' + f + '_lbl').css('color', 'red');
+				throw 1;
+			}
+		}
 		$('#fo_edit_candidate').submit();
-	});
-	$('#bu_cancel').click(cancelEdit);
-});
+	} catch (err) {
+		var errMsg = '';
+		switch (err) {
+			case 1:
+				errMsg = 'You must fill out all required fields.';
+				break;
+		}
+		$('#di_error').css('display', 'block');
+		$('#p_errmsg').html(errMsg);
+		return false;
+	}
+	
+}
 
 function cancelEdit() {
 
@@ -260,6 +289,7 @@ function cancelEdit() {
 <?php } else { ?>
 
 $(document).ready(function() {
+	$.post('ajax/candidate.vote.php', {id: <?php echo $candidate->id; ?>}, updateVoteFields, 'json');
 	$('img.ec').click(function () {
 		var id;
 		id = $(this).attr('id');

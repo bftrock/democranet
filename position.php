@@ -137,6 +137,11 @@ p.ref
 	text-align: left;
 }
 
+#di_error
+{
+	display: none;
+}
+
 	</style>
 
 </head>
@@ -151,14 +156,15 @@ p.ref
 
 <?php if ($mode == "e" || $mode == "n") { ?>
 
+<div id="di_error"><p id="p_errmsg"></p></div>
 <table class="form">
 	<form id="fo_edit_pos" method="post" action="<?php echo $submit_action; ?>">
 	<tr>
-		<th>Position:
+		<th id="in_name_lbl">Position:*
 			<input name="position_id" id="type_id" type="hidden" value="<?php echo $position->id; ?>" />
 			<input name="issue_id" id="issue_id" type="hidden" value="<?php echo $position->issue_id; ?>" />
 		</th>
-		<td><input name="name" size="75" value="<?php echo $position->name; ?>" /></td>
+		<td><input id="in_name" name="name" size="75" value="<?php echo $position->name; ?>" /></td>
 	</tr>
 	<tr>
 		<th>Justification:</th><td><textarea name="justification" id="ta_justification"><?php echo $position->justification; ?></textarea></td>
@@ -166,8 +172,8 @@ p.ref
 	<tr>
 		<td></td>
 		<td>
-			<a class="btn" id="bu_submit" href="#" >Save Position</a>
-			<a class="btn" id="bu_cancel" href="#">Cancel Edit</a>
+			<a class="btn" id="bu_submit" href="JAVASCRIPT: submitForm()" >Save Position</a>
+			<a class="btn" id="bu_cancel" href="JAVASCRIPT: cancelEdit()">Cancel Edit</a>
 		</td>
 	</tr>
 	</form>
@@ -251,10 +257,6 @@ p.ref
 <?php if ($mode == "e" || $mode == "n") { ?>
 
 $(document).ready(function () {
-	$('#bu_submit').click(function () {
-		$('#fo_edit_pos').submit();
-	});
-	$('#bu_cancel').click(cancelEdit);
 	$('#rb_ref_type').on('change', adjustRB);
 	$('#bu_add').click(function () {
 		postRef('i');
@@ -274,6 +276,36 @@ $(document).ready(function () {
 	displayRefs();
 	adjustRB();
 });
+
+function submitForm() {
+	
+	$('th[id$="lbl"]').css('color', 'black');
+	try
+	{
+		var rf = new Array('in_name');
+		var i, f, x1, errMsg = '';
+		for (i in rf) {
+			var f = rf[i];
+			var x1 = $('#' + f).val();
+			if (x1 == null || x1 == '') {
+				$('#' + f + '_lbl').css('color', 'red');
+				throw 1;
+			}
+		}
+		$('#fo_edit_pos').submit();
+	} catch (err) {
+		var errMsg = '';
+		switch (err) {
+			case 1:
+				errMsg = 'You must fill out all required fields.';
+				break;
+		}
+		$('#di_error').css('display', 'block');
+		$('#p_errmsg').html(errMsg);
+		return false;
+	}
+	
+}
 
 function cancelEdit() {
 

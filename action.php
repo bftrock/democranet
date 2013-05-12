@@ -106,6 +106,14 @@ echo DOC_TYPE;
 	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
 	<link rel="stylesheet" type="text/css" href="style/action.css" />
 	<link href="http://fonts.googleapis.com/css?family=Dosis:400,600|Quattrocento+Sans:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+	<style type="text/css">
+
+#di_error
+{
+	display: none;
+}
+
+	</style>
 </head>
 
 <body>
@@ -117,18 +125,19 @@ echo DOC_TYPE;
 	<div class="content">
 
 <?php if ($mode == "e" || $mode == "n") { ?>
-
+		
+		<div id="di_error"><p id="p_errmsg"></p></div>
 		<table class="form">
 			<form id="fo_edit_action" method="post" action="<?php echo $submit_action; ?>">
 				<tr>
-					<th>Action:
+					<th id="in_name_lbl">Action:*
 						<input name="action_id" type="hidden" value="<?php echo $action->id; ?>" />
 						<input name="position_id" type="hidden" value="<?php echo $action->position_id; ?>" />
 					</th>
-					<td><input name="name" size="50" value="<?php echo $action->name; ?>" /></td>
+					<td><input id="in_name" name="name" size="50" value="<?php echo $action->name; ?>" /></td>
 				</tr>
 				<tr>
-					<th>Description:</th><td><textarea name="description" rows="15" cols="90"><?php echo $action->description; ?></textarea></td>
+					<th id="ta_description_lbl">Description:*</th><td><textarea id="ta_description" name="description" rows="15" cols="90"><?php echo $action->description; ?></textarea></td>
 				</tr>
 				<tr>
 					<th>When:</th><td><input name="date" size="50" value="<?php echo $action->date; ?>" /></td>
@@ -139,8 +148,8 @@ echo DOC_TYPE;
 				<tr>
 					<td></td>
 					<td>
-						<a class="btn" id="bu_submit" href="#">Save Action</a>
-						<a class="btn" id="bu_cancel" href="#">Cancel Edit</a>
+						<a class="btn" id="bu_submit" href="JAVASCRIPT:submitForm()">Save Action</a>
+						<a class="btn" id="bu_cancel" href="JAVASCRIPT:cancelEdit()">Cancel Edit</a>
 					</td>
 				</tr>
 			</form>
@@ -207,29 +216,47 @@ echo DOC_TYPE;
 <script src="js/main.js"></script>
 <script type="text/javascript">
 
+<?php if ($mode == "e" || $mode == "n") { ?>
+
+function submitForm()
+{	
+	$('th[id$="lbl"]').css('color', 'black');
+	try
+	{
+		var rf = new Array('in_name', 'ta_description');
+		var i, f, x1, errMsg = '';
+		for (i in rf) {
+			var f = rf[i];
+			var x1 = $('#' + f).val();
+			if (x1 == null || x1 == '') {
+				$('#' + f + '_lbl').css('color', 'red');
+				throw 1;
+			}
+		}
+		$('#fo_edit_action').submit();
+	} catch (err) {
+		var errMsg = '';
+		switch (err) {
+			case 1:
+				errMsg = 'You must fill out all required fields.';
+				break;
+		}
+		$('#di_error').css('display', 'block');
+		$('#p_errmsg').html(errMsg);
+		return false;
+	}
+	
+}
+
+function cancelEdit()
+{
 <?php if ($mode == "e") { ?>
-
-$(document).ready(function () {
-	$('#bu_submit').click(function () {
-		$('#fo_edit_action').submit();
-	});
-	$('#bu_cancel').click(function () {
-		window.location = 'action.php?m=r&aid=<?php echo $action->id; ?>';
-		return false;
-	});
-});
-
-<?php } else if ($mode == "n") { ?>
-
-$(document).ready(function () {
-	$('#bu_submit').click(function () {
-		$('#fo_edit_action').submit();
-	});
-	$('#bu_cancel_act').click(function () {
-		window.location = 'position.php?m=r&pid=<?php echo $action->position_id; ?>';
-		return false;
-	});
-});
+	window.location = 'action.php?m=r&aid=<?php echo $action->id; ?>';
+<?php } elseif ($mode == "n") { ?>
+	window.location = 'position.php?m=r&pid=<?php echo $action->position_id; ?>';
+<?php } ?>
+	return false;
+}
 
 <?php } else { ?>
 

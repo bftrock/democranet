@@ -92,6 +92,12 @@ echo DOC_TYPE;
 	<link rel="stylesheet" type="text/css" href="style/democranet.css" />
 	<link href="http://fonts.googleapis.com/css?family=Dosis:400,600|Quattrocento+Sans:400,700,400italic,700italic" rel="stylesheet" type="text/css">
 	<style type="text/css">
+
+#di_error
+{
+	display: none;
+}
+
 	</style>
 
 </head>
@@ -107,6 +113,7 @@ echo DOC_TYPE;
 
 	<div class="content">
 
+		<div id="di_error"><p id="p_errmsg"></p></div>
 		<table class="form">
 			<form id="fo_edit_election" method="post" action="<?php echo $submit_action; ?>">
 <?php if($election->office_id) { ?>
@@ -116,8 +123,8 @@ echo DOC_TYPE;
 			</tr>
 <?php } ?>
 			<tr>
-				<th>
-					Date:
+				<th id="in_date_lbl">
+					Date:*
 					<input name="election_id" id="election_id" type="hidden" value="<?php echo $election->id; ?>" />
 					<input name="office_id" id="office_id" type="hidden" value="<?php echo $election->office_id; ?>" />
 				</th>
@@ -126,8 +133,8 @@ echo DOC_TYPE;
 			<tr>
 				<td></td>
 				<td>
-					<a id="bu_submit" class="btn" href="#">Save Election</a>&nbsp;
-					<a id="bu_cancel" class="btn" href="#">Cancel Edit</a>
+					<a id="bu_submit" class="btn" href="JAVASCRIPT: submitForm()">Save Election</a>&nbsp;
+					<a id="bu_cancel" class="btn" href="JAVASCRIPT: cancelEdit()">Cancel Edit</a>
 				</td>
 			</tr>
 			</form>
@@ -160,12 +167,33 @@ echo DOC_TYPE;
 	
 <?php if ($mode == "e" || $mode == "n") { ?>
 
-$(document).ready(function() {
-	$('#bu_submit').click(function () {
+function submitForm()
+{	
+	$('th[id$="lbl"]').css('color', 'black');
+	try
+	{
+		var x = $('#in_date').val();
+		if (x == null || x == '')
+		{
+			$('#in_date_lbl').css('color', 'red');
+			throw 1;
+		}
 		$('#fo_edit_election').submit();
-	});
-	$('#bu_cancel').click(cancelEdit);
-});
+	}
+	catch (err)
+	{
+		var errMsg = '';
+		switch (err)
+		{
+			case 1:
+				errMsg = 'You must fill out all required fields.';
+				break;
+		}
+		$('#di_error').css('display', 'block');
+		$('#p_errmsg').html(errMsg);
+		return false;
+	}
+}
 
 function cancelEdit() {
 
@@ -177,6 +205,7 @@ function cancelEdit() {
 	window.location.assign(url);
 	return false;
 }
+
 <?php } else { ?>
 
 $(document).ready(function() {

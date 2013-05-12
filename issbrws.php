@@ -4,7 +4,6 @@
 require_once ("inc/class.database.php");
 require_once ("inc/util.democranet.php");
 require_once ("inc/class.citizen.php");
-require_once ("inc/util.markdown.php");
 
 // This function is in class.database. It opens a connection to the db using hard-coded username and password.
 $db = new database();
@@ -60,7 +59,9 @@ div.is_de {
 
 	<div class="content">
 		<p class="with_btn"><span class="title">Issues</span><a class="btn" href="issue.php?m=n">Add Issue</a></p>
+		<div id="issue_list">
 <?php echo get_issue_list(); ?>
+		</div>
 	</div>
 
 </div>
@@ -71,12 +72,11 @@ div.is_de {
 
 <?php
 
-// This function generates a table that lists all issue Names and abbreviated Descriptions.
 function get_issue_list() {
 
 	global $db;
 
-	$ret = "<div id=\"issue_list\">";
+	$ret = "";
 	$sql = "SELECT c.name category_name, i.issue_id issue_id, i.name issue_name, CONCAT(LEFT(i.description, 210), '...') issue_description
 		FROM issues i
 		LEFT JOIN issue_category ic ON i.issue_id = ic.issue_id
@@ -93,10 +93,9 @@ function get_issue_list() {
 			$ret .= "<p class=\"is_ca\">(Uncategorized)</p>\n";
 		}
 		$ret .= "<p class=\"is_ti\"><a href=\"issue.php?iid={$line['issue_id']}\" />{$line['issue_name']}</a>
-				<div class=\"is_de\">" . Markdown($line['issue_description']) . "</div>";
+				<div class=\"is_de\">{$line['issue_description']}</div>";
 		$last_category = $this_category;
 	}
-	$ret .= "</div>";
 	return $ret;
 
 }

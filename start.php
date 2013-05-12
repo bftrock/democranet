@@ -39,7 +39,7 @@ else
 		<div id="di_search">
 			<a class="btn" id="bu_help" href="#" title="Search help">?</a>
 			<input type="text" id="in_search"/>
-			<a class="btn" id="bu_search" href="#">Search</a>
+			<a class="btn" id="bu_search" href="JAVASCRIPT: search()">Search</a>
 			<div id="search_help" title="Search Help">To search in Issues, Positions and Actions, 
 				enter a search phrase and click Search. To limit the search scope, start the search
 				phrase with "issue:", "position:" or "action:". The results will be limited to the
@@ -64,11 +64,6 @@ else
 <script type="text/javascript">
 
 $(document).ready(function() {
-	$('#bu_search').on('click', function() {
-		$.post('ajax/start.search.php', {s: $('#in_search').val()}, function (data) {
-			$('#di_results').html(data);
-		})
-	})
 	$('#bu_issues').on('click', function () {
 		window.location.assign('issbrws.php');
 	})
@@ -95,6 +90,13 @@ $(document).ready(function() {
 		}
 	});
 });
+
+function search()
+{
+	$.post('ajax/start.search.php', {s: $('#in_search').val()}, function (data) {
+		$('#di_results').html(data);
+	})
+}
 
 </script>
 
