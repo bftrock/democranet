@@ -212,8 +212,6 @@ echo DOC_TYPE;
 
 <script src="js/jquery.js"></script>')
 <script src="js/jquery-ui.js"></script>
-<script src="js/vendor/bootstrap.js"></script>
-<script src="js/main.js"></script>
 <script type="text/javascript">
 
 <?php if ($mode == "e" || $mode == "n") { ?>
@@ -262,14 +260,14 @@ function cancelEdit()
 
 $(document).ready(function () {
 	$.post('ajax/action.vote.php', {aid: <?php echo $action->id; ?>}, updateVoteFields, 'json');
-	$('#di_comments').load('ajax/action.comments.php', {aid: <?php echo $action->id; ?>});
+	$('#di_comments').load('ajax/item.comments.php', {t: 'a', tid: <?php echo $action->id; ?>});
 	$('#bu_add_comment').click(function () {
 		$('#di_new_comment').show();
 	});
 	$('#bu_save_comment').click(function () {
 		$('#di_comments').load(
-			'ajax/action.comments.php',
-			{co: $('#ta_comment').val(), aid: <?php echo $action->id; ?>}
+			'ajax/item.comments.php',
+			{t: 'a', tid: <?php echo $action->id; ?>, m: 'i', co: $('#ta_comment').val()}
 		);
 		$('#ta_comment').val('');
 		$('#di_new_comment').hide();
@@ -314,6 +312,19 @@ function updateVoteFields(data) {
 <?php } ?>
 	$('#citizens_for').html(j.for);
 	$('#citizens_against').html(j.against);
+}
+
+function deleteComment(commentId)
+{
+	$('#di_comments').load(
+		'ajax/item.comments.php',
+		{t: 'a', tid: <?php echo $action->id; ?>, m: 'd', id: commentId}
+	);
+}
+
+function editComment(commentId)
+{
+	
 }
 
 <?php } ?>

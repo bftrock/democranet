@@ -182,6 +182,23 @@ class issue
 		return $following;		
 	}
 
+	public function get_positions($citizen_id)
+	{
+		$arr = array();
+		$sql = "SELECT p.position_id, p.name, 
+			(SELECT v.vote FROM votes v WHERE v.type = 'p' AND v.type_id = p.position_id AND citizen_id = '{$citizen_id}') citizen_vote, 
+			(SELECT COUNT(*) FROM votes v WHERE v.type = 'p' AND v.type_id = p.position_id AND v.vote = '".VOTE_FOR."') vote_for, 
+			(SELECT COUNT(*) FROM votes v WHERE v.type = 'p' AND v.type_id = p.position_id AND v.vote = '".VOTE_AGAINST."') vote_against 
+			FROM positions p 
+			WHERE p.issue_id = '{$this->id}'";
+		$this->db->execute_query($sql);
+		while ($line = $this->db->fetch_line())
+		{
+			$arr[] = $line;
+		}
+		return $arr;
+	}
+
 	private function get_next_id()
 	{
 		$sql = "SELECT MAX(issue_id) id FROM issues";

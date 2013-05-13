@@ -37,7 +37,7 @@ else
 	<div class="content">
 
 		<div id="di_search">
-			<a class="btn" id="bu_help" href="#" title="Search help">?</a>
+			<a class="btn" id="bu_help" href="JAVASCRIPT: help()" title="Search help">?</a>
 			<input type="text" id="in_search"/>
 			<a class="btn" id="bu_search" href="JAVASCRIPT: search()">Search</a>
 			<div id="search_help" title="Search Help">To search in Issues, Positions and Actions, 
@@ -57,6 +57,13 @@ else
 		</div>
 	</div>
 
+	<div class="content">
+		<p class="with_btn"><span class="title">Elections I'm Following</span><a class="btn" href="elecbrws.php">Browse All Elections</a></p>
+		<div id="di_elecfol">
+			<?php echo get_offices(); ?>
+		</div>
+	</div>
+
 </div>
 
 <script src="js/jquery.js"></script>
@@ -69,15 +76,10 @@ $(document).ready(function() {
 	})
 	$('#in_search').keyup(function (event) {
 		if(event.keyCode == 13){
-			$("#bu_search").click();
+			search();
 		}
 	});
 	$('#search_help').dialog({autoOpen: false});
-	$('#bu_help').click(function () {
-		$('#search_help').dialog({width: 500});
-		$('#search_help').dialog({modal: true});
-	    $('#search_help').dialog('open');
-	});
 	$('img.ec').click(function () {
 		var id;
 		id = $(this).attr('id');
@@ -96,6 +98,13 @@ function search()
 	$.post('ajax/start.search.php', {s: $('#in_search').val()}, function (data) {
 		$('#di_results').html(data);
 	})
+}
+
+function help()
+{
+	$('#search_help').dialog({width: 500});
+	$('#search_help').dialog({modal: true});
+	$('#search_help').dialog('open');
 }
 
 </script>
@@ -176,4 +185,78 @@ function get_actions($position_id) {
 	return $html;
 
 }
+
+function get_offices() {
+
+	global $citizen, $db;
+
+	$sql = "SELECT o.office_id, o.name 
+		FROM follows f INNER JOIN offices o ON f.type_id = o.office_id 
+		WHERE f.type = 'o' 
+		AND f.citizen_id = {$citizen->citizen_id} 
+		ORDER BY o.office_id";
+	$db->execute_query($sql);
+	$result = $db->get_result();
+	$html = "";
+	while ($line = $db->fetch_line($result)) {
+		$html .= "
+			<p class=\"i1\">
+				<img id=\"o{$line['office_id']}\" class=\"ec\" src=\"img/collapse.png\">
+				<a class=\"su\" href=\"office.php?m=r&id={$line['office_id']}\">{$line['name']}</a>
+			</p>
+			<div class=\"di_ec\" id=\"di_o{$line['office_id']}\">" . get_elections($line['office_id']) . "
+			</div>\n";
+	}
+	return $html;
+
+}
+
+function get_elections($office_id) {
+
+	global $citizen, $db;
+
+	$sql = "SELECT f.type_id election_id, DATE_FORMAT(e.date, '%M %e, %Y') date
+		FROM follows f LEFT JOIN elections e ON f.type_id = e.election_id 
+		WHERE f.type = 'e' 
+		AND f.citizen_id = '{$citizen->citizen_id}'
+		AND e.office_id = '{$office_id}'";
+	$db->execute_query($sql);
+	$result = $db->get_result();
+	$html = "";
+	while ($line = $db->fetch_line($result)) {
+		$html .= "
+				<p class=\"i2\">
+					<img id=\"e{$line['election_id']}\" class=\"ec\" src=\"img/collapse.png\">
+					<a class=\"su\" href=\"election.php?m=r&id={$line['election_id']}\">{$line['date']}</a>
+				</p>
+				<div class=\"di_ec\" id=\"di_e{$line['election_id']}\">" . get_candidates($line['election_id']) . "
+				</div>\n";
+	}
+	return $html;
+
+}
+
+function get_candidates($election_id) {
+
+	global $citizen, $db;
+
+	$sql = "SELECT f.type_id candidate_id, ci.name 
+		FROM follows f LEFT JOIN candidates c ON f.type_id = c.candidate_id 
+		LEFT JOIN citizens ci ON c.citizen_id = ci.citizen_id
+		WHERE f.type = 'c' 
+		AND f.citizen_id = '{$citizen->citizen_id}'
+		AND c.election_id = '{$election_id}'";
+	$db->execute_query($sql);
+	$result = $db->get_result();
+	$html = "";
+	while ($line = $db->fetch_line($result)) {
+		$html .= "
+					<p class=\"i3\">
+						<a class=\"su\" href=\"candidate.php?m=r&id={$line['candidate_id']}\">{$line['name']}</a>
+					</p>\n";
+	}
+	return $html;
+
+}
+
 ?>

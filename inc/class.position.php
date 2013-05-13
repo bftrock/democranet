@@ -176,6 +176,23 @@ class position
 		return $following;		
 	}
 
+	public function get_actions($citizen_id)
+	{
+		$arr = array();
+		$sql = "SELECT a.action_id, a.name, 
+			(SELECT v.vote FROM votes v WHERE v.type = 'a' AND v.type_id = a.action_id AND citizen_id = '{$citizen_id}') citizen_vote, 
+			(SELECT COUNT(*) FROM votes v WHERE v.type = 'p' AND v.type_id = a.action_id AND v.vote = '".VOTE_FOR."') vote_for, 
+			(SELECT COUNT(*) FROM votes v WHERE v.type = 'p' AND v.type_id = a.action_id AND v.vote = '".VOTE_AGAINST."') vote_against 
+			FROM actions a
+			WHERE a.position_id = '{$this->id}'";
+		$this->db->execute_query($sql);
+		while ($line = $this->db->fetch_line())
+		{
+			$arr[] = $line;
+		}
+		return $arr;
+	}
+
 }
 
 ?>

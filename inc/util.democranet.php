@@ -54,4 +54,18 @@ function get_button_text($is_following)
 	return $button_text;
 }
 
+function get_vote_html($vote)
+{
+	$src = "";		
+	if ($vote == VOTE_FOR)
+	{
+		$src = "img/for.png";
+	}
+	else
+	{
+		$src = "img/against.png";
+	}
+	return "<img src=\"{$src}\" />";
+}
+
 ?>

@@ -143,84 +143,96 @@ span.counter
 
 <?php include ("inc/header.login.php"); ?>
 
+<?php if ($mode == "e" || $mode == "n") { ?>
+
 	<div class="content">
 
-<?php if ($mode == "e" || $mode == "n") { ?>
-<div id="di_error"><p id="p_errmsg"></p></div>
-<table class="form">
-	<form id="fo_edit_issue" method="post" action="<?php echo $submit_action; ?>">
-	<tr>
-		<th id="in_name_lbl">Title:*<input name="issue_id" id="type_id" type="hidden" value="<?php echo $issue->id; ?>" /></th>
-		<td><input id="in_name" name="name" size="50" value="<?php echo $issue->name; ?>" /></td>
-	</tr>
-	<tr>
-		<th id="ta_description_lbl">
-			Description:*<br>
-			<a class="btn" id="bu_desc_help" href="JAVASCRIPT:$('#bu_desc_help').click()">?</a>
-		</th>
-		<td>
-			<textarea id="ta_description" name="description" data-maxChars="<?php echo ISS_DESC_MAXLEN; ?>"><?php echo $issue->description; ?></textarea>
-			<span class="counter">Character count: <span id="sp_char_num"></span> / <?php echo ISS_DESC_MAXLEN; ?> maximum</span>
-			<div id="desc_help" title="Description Help">
-				<p>The length of the Description field is deliberately limited to 3000 characters in
-				 	order to keep the issue description brief. References are used to provide 
-				 	additional detail and to improve the credibility of the statements.
-				</p>
-			</div>
-		</td>
-	</tr>
-	<tr>
-		<th>Categories:</th>
-		<td>
-			<select name="categories[]" id="categories" multiple="multiple" size="6">
-				<?php echo get_category_options($issue->get_categories()); ?>
-			</select>
-		</td>
-	</tr>
-	<tr>
-		<td></td>
-		<td>
-			<a id="bu_submit" class="btn" href="JAVASCRIPT: submitForm()">Save Issue</a>&nbsp;
-			<a id="bu_cancel" class="btn" href="JAVASCRIPT: cancelEdit()">Cancel Edit</a>
-		</td>
-	</tr>
-	</form>
-</table>
+		<div id="di_error"><p id="p_errmsg"></p></div>
+		<table class="form">
+			<form id="fo_edit_issue" method="post" action="<?php echo $submit_action; ?>">
+			<tr>
+				<th id="in_name_lbl">Title:*<input name="issue_id" id="type_id" type="hidden" value="<?php echo $issue->id; ?>" /></th>
+				<td><input id="in_name" name="name" size="50" value="<?php echo $issue->name; ?>" /></td>
+			</tr>
+			<tr>
+				<th id="ta_description_lbl">
+					Description:*<br>
+					<a class="btn" id="bu_desc_help" href="JAVASCRIPT:$('#bu_desc_help').click()">?</a>
+				</th>
+				<td>
+					<textarea id="ta_description" name="description" data-maxChars="<?php echo ISS_DESC_MAXLEN; ?>"><?php echo $issue->description; ?></textarea>
+					<span class="counter">Character count: <span id="sp_char_num"></span> / <?php echo ISS_DESC_MAXLEN; ?> maximum</span>
+					<div id="desc_help" title="Description Help">
+						<p>The length of the Description field is deliberately limited to 3000 characters in
+						 	order to keep the issue description brief. References are used to provide 
+						 	additional detail and to improve the credibility of the statements.
+						</p>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<th>Categories:</th>
+				<td>
+					<select name="categories[]" id="categories" multiple="multiple" size="6">
+						<?php echo get_category_options($issue->get_categories()); ?>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td>
+					<a id="bu_submit" class="btn" href="JAVASCRIPT: submitForm()">Save Issue</a>&nbsp;
+					<a id="bu_cancel" class="btn" href="JAVASCRIPT: cancelEdit()">Cancel Edit</a>
+				</td>
+			</tr>
+			</form>
+		</table>
 
 <?php if ($mode != "n") { ?>
-<table class="form" style="margin-top: 10px">
-	<tr>
-		<th>References:<br><a id="bu_ref_help" class="btn" href="#">?</a></th>
-		<td>
-<?php include ("inc/div.refbuilder.php"); ?>
-		</td>
-	</tr>
-</table>
+		<table class="form" style="margin-top: 10px">
+			<tr>
+				<th>References:<br><a id="bu_ref_help" class="btn" href="#">?</a></th>
+				<td>
+		<?php include ("inc/div.refbuilder.php"); ?>
+				</td>
+			</tr>
+		</table>
 <?php } ?>
+
+	</div>
 
 <?php } else { ?>
 
-			<p class="with_btn">
-				<a href="issbrws.php">All Issues</a> / <br>
-				<span class="title"><?php echo $issue->name; ?></span>
-				<a class="btn" href="JAVASCRIPT: displayFollow()" id="bu_follow"><?php echo get_button_text($issue->is_following($citizen->citizen_id)); ?></a>
-			</p>
-			<input type="hidden" id="type_id" value="<?php echo $issue->id; ?>" />
-			<div id="description"><?php echo $issue->display_description(); ?></div>
-			<p><strong>Categories</strong>: <?php echo display_categories($issue->get_categories(), 1); ?></p>
-			<p class="title">References</p>
-			<div id="di_refs"></div>
-			<a class="btn" href="issue.php?m=e&iid=<?php echo $issue->id; ?>">Edit Issue</a>
-			<a class="btn" href="isshist.php?iid=<?php echo $issue->id; ?>">Show History</a>
+	<div class="content">
+
+		<p class="with_btn">
+			<a href="issbrws.php">All Issues</a> / <br>
+			<span class="title"><?php echo $issue->name; ?></span>
+			<a class="btn" href="JAVASCRIPT: displayFollow()" id="bu_follow"><?php echo get_button_text($issue->is_following($citizen->citizen_id)); ?></a>
+		</p>
+		<input type="hidden" id="type_id" value="<?php echo $issue->id; ?>" />
+		<div id="description"><?php echo $issue->display_description(); ?></div>
+		<p><strong>Categories</strong>: <?php echo display_categories($issue->get_categories(), 1); ?></p>
+		<p class="title_sm">References</p>
+		<div id="di_refs"></div>
+		<a class="btn" href="issue.php?m=e&iid=<?php echo $issue->id; ?>">Edit Issue</a>
+		<a class="btn" href="isshist.php?iid=<?php echo $issue->id; ?>">Show History</a>
 		
-		</div>
-
-		<div class="content">
-			<div id="di_positions"></div>
-<?php } ?>
-		</div>
-
 	</div>
+
+	<div class="content">
+		<div id="di_positions">
+			<p class="with_btn">
+				<span class="title">Positions</span>
+				<a id="bu_add_pos" class="btn" href="position.php?m=n&iid=<?php echo $issue->id; ?>">Add Position</a>
+			</p>			
+<?php get_positions() ?>
+		</div>
+	</div>
+
+<?php } ?>
+
+</div>
 
 <script src="js/jquery.js"></script>
 <script src="js/jquery-ui.js"></script>
@@ -313,9 +325,6 @@ function cancelEdit() {
 <?php } else { ?>
 
 $(document).ready(function() {
-	$('#di_positions').load('ajax/issue.positions.php',
-		{iid: <?php echo $issue->id; ?>}
-	);
 	displayRefs();
 });
 
@@ -349,6 +358,39 @@ function displayFollow() {
 </html>
 
 <?php
+
+function get_positions()
+{
+	global $issue, $citizen;
+
+	$positions = $issue->get_positions($citizen->citizen_id);
+	if (count($positions))
+	{
+		echo "
+			<table class=\"vote_tally\">
+				<tr>
+					<th id=\"th_c1\"></th>
+					<th id=\"th_c2\" class=\"ac\">Your Vote</th>
+					<th id=\"th_c3\" class=\"ac\"><img src=\"img/for.png\" title=\"Citizens For\"/></th>
+					<th id=\"th_c4\" class=\"ac\"><img src=\"img/against.png\" title=\"Citizens Against\"/></th>
+				</tr>\n";	
+		foreach($positions as $line)
+		{
+			echo "<tr><td><a href=\"position.php?m=r&pid={$line['position_id']}&iid={$issue->id}\" >{$line['name']}</a></td>";
+			if (isset($line['citizen_vote'])) 
+			{
+				echo "<td class=\"ac\">" . get_vote_html($line['citizen_vote']) . "</td>";
+			}
+			else 
+			{
+				echo "<td></td>";
+			}
+			echo "<td class=\"ac\">{$line['vote_for']}</td><td class=\"ac\">{$line['vote_against']}</td></tr>\n";
+		}
+		echo "
+			</table>\n";
+	}
+}
 
 // Returns selected categories to be displayed with issue.
 function display_categories($selected_categories) {

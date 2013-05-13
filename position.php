@@ -48,6 +48,7 @@ elseif ($mode == "u" || $mode == "i")
 else
 {
 	$position->load(LOAD_NEW);
+	$position->citizen_id = $citizen->citizen_id;
 }
 
 
@@ -152,102 +153,112 @@ p.ref
 
 <?php include ("inc/header.login.php"); ?>
 
-	<div class="content">
-
 <?php if ($mode == "e" || $mode == "n") { ?>
 
-<div id="di_error"><p id="p_errmsg"></p></div>
-<table class="form">
-	<form id="fo_edit_pos" method="post" action="<?php echo $submit_action; ?>">
-	<tr>
-		<th id="in_name_lbl">Position:*
-			<input name="position_id" id="type_id" type="hidden" value="<?php echo $position->id; ?>" />
-			<input name="issue_id" id="issue_id" type="hidden" value="<?php echo $position->issue_id; ?>" />
-		</th>
-		<td><input id="in_name" name="name" size="75" value="<?php echo $position->name; ?>" /></td>
-	</tr>
-	<tr>
-		<th>Justification:</th><td><textarea name="justification" id="ta_justification"><?php echo $position->justification; ?></textarea></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td>
-			<a class="btn" id="bu_submit" href="JAVASCRIPT: submitForm()" >Save Position</a>
-			<a class="btn" id="bu_cancel" href="JAVASCRIPT: cancelEdit()">Cancel Edit</a>
-		</td>
-	</tr>
-	</form>
-</table>
+	<div class="content">
+
+		<div id="di_error"><p id="p_errmsg"></p></div>
+		<table class="form">
+			<form id="fo_edit_pos" method="post" action="<?php echo $submit_action; ?>">
+			<tr>
+				<th id="in_name_lbl">Position:*
+					<input name="position_id" id="type_id" type="hidden" value="<?php echo $position->id; ?>" />
+					<input name="issue_id" id="issue_id" type="hidden" value="<?php echo $position->issue_id; ?>" />
+					<input name="citizen_id" id="citizen_id" type="hidden" value="<?php echo $position->citizen_id; ?>" />
+				</th>
+				<td><input id="in_name" name="name" size="75" value="<?php echo $position->name; ?>" /></td>
+			</tr>
+			<tr>
+				<th>Justification:</th><td><textarea name="justification" id="ta_justification"><?php echo $position->justification; ?></textarea></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td>
+					<a class="btn" id="bu_submit" href="JAVASCRIPT: submitForm()" >Save Position</a>
+					<a class="btn" id="bu_cancel" href="JAVASCRIPT: cancelEdit()">Cancel Edit</a>
+				</td>
+			</tr>
+			</form>
+		</table>
 
 <?php if ($mode != "n") { ?>
-
-<table class="form" style="margin-top: 10px">
-	<tr>
-		<th>References:<br><a id="bu_ref_help" class="btn" href="JAVASCRIPT:$('#bu_ref_help').click()">?</a></th>
-		<td>
-<?php include ("inc/div.refbuilder.php"); ?>
-		</td>
-	</tr>
-</table>
-
+		<table class="form" style="margin-top: 10px">
+			<tr>
+				<th>References:<br><a id="bu_ref_help" class="btn" href="JAVASCRIPT:$('#bu_ref_help').click()">?</a></th>
+				<td>
+		<?php include ("inc/div.refbuilder.php"); ?>
+				</td>
+			</tr>
+		</table>
 <?php } ?>
+
+	</div>
 
 <?php } else { ?>
 
-<p class="with_btn">
-	<a href="issbrws.php">All Issues</a> / 
-	<a href="issue.php?m=r&iid=<?php echo $position->issue_id; ?>"><?php echo $position->issue_name; ?></a> / <br>
-	<span class="title"><?php echo $position->name; ?></span>
-	<a class="btn" id="bu_follow" href="JAVASCRIPT: displayFollow()"><?php echo get_button_text($position->is_following($citizen->citizen_id)); ?></a>
-</p>
+	<div class="content">
+
+		<p class="with_btn">
+			<a href="issbrws.php">All Issues</a> / 
+			<a href="issue.php?m=r&iid=<?php echo $position->issue_id; ?>"><?php echo $position->issue_name; ?></a> / <br>
+			<span class="title"><?php echo $position->name; ?></span>
+			<a class="btn" id="bu_follow" href="JAVASCRIPT: displayFollow()"><?php echo get_button_text($position->is_following($citizen->citizen_id)); ?></a>
+		</p>
 
 <?php if ($citizen->citizen_id != $position->citizen_id)  { ?>
-<p>By <?php echo $position->citizen_name; ?></p>
+		<p>By <?php echo $position->citizen_name; ?></p>
 <?php } ?>
 
-<input type="hidden" id="type_id" value="<?php echo $position->id; ?>" />
-<p><?php echo $position->display_justification(); ?></p>
-<p class="title">References</p>
-<div id="di_refs"></div>
+		<input type="hidden" id="type_id" value="<?php echo $position->id; ?>" />
+		<p><?php echo $position->display_justification(); ?></p>
+		<p class="title_sm">References</p>
+		<div id="di_refs"></div>
 
 <?php if ($citizen->citizen_id == $position->citizen_id)  { ?>
-<a class="btn" href="position.php?m=e&pid=<?php echo $position->id; ?>">Edit Position</a>
+		<a class="btn" href="position.php?m=e&pid=<?php echo $position->id; ?>">Edit Position</a>
 <?php } ?>
 
-<ul id="votes">
-	<li class="label">Your vote:</li>
-	<li id="your_vote" class="with_img"></li>
-	<li class="label">Add/change vote:</li>
-	<li>
-		<a id="vote_for" class="btn" href="JAVASCRIPT: setVote(1)" title="Click to vote for">For</a>&nbsp;
-		<a id="vote_against" class="btn" href="JAVASCRIPT: setVote(2)" title="Click to vote against">Against</a>
-	</li>
-	<li class="label with_img"><img src="img/for.png" title="Number of citizens for"/>:</li>
-	<li id="citizens_for"></li>
-	<li class="label with_img"><img src="img/against.png" title="Number of citizens against"/>:</li>
-	<li id="citizens_against"></li>
-</ul>
+		<ul id="votes">
+			<li class="label">Your vote:</li>
+			<li id="your_vote" class="with_img"></li>
+			<li class="label">Add/change vote:</li>
+			<li>
+				<a id="vote_for" class="btn" href="JAVASCRIPT: setVote(1)" title="Click to vote for">For</a>&nbsp;
+				<a id="vote_against" class="btn" href="JAVASCRIPT: setVote(2)" title="Click to vote against">Against</a>
+			</li>
+			<li class="label with_img"><img src="img/for.png" title="Number of citizens for"/>:</li>
+			<li id="citizens_for"></li>
+			<li class="label with_img"><img src="img/against.png" title="Number of citizens against"/>:</li>
+			<li id="citizens_against"></li>
+		</ul>
 
 	</div>
 
 	<div class="content">
 
-<div id="di_actions"></div>
+		<div id="di_actions">
+			<p class="with_btn">
+				<span class="title">Actions</span>
+				<a id="bu_add_act" class="btn" href="action.php?m=n&pid=<?php echo $position->id; ?>">Add Action</a>
+			</p>
+<?php get_actions() ?>
+		</div>
 
 	</div>
 
 	<div class="content">
 
-<p class="with_btn"><span class="title">Comments</span><a class="btn" id="bu_add_comment">Add Comment</a></p>
-<div id="di_new_comment">
-	<textarea id="ta_comment" rows="10" cols="90"></textarea><br />
-	<a id="bu_save_comment" class="btn" href="#">Save</a>
-	<a id="bu_cancel_comment" class="btn" href="#">Cancel</a>
-</div>
-<div id="di_comments"></div>
-<?php } ?>
+		<p class="with_btn"><span class="title">Comments</span><a class="btn" id="bu_add_comment">Add Comment</a></p>
+		<div id="di_new_comment">
+			<textarea id="ta_comment" rows="10" cols="90"></textarea><br />
+			<a id="bu_save_comment" class="btn" href="#">Save</a>
+			<a id="bu_cancel_comment" class="btn" href="#">Cancel</a>
+		</div>
+		<div id="di_comments"></div>
 
 	</div>
+
+<?php } ?>
 
 </div>
 <script src="js/jquery.js"></script>
@@ -325,15 +336,14 @@ function cancelEdit() {
 
 $(document).ready(function () {
 	$.post('ajax/position.vote.php', {pid: <?php echo $position->id; ?>}, updateVoteFields, 'json');
-	$('#di_actions').load('ajax/position.actions.php', {pid: <?php echo $position->id; ?>});
-	$('#di_comments').load('ajax/position.comments.php', {pid: <?php echo $position->id; ?>});
+	$('#di_comments').load('ajax/item.comments.php', {t: 'p', tid: <?php echo $position->id; ?>});
 	$('#bu_add_comment').click(function () {
 		$('#di_new_comment').show();
 	});
 	$('#bu_save_comment').click(function () {
 		$('#di_comments').load(
-			'ajax/position.comments.php',
-			{co: $('#ta_comment').val(), pid: <?php echo $position->id; ?>}
+			'ajax/item.comments.php',
+			{t: 'p', tid: <?php echo $position->id; ?>, m: 'i', co: $('#ta_comment').val()}
 		);
 		$('#ta_comment').val('');
 		$('#di_new_comment').hide();
@@ -388,9 +398,53 @@ function updateVoteFields(data) {
 	$('#citizens_against').html(j.against);
 }
 
+function deleteComment(commentId)
+{
+	$('#di_comments').load(
+		'ajax/item.comments.php',
+		{t: 'p', tid: <?php echo $position->id; ?>, m: 'd', id: commentId}
+	);
+}
+
 <?php } ?>
 
 </script>
 
 </body>
 </html>
+
+<?php
+
+function get_actions()
+{
+	global $position, $citizen;
+
+	$actions = $position->get_actions($citizen->citizen_id);
+	if (count($actions))
+	{
+		echo "
+			<table class=\"vote_tally\">
+				<tr>
+					<th id=\"th_c1\"></th>
+					<th id=\"th_c2\" class=\"ac\">Your Vote</th>
+					<th id=\"th_c3\" class=\"ac\"><img src=\"img/for.png\" title=\"Citizens For\"/></th>
+					<th id=\"th_c4\" class=\"ac\"><img src=\"img/against.png\" title=\"Citizens Against\"/></th>
+				</tr>\n";	
+		foreach($actions as $line)
+		{
+			echo "<tr><td><a href=\"action.php?m=r&aid={$line['action_id']}&pid={$position->id}\" >{$line['name']}</a></td>";
+			if (isset($line['citizen_vote'])) 
+			{
+				echo "<td class=\"ac\">" . get_vote_html($line['citizen_vote']) . "</td>";
+			}
+			else 
+			{
+				echo "<td></td>";
+			}
+			echo "<td class=\"ac\">{$line['vote_for']}</td><td class=\"ac\">{$line['vote_against']}</td></tr>\n";
+		}
+		echo "
+			</table>\n";
+	}
+}
+?>
