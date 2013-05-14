@@ -248,11 +248,11 @@ p.ref
 
 	<div class="content">
 
-		<p class="with_btn"><span class="title">Comments</span><a class="btn" id="bu_add_comment">Add Comment</a></p>
+		<p class="with_btn"><span class="title">Comments</span><a class="btn" id="bu_add_comment" href="JAVASCRIPT: addComment()">Add Comment</a></p>
 		<div id="di_new_comment">
 			<textarea id="ta_comment" rows="10" cols="90"></textarea><br />
-			<a id="bu_save_comment" class="btn" href="#">Save</a>
-			<a id="bu_cancel_comment" class="btn" href="#">Cancel</a>
+			<a id="bu_save_comment" class="btn" href="JAVASCRIPT: saveComment()">Save</a>
+			<a id="bu_cancel_comment" class="btn" href="JAVASCRIPT: cancelComment()">Cancel</a>
 		</div>
 		<div id="di_comments"></div>
 
@@ -337,23 +337,58 @@ function cancelEdit() {
 $(document).ready(function () {
 	$.post('ajax/position.vote.php', {pid: <?php echo $position->id; ?>}, updateVoteFields, 'json');
 	$('#di_comments').load('ajax/item.comments.php', {t: 'p', tid: <?php echo $position->id; ?>});
-	$('#bu_add_comment').click(function () {
-		$('#di_new_comment').show();
-	});
-	$('#bu_save_comment').click(function () {
-		$('#di_comments').load(
-			'ajax/item.comments.php',
-			{t: 'p', tid: <?php echo $position->id; ?>, m: 'i', co: $('#ta_comment').val()}
-		);
-		$('#ta_comment').val('');
-		$('#di_new_comment').hide();
-	});
-	$('#bu_cancel_comment').click(function () {
-		$('#ta_comment').val('');
-		$('#di_new_comment').hide();
-	});
 	displayRefs();
 });
+
+function addComment()
+{
+	$('#di_new_comment').show();
+}
+
+function saveComment()
+{
+	$('#di_comments').load(
+		'ajax/item.comments.php',
+		{t: 'p', tid: <?php echo $position->id; ?>, m: 'i', co: $('#ta_comment').val()}
+	);
+	$('#ta_comment').val('');
+	$('#di_new_comment').hide();
+}
+
+function cancelComment()
+{
+	$('#ta_comment').val('');
+	$('#di_new_comment').hide();
+}
+
+function deleteComment(commentId)
+{
+	$('#di_comments').load(
+		'ajax/item.comments.php',
+		{t: 'p', tid: <?php echo $position->id; ?>, m: 'd', id: commentId}
+	);
+}
+
+function editComment(commentId)
+{
+	var c = $('#td_'+commentId).html();
+	$('#td_'+commentId).html('<textarea id="ta_'+commentId+'">' + c + '</textarea>');
+	$('#a_e_'+commentId).html('Save').attr('href', 'JAVASCRIPT: saveCommentEdit('+commentId+')');
+	$('#a_d_'+commentId).html('Cancel').attr('href', 'JAVASCRIPT: cancelCommentEdit()');
+}
+
+function saveCommentEdit(commentId)
+{
+	$('#di_comments').load(
+		'ajax/item.comments.php',
+		{t: 'p', tid: <?php echo $position->id; ?>, m: 'u', co: $('#ta_'+commentId).val(), id: commentId}
+	);
+}
+
+function cancelCommentEdit()
+{
+	$('#di_comments').load('ajax/item.comments.php', {t: 'p', tid: <?php echo $position->id; ?>});
+}
 
 function displayRefs() {
 

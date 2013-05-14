@@ -38,7 +38,7 @@ if (check_field('m', $_REQUEST))
 		
 		case 'u':
 			$sql = "UPDATE comments SET comment = '".$db->safe_sql($_REQUEST['co'])."' 
-				WHERE type = '{$type}' AND type_id = '{$type_id}' AND citizen_id = '{$citizen->citizen_id}'";
+				WHERE comment_id = '{$_REQUEST['id']}'";
 			break;
 		
 		case 'd':
@@ -61,13 +61,13 @@ $ret = "";
 if ($db->get_num_rows()) {
 	$ret .= "<table>";
 	while ($line = $db->fetch_line()) {
-		$ret .= "<tr><td>{$line['name']}<br />{$line['ts_f']}</td><td>{$line['comment']}</td>";
+		$ret .= "<tr><td>{$line['name']}<br />{$line['ts_f']}</td><td id=\"td_{$line['comment_id']}\">{$line['comment']}</td>";
 		if ($line['citizen_id'] == $citizen->citizen_id)
 		{
 			$ret.="
 				<td>
-					<a class=\"btn\" href=\"JAVASCRIPT: editComment({$line['comment_id']})\">Edit</a>
-					<a class=\"btn\" href=\"JAVASCRIPT: deleteComment({$line['comment_id']})\">Delete</a>
+					<a id=\"a_e_{$line['comment_id']}\" class=\"btn\" href=\"JAVASCRIPT: editComment({$line['comment_id']})\">Edit</a>
+					<a id=\"a_d_{$line['comment_id']}\" class=\"btn\" href=\"JAVASCRIPT: deleteComment({$line['comment_id']})\">Delete</a>
 				</td></tr>";
 		}
 		else

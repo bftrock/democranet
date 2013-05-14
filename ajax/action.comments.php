@@ -35,7 +35,7 @@ if (check_field('co', $_REQUEST)) {
 
 // Now get all comments for this action. Join comments with their respective citizen.
 $sql = " ";
-$sql .= "SELECT co.comment, ci.name, co.ts
+$sql .= "SELECT co.comment_id, co.comment, ci.name, co.ts
 	FROM comments co LEFT JOIN citizens ci ON co.citizen_id = ci.citizen_id
 	WHERE co.type_id = '{$action_id}'
 	AND co.type = 'a'
@@ -45,7 +45,7 @@ $ret = "";
 if ($db->get_num_rows()) {
 	$ret .= "<table>";
 	while ($line = $db->fetch_line()) {
-		$ret .= "<tr><td>{$line['name']}<br />{$line['ts']}</td><td>{$line['comment']}</td></tr>";
+		$ret .= "<tr><td>{$line['name']}<br />{$line['ts']}</td><td id=\"td_{$line['comment_id']}\">{$line['comment']}</td></tr>";
 	}
 	$ret .= "</table>\n";
 }

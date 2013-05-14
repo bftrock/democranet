@@ -197,11 +197,11 @@ echo DOC_TYPE;
 
 	<div class="content">
 
-<p class="with_btn"><span class="title">Comments</span><a class="btn" id="bu_add_comment">Add Comment</a></p>
+<p class="with_btn"><span class="title">Comments</span><a class="btn" id="bu_add_comment" href="JAVASCRIPT: addComment()">Add Comment</a></p>
 <div id="di_new_comment">
 	<textarea id="ta_comment" rows="10" cols="90"></textarea><br />
-	<a id="bu_save_comment" class="btn" href="#">Save</a>
-	<a id="bu_cancel_comment" class="btn" href="#">Cancel</a>
+	<a id="bu_save_comment" class="btn" href="JAVASCRIPT: saveComment()">Save</a>
+	<a id="bu_cancel_comment" class="btn" href="JAVASCRIPT: cancelComment()">Cancel</a>
 </div>
 <div id="di_comments"></div>
 <?php } ?>
@@ -210,7 +210,7 @@ echo DOC_TYPE;
 
 </div>
 
-<script src="js/jquery.js"></script>')
+<script src="js/jquery.js"></script>
 <script src="js/jquery-ui.js"></script>
 <script type="text/javascript">
 
@@ -261,22 +261,57 @@ function cancelEdit()
 $(document).ready(function () {
 	$.post('ajax/action.vote.php', {aid: <?php echo $action->id; ?>}, updateVoteFields, 'json');
 	$('#di_comments').load('ajax/item.comments.php', {t: 'a', tid: <?php echo $action->id; ?>});
-	$('#bu_add_comment').click(function () {
-		$('#di_new_comment').show();
-	});
-	$('#bu_save_comment').click(function () {
-		$('#di_comments').load(
-			'ajax/item.comments.php',
-			{t: 'a', tid: <?php echo $action->id; ?>, m: 'i', co: $('#ta_comment').val()}
-		);
-		$('#ta_comment').val('');
-		$('#di_new_comment').hide();
-	});
-	$('#bu_cancel_comment').click(function () {
-		$('#ta_comment').val('');
-		$('#di_new_comment').hide();
-	});
 });
+
+function addComment()
+{
+	$('#di_new_comment').show();
+}
+
+function saveComment()
+{
+	$('#di_comments').load(
+		'ajax/item.comments.php',
+		{t: 'a', tid: <?php echo $action->id; ?>, m: 'i', co: $('#ta_comment').val()}
+	);
+	$('#ta_comment').val('');
+	$('#di_new_comment').hide();
+}
+
+function cancelComment()
+{
+	$('#ta_comment').val('');
+	$('#di_new_comment').hide();
+}
+
+function deleteComment(commentId)
+{
+	$('#di_comments').load(
+		'ajax/item.comments.php',
+		{t: 'a', tid: <?php echo $action->id; ?>, m: 'd', id: commentId}
+	);
+}
+
+function editComment(commentId)
+{
+	var c = $('#td_'+commentId).html();
+	$('#td_'+commentId).html('<textarea id="ta_'+commentId+'">' + c + '</textarea>');
+	$('#a_e_'+commentId).html('Save').attr('href', 'JAVASCRIPT: saveCommentEdit('+commentId+')');
+	$('#a_d_'+commentId).html('Cancel').attr('href', 'JAVASCRIPT: cancelCommentEdit()');
+}
+
+function saveCommentEdit(commentId)
+{
+	$('#di_comments').load(
+		'ajax/item.comments.php',
+		{t: 'a', tid: <?php echo $action->id; ?>, m: 'u', co: $('#ta_'+commentId).val(), id: commentId}
+	);
+}
+
+function cancelCommentEdit()
+{
+	$('#di_comments').load('ajax/item.comments.php', {t: 'a', tid: <?php echo $action->id; ?>});
+}
 
 function displayFollow() {
 	var bt = $('#bu_follow').text();
@@ -300,7 +335,6 @@ function setVote(vote) {
 
 function updateVoteFields(data) {
 	var j = data;
-<?php if ($citizen->citizen_id) { ?>
 	var v = j.vote;
 	if (v == 1) {
 		$('#your_vote').html('<img src="img/for.png"/>');
@@ -309,22 +343,8 @@ function updateVoteFields(data) {
 	} else {
 		$('#your_vote').html('(none)');
 	}
-<?php } ?>
 	$('#citizens_for').html(j.for);
 	$('#citizens_against').html(j.against);
-}
-
-function deleteComment(commentId)
-{
-	$('#di_comments').load(
-		'ajax/item.comments.php',
-		{t: 'a', tid: <?php echo $action->id; ?>, m: 'd', id: commentId}
-	);
-}
-
-function editComment(commentId)
-{
-	
 }
 
 <?php } ?>
