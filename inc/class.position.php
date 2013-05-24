@@ -52,6 +52,10 @@ class position
 			case LOAD_NEW:
 			default:
 				$this->issue_id = $_REQUEST['iid'];
+				$sql = "SELECT i.name FROM issues i WHERE issue_id = '{$this->issue_id}'";
+				$this->db->execute_query($sql);
+				$line = $this->db->fetch_line();
+				$this->issue_name = $line['name'];
 		}
 	}
 	

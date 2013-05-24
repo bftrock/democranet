@@ -19,34 +19,39 @@ if (check_field('v', $_REQUEST, true)) {
 
 $new_iss = new issue($db);
 $new_iss->load(LOAD_DB, $version);
-
-$old_iss = new issue($db);
-$old_iss->load(LOAD_DB, --$version);
-
-$pattern = "/(?<=[.!?]|[.!?]['\"])(?<!Mr\.|Mrs\.|Ms\.|Jr\.|Dr\.|Prof\.|Sr\.)\s+/ix";
-$old_desc = preg_split($pattern, $old_iss->description);
-$new_desc = preg_split($pattern, $new_iss->description);
-$diffs = diff($old_desc, $new_desc);
-//print_r($diffs);
-
 echo $new_iss->display_description();
 echo "<p><span class=\"title\">Differences with Previous Version</span></p>\n";
-echo "<table id=\"diffs\">\n<tr><th>Line</th><th>Deleted</th><th>Inserted</th></tr>\n";
-foreach ($diffs as $key=>$val) {
-	$d = null; $i = null;
-	if (is_array($val)) {
-		if (count($val['d']) > 0 && isset($val['d'][0])) {
-			$d = $val['d'][0];
-		}
-		if (count($val['i']) > 0 && isset($val['i'][0])) {
-			$i = $val['i'][0];
-		}
-		if ($d || $i) {
-			echo "<tr><td>".($key+1)."</td><td class=\"del\">{$d}</td><td class=\"ins\">{$i}</td></tr>\n";
+
+if ($version == "1")
+{
+	echo "<p>None. This is the first version.</p>\n";
+}
+else
+{
+	$old_iss = new issue($db);
+	$old_iss->load(LOAD_DB, --$version);
+
+	$pattern = "/(?<=[.!?]|[.!?]['\"]|[.!?]\[[0-9]\])(?<!Mr\.|Mrs\.|Ms\.|Jr\.|Dr\.|Prof\.|Sr\.|e\.g\.)\s+/ix";
+	$old_desc = preg_split($pattern, $old_iss->description);
+	$new_desc = preg_split($pattern, $new_iss->description);
+	$diffs = diff($old_desc, $new_desc);
+	echo "<table id=\"diffs\">\n<tr><th>Line</th><th>Deleted</th><th>Inserted</th></tr>\n";
+	foreach ($diffs as $key=>$val) {
+		$d = null; $i = null;
+		if (is_array($val)) {
+			if (count($val['d']) > 0 && isset($val['d'][0])) {
+				$d = $val['d'][0];
+			}
+			if (count($val['i']) > 0 && isset($val['i'][0])) {
+				$i = $val['i'][0];
+			}
+			if ($d || $i) {
+				echo "<tr><td>".($key+1)."</td><td class=\"del\">{$d}</td><td class=\"ins\">{$i}</td></tr>\n";
+			}
 		}
 	}
+	echo "</table>\n";	
 }
-echo "</table>\n";
 
 /*
 	Paul's Simple Diff Algorithm v 0.1

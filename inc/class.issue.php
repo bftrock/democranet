@@ -73,10 +73,13 @@ class issue
 
 	public function update()
 	{	
-		$this->version = $this->get_next_version();
-		$sql = "DELETE FROM issue_category WHERE issue_id = '{$this->id}'";
-		$this->db->execute_query($sql);
-		$this->insert_issue();
+		if ($this->content_changed())
+		{
+			$this->version = $this->get_next_version();
+			$sql = "DELETE FROM issue_category WHERE issue_id = '{$this->id}'";
+			$this->db->execute_query($sql);
+			$this->insert_issue();
+		}
 		return true;
 	}
 
@@ -238,6 +241,32 @@ class issue
 		}
 	}
 	
+	private function content_changed()
+	{
+		$result = false;
+		$sql = "SELECT i1.name, i1.description 
+			FROM issues i1 
+			WHERE i1.issue_id = '{$this->id}' 
+			AND i1.version = (SELECT MAX(version) FROM issues i2 WHERE i2.issue_id = i1.issue_id)";
+		$this->db->execute_query($sql);
+		$line = $this->db->fetch_line();
+		if ( ($this->name != $line['name']) || ($this->description != $line['description']) )
+		{
+			$result = true;
+		}
+		$sql = "SELECT * FROM issue_category WHERE issue_id = '{$this->id}'";
+		$this->db->execute_query($sql);
+		$new_categories = array();
+		while($line = $this->db->fetch_line()) {
+			$new_categories[] = $line['category_id'];
+		}
+		if ($this->categories != $new_categories)
+		{
+			$result = true;
+		}
+		return $result;
+	}
+
 }
 
 ?>

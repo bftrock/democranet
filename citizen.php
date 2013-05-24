@@ -93,12 +93,6 @@ echo DOC_TYPE;
 	display: <?php echo $display; ?>;
 }
 
-.content
-{
-	width: 700px;
-	margin: 0 auto;
-}
-
 table.form
 {
 	width: auto;
@@ -112,6 +106,32 @@ table.form th
 table.form input[type="radio"]
 {
 	margin-left: 20px;
+}
+
+img.ec
+{
+	height: 1.5em;
+}
+
+.i1, .i2, .i3
+{
+	margin:top: 0;
+	margin-bottom: 0;
+}
+
+.i2
+{
+	margin-left: 2em;
+}
+
+.i3
+{
+	margin-left: 5em;
+}
+
+.vote
+{
+	height: 20px;
 }
 
 	</style>
@@ -191,10 +211,29 @@ table.form input[type="radio"]
 
 	</div>
 
+	<div class="content">
+		<p><span class="title">Citizen's Issues</span></p>
+		<?php echo get_issues(); ?>
+	</div>
+
 </div>
 
 <script src="js/jquery.js"></script>
 <script type="text/javascript">
+
+$(document).ready(function() {
+	$('img.ec').click(function () {
+		var id;
+		id = $(this).attr('id');
+		if ($(this).attr('src') == 'img/collapse.png') {
+			$(this).attr('src', 'img/expand.png');
+			$('#di_' + id).slideUp();
+		} else {
+			$(this).attr('src', 'img/collapse.png');
+			$('#di_' + id).slideDown();
+		}
+	});
+});
 
 function submitForm() {
 	
@@ -273,8 +312,100 @@ function submitForm() {
 	
 }
 
-
 </script>
 
 </body>
 </html>
+<?php
+
+function get_issues() {
+
+	global $citizen, $db;
+
+	$sql = "SELECT DISTINCT i.issue_id, i.name 
+		FROM votes v INNER JOIN positions p ON v.type_id = p.position_id 
+		INNER JOIN issues i ON p.issue_id = i.issue_id 
+		WHERE v.type = 'p' AND v.citizen_id = '{$citizen->citizen_id}' 
+		ORDER BY issue_id";
+	$db->execute_query($sql);
+	$result = $db->get_result();
+	$html = "";
+	while ($line = $db->fetch_line($result)) {
+		$html .= "
+			<p class=\"i1\">
+				<img id=\"i{$line['issue_id']}\" class=\"ec\" src=\"img/collapse.png\">
+				<a class=\"su\" href=\"issue.php?m=r&iid={$line['issue_id']}\">{$line['name']}</a>
+			</p>
+			<div class=\"di_ec\" id=\"di_i{$line['issue_id']}\">" . get_positions($line['issue_id']) . "
+			</div>\n";
+	}
+	return $html;
+
+}
+
+function get_positions($issue_id) {
+
+	global $db, $citizen;
+
+	$sql = "SELECT p.position_id, p.name, v.vote citizen_vote
+		FROM votes v INNER JOIN positions p ON v.type_id = p.position_id
+		WHERE v.type = 'p'
+		AND v.citizen_id = '{$citizen->citizen_id}'
+		AND p.issue_id = '{$issue_id}'";
+	$db->execute_query($sql);
+	$result = $db->get_result();
+	$html = "";
+	while ($line = $db->fetch_line($result)) {
+		if ($line['citizen_vote'] == VOTE_FOR)
+		{
+			$citizen_vote_img = "for.png";
+		}
+		else
+		{
+			$citizen_vote_img = "against.png";
+		}
+		$html .= "
+			<p class=\"i2\">
+				<img id=\"p{$line['position_id']}\" class=\"ec\" src=\"img/collapse.png\">
+				<a class=\"su\" href=\"position.php?m=r&pid={$line['position_id']}\">{$line['name']}</a>
+				<img class=\"vote\" src=\"img/{$citizen_vote_img}\">";
+		$html .= "
+			</p>
+			<div class=\"di_ec\" id=\"di_p{$line['position_id']}\">" . get_actions($line['position_id']) . "
+			</div>\n";
+	}
+	return $html;
+
+}
+
+function get_actions($position_id) {
+
+	global $db, $citizen;
+
+	$sql = "SELECT a.action_id, a.name, v.vote citizen_vote
+		FROM votes v INNER JOIN actions a ON v.type_id = a.action_id 
+		WHERE v.type = 'a' 
+		AND v.citizen_id = '{$citizen->citizen_id}' 
+		AND a.position_id = '{$position_id}'";
+	$db->execute_query($sql);
+	$result = $db->get_result();
+	$html = "";
+	while ($line = $db->fetch_line($result)) {
+		if ($line['citizen_vote'] == VOTE_FOR)
+		{
+			$citizen_vote_img = "for.png";
+		}
+		else
+		{
+			$citizen_vote_img = "against.png";
+		}
+		$html .= "
+			<p class=\"i3\">
+				<a class=\"su\" href=\"action.php?m=r&aid={$line['action_id']}\">{$line['name']}</a>
+				<img class=\"vote\" src=\"img/{$citizen_vote_img}\">";
+		$html .= "</p>\n";
+	}
+	return $html;
+
+}
+?>

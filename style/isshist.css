@@ -110,11 +110,13 @@ table#diffs th, table#diffs td
 table#diffs td.del
 {
 	background-color: LightCoral;
+	width: 48%;
 }
 
 table#diffs td.ins
 {
 	background-color: LightGreen;
+	width: 48%;
 }
 
 table#diffs th

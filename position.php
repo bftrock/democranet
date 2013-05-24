@@ -161,9 +161,13 @@ p.ref
 		<table class="form">
 			<form id="fo_edit_pos" method="post" action="<?php echo $submit_action; ?>">
 			<tr>
-				<th id="in_name_lbl">Position:*
+				<th>Issue:<input name="issue_id" id="issue_id" type="hidden" value="<?php echo $position->issue_id; ?>" /></th>
+				<td><?php echo $position->issue_name; ?></td>
+			</tr>
+			<tr>
+				<th id="in_name_lbl">
+					Position:*
 					<input name="position_id" id="type_id" type="hidden" value="<?php echo $position->id; ?>" />
-					<input name="issue_id" id="issue_id" type="hidden" value="<?php echo $position->issue_id; ?>" />
 					<input name="citizen_id" id="citizen_id" type="hidden" value="<?php echo $position->citizen_id; ?>" />
 				</th>
 				<td><input id="in_name" name="name" size="75" value="<?php echo $position->name; ?>" /></td>

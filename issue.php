@@ -197,6 +197,8 @@ span.counter
 				</td>
 			</tr>
 		</table>
+<?php } else { ?>
+		<p>Note: references can't be added until after the issue is saved the first time.</p>
 <?php } ?>
 
 	</div>

@@ -146,7 +146,7 @@ switch ($mode)
 				</tr>
 			</table>
 		</form>
-		<a href="register.php">Register</a><a style="float:right" href="#">Reset password</a>
+		<a href="register.php">Register to become a Citizen</a>
 	</div>
 
 	<div id="di_diagram" class="content">
