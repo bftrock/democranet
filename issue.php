@@ -157,7 +157,7 @@ span.counter
 			<tr>
 				<th id="ta_description_lbl">
 					Description:*<br>
-					<a class="btn" id="bu_desc_help" href="JAVASCRIPT:$('#bu_desc_help').click()">?</a>
+					<a class="btn" id="bu_desc_help" href="JAVASCRIPT:showDescHelp()">?</a>
 				</th>
 				<td>
 					<textarea id="ta_description" name="description" data-maxChars="<?php echo ISS_DESC_MAXLEN; ?>"><?php echo $issue->description; ?></textarea>
@@ -191,7 +191,7 @@ span.counter
 <?php if ($mode != "n") { ?>
 		<table class="form" style="margin-top: 10px">
 			<tr>
-				<th>References:<br><a id="bu_ref_help" class="btn" href="#">?</a></th>
+				<th>References:<br><a id="bu_ref_help" class="btn" href="JAVASCRIPT:showRefHelp()">?</a></th>
 				<td>
 		<?php include ("inc/div.refbuilder.php"); ?>
 				</td>
@@ -267,21 +267,23 @@ $(document).ready(function() {
 		postRef('d');
 	})
 	$('#desc_help').dialog({ autoOpen: false });
-	$('#bu_desc_help').click(function () {
-		$('#desc_help').dialog({width: 500});
-		$('#desc_help').dialog({modal: true});
-	    $('#desc_help').dialog('open');
-	});
 	$('#ref_help').dialog({ autoOpen: false });
-	$('#bu_ref_help').click(function () {
-		$('#ref_help').dialog({width: 500});
-		$('#ref_help').dialog({modal: true});
-	    $('#ref_help').dialog('open');
-	});
 	updateCount();
 	displayRefs();
 	adjustRB();
 });
+
+function showDescHelp() {
+	$('#desc_help').dialog({width: 500});
+	$('#desc_help').dialog({modal: true});
+	$('#desc_help').dialog('open');	
+}
+
+function showRefHelp() {
+	$('#ref_help').dialog({width: 500});
+	$('#ref_help').dialog({modal: true});
+	$('#ref_help').dialog('open');
+}
 
 function submitForm() {
 	
