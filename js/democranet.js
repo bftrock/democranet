@@ -1,6 +1,14 @@
 // site-wide javascript 
 
 $(document).ready(function() {
+
+	//login
+	$('#password').keyup(function (event) {
+		if(event.keyCode == 13){
+			submitForm();
+		}
+	});
+
 	$('#bu_issues').on('click', function () {
 		window.location.assign('issbrws.php');
 	})
