@@ -10,8 +10,7 @@ You Will Be Free: #CBDBE0
 Breathe Then: #BED2D9
 Orange: #C86C06
 */
-body
-{
+body {
 	font-family: 'Quattrocento Sans', helvetica, arial, sans-serif;
 	font-size: 100%;
 	line-height: 1.4;
@@ -19,16 +18,16 @@ body
 	margin: 0;
 }
 
-h1, h2, h3, h4, h5 
-{
+/* ===== type ===== */
+
+h1, h2, h3, h4, h5 {
 	font-family: 'Dosis', sans-serif;
 	font-weight: 600;
 	line-height: 1.2;
 	margin-bottom: .5em;
 }
 
-p 
-{
+p {
 	font-family: 'Quattrocento Sans', helvetica, arial, sans-serif;
 	font-size: 1em;
 	font-weight: 400;
@@ -36,33 +35,119 @@ p
 	margin-bottom: .5em;
 }
 
-li
-{
-	font-size: 1em;
+.bold  {
+	font-weight: 700;
 }
 
 
-input, textarea, select
-{
+.italics  {
+	font-style: italic;
+}
+
+#header h1 {
+	margin-top:0;
+	margin-bottom: 0;
+	font-size: 4em;
+}
+
+.title	{
+	font-size: 1.5em;
+	margin: 0 0 .5em 0;
+	font-weight: 700;
+}
+
+.title_sm	{
+	font-size: 1.2em;
+	margin: 0 0 .5em 0;
+	font-weight: 700;
+}
+
+table {
+	font-size: 1em;
+}
+
+/* ===== links ===== */
+
+a:link {
+	text-decoration: none;
+	color: #C86C06;
+	-webkit-transition: all .1s linear;
+	   -moz-transition: all .1s linear;
+	    -ms-transition: all .1s linear;
+	     -o-transition: all .1s linear;
+	        transition: all .1s linear;
+}
+
+a:visited	{
+	color: #C86C06;
+}
+
+
+a:hover	{
+	color: #222;
+}
+
+
+a:active	{
+	color: #222;
+}
+
+.btn 	{
+	border-style: solid;
+	border-color: #BED2D9;
+	border-radius: 4px;
+	border-width: 1px;
+	padding: 3px 5px 2px;
+	background-image: linear-gradient(#F7F9FE, #DCE8EB);
+	cursor: pointer;
+}
+
+.btn:hover	{
+	background-image: linear-gradient(#ECF1F2, #BED2D9);
+}
+
+
+a.btn:link 	{
+	text-decoration: none;
+	color: #222;
+	-webkit-transition: all 0s linear;
+	   -moz-transition: all 0s linear;
+	    -ms-transition: all 0s linear;
+	     -o-transition: all 0s linear;
+	        transition: all 0s linear;
+}
+
+a.btn:visited	{
+	color: #222;
+}
+
+
+a.btn:hover	{
+	color: #C86C06;
+}
+
+
+a.btn:active	{
+	color: #C86C06;
+}
+
+/* ===== lists ===== */
+
+
+li 	{
+	font-size: 1em;
+}
+
+/* ===== forms ====== */
+
+input, textarea, select	{
 	font-family: 'Courier', monospace;
 	font-size: 0.9em;
 	padding: 2px;
 }
 
-.bold
-{
-	font-weight: 700;
-}
-
-
-.italics
-{
-	font-style: italic;
-}
-
-
-.exceeded
-{
+/* ===== globals ===== */
+.exceeded	{
 	background-color : red;
 }
 
@@ -78,139 +163,34 @@ input, textarea, select
 	display: none;
 }
 
+/* ===== layout ===== */
 
-.title
-{
-	font-size: 1.5em;
-	margin: 0 0 .5em 0;
-	font-weight: 700;
-}
-
-.title_sm
-{
-	font-size: 1.2em;
-	margin: 0 0 .5em 0;
-	font-weight: 700;
-}
-
-table
-{
-	font-size: 1em;
-}
-
-
-.btn 
-{
-	border-style: solid;
-	border-color: #BED2D9;
-	border-radius: 4px;
-	border-width: 1px;
-	padding: 3px 5px 2px;
-	background-image: linear-gradient(#F7F9FE, #DCE8EB);
-	cursor: pointer;
-}
-
-.btn:hover
-{
-	background-image: linear-gradient(#ECF1F2, #BED2D9);
-}
-
-
-a.btn:link 
-{
-	text-decoration: none;
-	color: #222;
-	-webkit-transition: all 0s linear;
-	   -moz-transition: all 0s linear;
-	    -ms-transition: all 0s linear;
-	     -o-transition: all 0s linear;
-	        transition: all 0s linear;
-}
-
-a.btn:visited
-{
-	color: #222;
-}
-
-
-a.btn:hover
-{
-	color: #C86C06;
-}
-
-
-a.btn:active
-{
-	color: #C86C06;
-}
-
-
-a:link 
-{
-	text-decoration: none;
-	color: #C86C06;
-	-webkit-transition: all .1s linear;
-	   -moz-transition: all .1s linear;
-	    -ms-transition: all .1s linear;
-	     -o-transition: all .1s linear;
-	        transition: all .1s linear;
-}
-
-a:visited
-{
-	color: #C86C06;
-}
-
-
-a:hover
-{
-	color: #222;
-}
-
-
-a:active
-{
-	color: #222;
-}
-
-
-#header 
-{
+#header 	{
 	text-align: center;
 	padding: 0;
 }
 
-#header h1 
-{
-	margin-top:0;
-	margin-bottom: 0;
-	font-size: 4em;
-}
 
-#container 
-{
+
+#container 	{
 	margin: 0 auto;
 	min-width: 200px;
 	max-width: 900px;
-	background-color: #ECF1F2;
 	min-height: 780px;
 	padding-bottom: 5px;
 }
 
-#login 
-{
+#login 	{
 	text-align: right;
 	padding-right: 6px;
 }
 
-#login p
-{
+#login p   {
 	margin: 0;
 }
 
 
-.content
-{
+.content  {
 	margin: 5px 10px;
 	padding: 10px;
 	background-color: #F7F9FE;
