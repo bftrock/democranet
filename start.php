@@ -21,6 +21,9 @@ else
 <html>
 <head>
 	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="description" content="Democra.net, noun (di-ˈmä-krə-net): A web site for increasing democratic participation and political networking.">
+    <meta name="viewport" content="width=device-width">
 	<title>Democranet: Start</title>
 	<link href="http://fonts.googleapis.com/css?family=Dosis:400,600|Quattrocento+Sans:400,700,400italic,700italic" rel="stylesheet" type="text/css">
 	<link rel="stylesheet" type="text/css" href="style/jquery-ui.css">
@@ -69,6 +72,7 @@ else
 
 <script src="/js/jquery.js"></script>
 <script src="/js/jquery-ui.js"></script>
+<script src="/js/bootstrap.js"></script>
 <script src="/js/democranet.js"></script>
 
 </body>
