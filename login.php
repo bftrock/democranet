@@ -86,36 +86,7 @@ switch ($mode)
 	<script src="/js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
 	<style type="text/css">
 
-#login_box {
-	background: #DCE8EB;
-	border-style: solid;
-	border-width: 5px;
-	border-color: #BED2D9;
-	border-radius: 10px;
-	padding: 10px;
-	width: 350px;
-	margin: 30px auto;
-}
 
-#login_box h3 {
-	border-bottom-style: solid;
-	border-width: 2px;
-	border-color: #BED2D9;
-	margin-top: 0;
-	margin-bottom: 20px;
-}
-
-#di_error
-{
-	width: 350px;
-	display: <?php echo $display; ?>;
-}
-
-#di_diagram img
-{
-	display: block;
-	margin: 0 auto;
-}
 
 	</style>
 
