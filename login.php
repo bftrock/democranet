@@ -128,11 +128,11 @@ switch ($mode)
 		
 	</div>
 
-	<div id="di_diagram" class="content">
+	<div id="how-it-works" class="content row">
 		<h2>How It Works</h2>
-		<div class="how-it-works-box" id="how-it-works-register"><h3>Step 1: <a href="/register.php">Register</a></h3></div>
-		<div class="how-it-works-box" id="how-it-works-vote"><h3>Step 2: <a href="#">Vote</a></h3></div>
-		<div class="how-it-works-box" id="how-it-works-express"><h3>Step 3: <a href="#">Express Your Views</a></h3></div>
+		<div class="how-it-works-box col-4" id="how-it-works-register"><span class="hiw-graphic"></span><h3>Step 1: <a href="/register.php">Register</a></h3></div>
+		<div class="how-it-works-box col-4" id="how-it-works-vote"><span class="hiw-graphic"></span><h3>Step 2: <a href="#">Vote</a></h3></div>
+		<div class="how-it-works-box col-4" id="how-it-works-express"><span class="hiw-graphic"></span><h3>Step 3: <a href="#">Express Your Views</a></h3></div>
 	</div>
 
 </div>

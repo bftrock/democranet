@@ -2,19 +2,20 @@
 Democranet palette
 http://www.colourlovers.com/palette/452030/you_will_be_free?widths=1
 
-Lightest to darkest:
-Persistence Pays: #F7F9FE
-Handsome Dividends: #ECF1F2
-In Good Time: #DCE8EB
-You Will Be Free: #CBDBE0
-Breathe Then: #BED2D9
+off white: #F7F9FE
+light gray: #ECF1F2
+very light blue: #DCE8EB
+
+Light Blue: #BED2D9
+blue-gray: #4e93aa;
 Orange: #C86C06
+light-orange: #fbad57;
 */
 body {
 	font-family: 'Quattrocento Sans', helvetica, arial, sans-serif;
-	font-size: 100%;
+	font-size: 16px;
 	line-height: 1.4;
-	background-color: #BED2D9;
+	background-color: #4e93aa;
 	margin: 0;
 }
 
@@ -68,7 +69,7 @@ table {
 
 a:link {
 	text-decoration: none;
-	color: #C86C06;
+	color: #fff;
 	-webkit-transition: all .1s linear;
 	   -moz-transition: all .1s linear;
 	    -ms-transition: all .1s linear;
@@ -77,17 +78,17 @@ a:link {
 }
 
 a:visited	{
-	color: #C86C06;
+	color: #fff;
 }
 
 
 a:hover	{
-	color: #222;
+	color: #fbad57;
 }
 
 
 a:active	{
-	color: #222;
+	color: #fbad57;
 }
 
 .btn 	{
@@ -190,11 +191,31 @@ input, textarea, select	{
 .content  {
 	margin: 5px 10px;
 	padding: 10px;
-	background-color: #F7F9FE;
+	/*background-color: #F7F9FE;
 	border-radius: 15px;
-	border: 1px solid #BED2D9;
+	border: 1px solid #BED2D9; */
 }
 
+/* ===== home page ===== */
+#how-it-works {
+	margin: 20px auto 60px;
+}
+
+#how-it-works h2 {text-align: center;}
+
+.how-it-works-box {
+	text-align: center;
+	padding-bottom: 40px;
+}
+
+.hiw-graphic {
+	display: block;
+	width: 240px;
+	height: 240px;
+	margin: 0 auto 20px;
+	background-color: #222;
+	border-radius: 100%;
+}
 
 #votes 
 {
@@ -260,8 +281,7 @@ input, textarea, select	{
 	vertical-align: bottom;
 }
 
-.vote_tally td img
-{
+.vote_tally td img  {
 	height: 25px;
 }
 
@@ -370,15 +390,25 @@ table.form th
 
 #di_error
 {
-	width: 350px;
+	width: 90%;
+	margin: 10px auto;
 	display: none;
 }
 
-#di_diagram img
-{
-	display: block;
-	margin: 0 auto;
-}
+
+
+/* ===========================================================
+============ media query max-width: 600px=====================
+============================================================== */
+@media (max-width: 600px) {
+
+	#how-it-works .col-4 {
+		float: none;
+		width: 100%;
+		margin: 0 auto;
+	}
+
+} /*end @media max-width 600px*/
 
 /* ===========================================================
 ============ media query min-width: 768px=====================
