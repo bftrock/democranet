@@ -20,7 +20,7 @@ body {
 
 /* ===== type ===== */
 
-h1, h2, h3, h4, h5 {
+h1, h2, h3, h4, h5, th {
 	font-family: 'Dosis', sans-serif;
 	font-weight: 600;
 	line-height: 1.2;
@@ -28,7 +28,6 @@ h1, h2, h3, h4, h5 {
 }
 
 p {
-	font-family: 'Quattrocento Sans', helvetica, arial, sans-serif;
 	font-size: 1em;
 	font-weight: 400;
 	margin-top: .2em;
@@ -171,10 +170,9 @@ input, textarea, select	{
 
 
 
-#container 	{
+.container 	{
 	margin: 0 auto;
-	min-width: 200px;
-	max-width: 900px;
+	min-width: 300px;
 	min-height: 780px;
 	padding-bottom: 5px;
 }
@@ -358,7 +356,7 @@ table.form th
 	border-color: #BED2D9;
 	border-radius: 10px;
 	padding: 10px;
-	width: 350px;
+	width: 90%;
 	margin: 30px auto;
 }
 
@@ -373,7 +371,7 @@ table.form th
 #di_error
 {
 	width: 350px;
-	display: <?php echo $display; ?>;
+	display: none;
 }
 
 #di_diagram img
@@ -381,3 +379,29 @@ table.form th
 	display: block;
 	margin: 0 auto;
 }
+
+/* ===========================================================
+============ media query min-width: 768px=====================
+============================================================== */
+@media (min-width: 768px) {
+
+
+} /*end @media min-width 768px*/
+
+/* ===========================================================
+============ media query min-width: 992px=====================
+============================================================== */
+
+@media (min-width: 992px) {
+
+
+} /*end @media min-width 992px*/
+
+/* ===========================================================
+============ media query min-width: 1200px=====================
+============================================================== */
+
+@media (min-width: 1200px) {
+
+
+} /*end @media min-width 1200px*/

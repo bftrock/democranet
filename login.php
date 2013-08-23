@@ -94,7 +94,7 @@ switch ($mode)
 
 <body>
 
-<div id="container">
+<div class="container">
 
 	<div id="header">
 		<h1>Democra.net</h1>
@@ -106,7 +106,9 @@ switch ($mode)
 	</div>
 
 	<div id="login_box">
-		<h3>Log in</h3>
+		<h3>Welcome!</h3>
+		<p>Democra.net is a tool for more direct democracy, allowing for citizen input and action on current issues. Anyone can register and participate, except corporations, which are not people.</p>
+		<p>To get started, log in below or <a href="register.php">become a Democra.net citizen</a>.</p>
 		<form id="login_form" method="post" action="login.php?m=au">
 			<table>
 				<tr>
@@ -123,11 +125,14 @@ switch ($mode)
 				</tr>
 			</table>
 		</form>
-		<a href="register.php">Register to become a Citizen</a>
+		
 	</div>
 
 	<div id="di_diagram" class="content">
-		<img src="img/login_diagram.png">
+		<h2>How It Works</h2>
+		<div class="how-it-works-box" id="how-it-works-register"><h3>Step 1: <a href="/register.php">Register</a></h3></div>
+		<div class="how-it-works-box" id="how-it-works-vote"><h3>Step 2: <a href="#">Vote</a></h3></div>
+		<div class="how-it-works-box" id="how-it-works-express"><h3>Step 3: <a href="#">Express Your Views</a></h3></div>
 	</div>
 
 </div>

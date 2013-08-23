@@ -35,7 +35,7 @@ else
 
 <body>
 
-<div id="container">
+<div class="container">
 
 <?php include ("inc/header.login.php"); ?>
 
