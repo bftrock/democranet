@@ -275,7 +275,10 @@ footer nav li {
 	margin: 20px auto 60px;
 }
 
-#how-it-works h2 {text-align: center;}
+#how-it-works h2 {
+	margin-bottom: 24px;
+	text-align: center;
+}
 
 .how-it-works-box {
 	text-align: center;

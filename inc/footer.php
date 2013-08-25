@@ -2,11 +2,12 @@
 	<div id="footer-wrap" class="clearfix">
 		<nav>
 			<ul>
-				<li><a href="/register.php">Register to Vote</a></li>
-				<li><a href="/issue.php">Issues</a></li>
+				<li><a href="/register.php">Register</a></li>
+				<li><a href="/issue.php">Browse & Vote</a></li>
+				<li><a href="/position.php">Take a Position</a></li>
 				<li><a href="/action.php">Take Action</a></li>
-				<li><a href="/office.php">Public Offices</a></li>
-				<li><a href="/issue.php">Contact Us</a></li>
+				<li><a href="/office.php">View Elections</a></li>
+				<li><a href="/candidate.php">View Candidates</a></li>
 			</ul>
 		</nav>
 		<div id="about">

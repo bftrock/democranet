@@ -119,15 +119,7 @@ switch ($mode)
 		
 	</div>
 
-	<div id="how-it-works" class="row">
-		<h2>How to Use It</h2>
-		<div class="how-it-works-box col-lg-4" id="how-it-works-register"><span class="hiw-graphic"></span><h3><a href="/register.php">Register</a></h3></div>
-		<div class="how-it-works-box col-lg-4" id="how-it-works-browse"><span class="hiw-graphic"></span><h3><a href="/issue.php">Browse Issues</a></h3></div>
-		<div class="how-it-works-box col-lg-4" id="how-it-works-vote"><span class="hiw-graphic"></span><h3><a href="#">Vote</a></h3></div>
-		<div class="how-it-works-box col-lg-4" id="how-it-works-express"><span class="hiw-graphic"></span><h3><a href="#">Express Your Views</a></h3></div>
-		<div class="how-it-works-box col-lg-4" id="how-it-works-action"><span class="hiw-graphic"></span><h3><a href="/action.php">Take Action</a></h3></div>
-		<div class="how-it-works-box col-lg-4" id="how-it-works-office"><span class="hiw-graphic"></span><h3><a href="/office.php">View Elections</a></h3></div>
-	</div>
+	<?php include ("/inc/how-it-works.php"); ?>
 
 </div>
 <?php require_once ("/inc/footer.php"); ?>
