@@ -107,35 +107,30 @@ switch ($mode)
 
 	<div id="login_box">
 		<h3>Welcome!</h3>
-		<p>Democra.net is a tool for more direct democracy, allowing for citizen input and action on current issues. Anyone can register and participate, except corporations, which are not people.</p>
-		<p>To get started, log in below or <a href="register.php">become a Democra.net citizen</a>.</p>
+		<p>Democra.net is a tool for direct democracy, allowing for citizen input and action on current issues. Anyone can register and participate, except corporations, which are not people.</p>
+		<p>To get started, log in below or <a href="register.php">register to vote</a>.</p>
 		<form id="login_form" method="post" action="login.php?m=au">
-			<table>
-				<tr>
-					<td><label id="email_lbl" for="email">Email Address:*</label></td>
-					<td><input type="text" size="25" name="email" id="email" value="<?php echo $email; ?>"/></td>
-				</tr>
-				<tr>
-					<td><label id="password_lbl" for="password">Password:*</label></td>
-					<td><input type="password" size="25" name="password" id="password"/></td>
-				</tr>
-				<tr>
-					<td></td>
-					<td><a id="bu_login" class="btn" href="JAVASCRIPT: submitForm()">Log in</a></td>
-				</tr>
-			</table>
+			<label id="email_lbl" for="email">Email Address:*</label>
+			<input type="email" name="email" id="email" value="<?php echo $email; ?>"/>
+			<label id="password_lbl" for="password">Password:*</label>
+			<input type="password" name="password" id="password"/>
+			<a id="bu_login" class="btn" href="JAVASCRIPT: submitForm()">Log in</a>
 		</form>
 		
 	</div>
 
-	<div id="how-it-works" class="content row">
-		<h2>How It Works</h2>
-		<div class="how-it-works-box col-4" id="how-it-works-register"><span class="hiw-graphic"></span><h3>Step 1: <a href="/register.php">Register</a></h3></div>
-		<div class="how-it-works-box col-4" id="how-it-works-vote"><span class="hiw-graphic"></span><h3>Step 2: <a href="#">Vote</a></h3></div>
-		<div class="how-it-works-box col-4" id="how-it-works-express"><span class="hiw-graphic"></span><h3>Step 3: <a href="#">Express Your Views</a></h3></div>
+	<div id="how-it-works" class="row">
+		<h2>How to Use It</h2>
+		<div class="how-it-works-box col-lg-4" id="how-it-works-register"><span class="hiw-graphic"></span><h3><a href="/register.php">Register</a></h3></div>
+		<div class="how-it-works-box col-lg-4" id="how-it-works-browse"><span class="hiw-graphic"></span><h3><a href="/issue.php">Browse Issues</a></h3></div>
+		<div class="how-it-works-box col-lg-4" id="how-it-works-vote"><span class="hiw-graphic"></span><h3><a href="#">Vote</a></h3></div>
+		<div class="how-it-works-box col-lg-4" id="how-it-works-express"><span class="hiw-graphic"></span><h3><a href="#">Express Your Views</a></h3></div>
+		<div class="how-it-works-box col-lg-4" id="how-it-works-action"><span class="hiw-graphic"></span><h3><a href="/action.php">Take Action</a></h3></div>
+		<div class="how-it-works-box col-lg-4" id="how-it-works-office"><span class="hiw-graphic"></span><h3><a href="/office.php">View Elections</a></h3></div>
 	</div>
 
 </div>
+<?php require_once ("/inc/footer.php"); ?>
 <script src="/js/jquery.js"></script>
 <script src="/js/jquery-ui.js"></script>
 <script src="/js/bootstrap.js"></script>

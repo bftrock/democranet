@@ -4,11 +4,15 @@ http://www.colourlovers.com/palette/452030/you_will_be_free?widths=1
 
 off white: #F7F9FE
 light gray: #ECF1F2
+gray: #555;
 very light blue: #DCE8EB
-
-Light Blue: #BED2D9
-blue-gray: #4e93aa;
-Orange: #C86C06
+Light Blue: #bed2d9;
+sky-blue: #4e93aa;
+dark-blue-gray: #24039e;
+light-green: #9afa59;
+green accent: #54cc03;
+Orange: #c86c06;
+dark orange accent: #c1540c;
 light-orange: #fbad57;
 */
 body {
@@ -65,11 +69,17 @@ table {
 	font-size: 1em;
 }
 
+footer {
+	font-size: .85em;
+}
+
+
 /* ===== links ===== */
 
-a:link {
+a, .btn {
 	text-decoration: none;
-	color: #fff;
+	font-weight: 700;
+	color: #30487a;
 	-webkit-transition: all .1s linear;
 	   -moz-transition: all .1s linear;
 	    -ms-transition: all .1s linear;
@@ -77,26 +87,28 @@ a:link {
 	        transition: all .1s linear;
 }
 
-a:visited	{
-	color: #fff;
+a:visited, .btn:visited	{
+	color: #30487a;
 }
 
 
-a:hover	{
-	color: #fbad57;
+a:hover, .btn:hover	{
+	color: #000;
 }
 
 
-a:active	{
-	color: #fbad57;
+a:active, .btn:active	{
+	color: #444;
 }
 
 .btn 	{
-	border-style: solid;
-	border-color: #BED2D9;
-	border-radius: 4px;
-	border-width: 1px;
-	padding: 3px 5px 2px;
+	display: inline-block;
+	padding: 6px 12px;
+	margin: 15px 0;
+	border-radius: 6px;
+	border: 2px solid #54cc03;
+	color: #222;
+	font-weight: 700;
 	background-image: linear-gradient(#F7F9FE, #DCE8EB);
 	cursor: pointer;
 }
@@ -106,43 +118,44 @@ a:active	{
 }
 
 
-a.btn:link 	{
-	text-decoration: none;
-	color: #222;
-	-webkit-transition: all 0s linear;
-	   -moz-transition: all 0s linear;
-	    -ms-transition: all 0s linear;
-	     -o-transition: all 0s linear;
-	        transition: all 0s linear;
-}
-
-a.btn:visited	{
-	color: #222;
-}
-
-
-a.btn:hover	{
-	color: #C86C06;
-}
-
-
-a.btn:active	{
-	color: #C86C06;
-}
-
 /* ===== lists ===== */
 
-
-li 	{
-	font-size: 1em;
+nav ul {
+	list-style-type: none;
+	padding: 0 0 12px 0;
 }
 
 /* ===== forms ====== */
 
-input, textarea, select	{
-	font-family: 'Courier', monospace;
-	font-size: 0.9em;
-	padding: 2px;
+form {
+	position: relative;
+	display: block;
+	margin: 20px;
+}
+
+input, textarea	{
+	display: block;
+	width: 100%;
+	font-weight: 700;
+	padding: 6px;
+	border-radius: 6px;
+	border: 2px solid #54cc03;
+	color: #222;
+}
+
+input {
+	height: 40px;
+	line-height: 20px;
+}
+
+
+label	{
+	display: block;
+	color: #555;
+	padding: 0;
+	margin: 15px 0 3px 0;
+	font-size: .8em;
+	text-transform: lowercase;
 }
 
 /* ===== globals ===== */
@@ -166,7 +179,7 @@ input, textarea, select	{
 
 #header 	{
 	text-align: center;
-	padding: 0;
+	padding: 20px;
 }
 
 
@@ -196,7 +209,68 @@ input, textarea, select	{
 	border: 1px solid #BED2D9; */
 }
 
+footer	{
+	position: relative;
+	padding: 30px;
+	background-color: #222;
+	color: #;
+}
+
+#footer-wrap	{
+	width: 100%;
+	max-width: 940px;
+}
+
+footer p, footer li, footer div {
+	color: #bed2d9;
+}
+
+footer nav 	{
+	margin: 15px auto;
+	
+}
+
+footer nav li {
+	display: block;
+	margin: 0 0 12px 0;
+}
+
+#copyright	{
+	margin: 20px 0;
+	clear: both;
+	color: #555;
+}
+
 /* ===== home page ===== */
+
+/* ===== login ===== */
+
+#login_box {
+	background-color: #9afa59;
+	border: 10px solid #54cc03;
+	border-radius: 20px 20px 0 0;
+	padding: 20px;
+	width: 90%;
+	max-width: 600px;
+	margin: 30px auto 100px;
+	box-shadow: 0 0 20px 0 #222;
+}
+
+#login_box h3 {
+	border-bottom: 2px solid #54cc03;
+	margin-top: 0;
+	margin-bottom: 20px;
+}
+
+#login_box p {font-weight: 700;}
+
+#di_error
+{
+	width: 90%;
+	margin: 10px auto;
+	display: none;
+}
+
 #how-it-works {
 	margin: 20px auto 60px;
 }
@@ -215,6 +289,8 @@ input, textarea, select	{
 	margin: 0 auto 20px;
 	background-color: #222;
 	border-radius: 100%;
+	border: 10px solid #54cc03;
+	box-shadow: 0 0 20px 0 #222;
 }
 
 #votes 
@@ -367,33 +443,7 @@ table.form th
 	margin: 0;
 }
 
-/* ===== login ===== */
 
-#login_box {
-	background: #DCE8EB;
-	border-style: solid;
-	border-width: 5px;
-	border-color: #BED2D9;
-	border-radius: 10px;
-	padding: 10px;
-	width: 90%;
-	margin: 30px auto;
-}
-
-#login_box h3 {
-	border-bottom-style: solid;
-	border-width: 2px;
-	border-color: #BED2D9;
-	margin-top: 0;
-	margin-bottom: 20px;
-}
-
-#di_error
-{
-	width: 90%;
-	margin: 10px auto;
-	display: none;
-}
 
 
 
@@ -402,12 +452,6 @@ table.form th
 ============================================================== */
 @media (max-width: 600px) {
 
-	#how-it-works .col-4 {
-		float: none;
-		width: 100%;
-		margin: 0 auto;
-	}
-
 } /*end @media max-width 600px*/
 
 /* ===========================================================
@@ -415,6 +459,19 @@ table.form th
 ============================================================== */
 @media (min-width: 768px) {
 
+	footer nav, #about {
+		float: left;
+		width: 40%;
+		margin: 0 5%;
+	}
+
+	#copyright	{
+		text-align: center;
+	}
+
+	/* ===== homepage =====*/
+	
+	
 
 } /*end @media min-width 768px*/
 
